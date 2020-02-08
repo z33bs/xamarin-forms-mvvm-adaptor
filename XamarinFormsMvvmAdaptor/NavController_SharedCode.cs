@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -94,7 +93,7 @@ namespace XamarinFormsMvvmAdaptor
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }
 
-        #region Stack Manipulation Helpers
+#region Stack Manipulation Helpers
         public Task RemoveLastFromBackStackAsync()
         {
             if (RootPage != null)
@@ -119,9 +118,9 @@ namespace XamarinFormsMvvmAdaptor
 
             return Task.FromResult(true);
         }
-        #endregion
+#endregion
 
-        #region Static Helpers
+#region Static Helpers
         public static Page CreatePageForAsync(IMvvmAdaptorViewModel viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
@@ -138,9 +137,9 @@ namespace XamarinFormsMvvmAdaptor
             //throw new InvalidCastException()
             //throw new NullReferenceException()
         }
-        #endregion
+#endregion
 
-        #region Forms.INavigation Adaptation
+#region Forms.INavigation Adaptation
         public void RemovePageFor<TViewModel>() where TViewModel : IMvvmAdaptorViewModel
         {
             Type pageType = GetPageTypeForViewModel(typeof(TViewModel));
@@ -154,7 +153,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             }
         }
-        #endregion
+#endregion
     }
 
     class RootPageNotSetException : Exception
