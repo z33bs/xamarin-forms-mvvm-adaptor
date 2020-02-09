@@ -3,10 +3,31 @@
     <PropertyGroup>
         <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
         <PackOnBuild>true</PackOnBuild>
+        <PackageVersion>1.0.0-beta</PackageVersion>
+        <Authors>Guy Antoine</Authors>
+        <Copyright>2020 Guy Antoine</Copyright>
+        <PackageIconUrl>https://github.com/z33bs/xamarin-forms-mvvm-adaptor/tree/master/XamarinFormsMvvmAdaptor/Art/icon.png</PackageIconUrl>
+        <NeutralLanguage>en</NeutralLanguage>
+        <PackageLicenseUrl>https://github.com/z33bs/xamarin-forms-mvvm-adaptor/blob/master/LICENSE</PackageLicenseUrl>
+        <Owners>Guy Antoine</Owners>
+        <PackageProjectUrl>https://github.com/z33bs/xamarin-forms-mvvm-adaptor</PackageProjectUrl>
+        <PackageReleaseNotes>See: https://github.com/z33bs/xamarin-forms-mvvm-adaptor/blob/master/CHANGELOG.md</PackageReleaseNotes>
+        <Summary>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Summary>
+        <PackageTags>mvvm xamarin forms viewmodel </PackageTags>
+        <Title>Xamarin Forms Mvvm Adaptor</Title>
+        <Description>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Description>
+        <PackageId>XamarinFormsMvvmAdaptor</PackageId>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <DebugType></DebugType>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Xamarin.Forms" Version="3.5.0.274416" />
         <PackageReference Include="Refractored.MvvmHelpers" Version="1.3.0" />
+        <PackageReference Include="NuGet.Build.Packaging" Version="0.2.5-dev.8">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
     </ItemGroup>
 <!--    <ItemGroup Condition=" '$(TargetFramework)' == 'net461' "> -->
 <!--        <Reference Include="mscorlib" />-->
