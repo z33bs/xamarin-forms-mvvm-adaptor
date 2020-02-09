@@ -20,4 +20,7 @@
 <!--        <Reference Include="System.Xml" />-->
 <!--        <Reference Include="System.Configuration" />-->
 <!--    </ItemGroup>-->
+    <ItemGroup>
+      <Folder Include="Art\" />
+    </ItemGroup>
 </Project>
