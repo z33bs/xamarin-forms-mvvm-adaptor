@@ -4,9 +4,9 @@ using MvvmHelpers;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public class MvvmAdaptorViewModel : BaseViewModel, IMvvmAdaptorViewModel
+    public abstract class MvvmAdaptorViewModel : BaseViewModel, IMvvmAdaptorViewModel
     {
-        public Task InitializeAsync(object navigationData)
+        public virtual Task InitializeAsync(object navigationData)
         {
             return Task.FromResult(false);
         }
