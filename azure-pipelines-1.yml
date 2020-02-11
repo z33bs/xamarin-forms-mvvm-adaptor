@@ -1,16 +1,17 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Process setup per JM
+# https://montemagno.com/continuous-integration-delivery-for-net-libraries-with-vsts/
 
+# Set buildnumber here and add versioningScheme: byBuildNumber to NugetCommand@2
 name: 1.0.3$(rev:.r)
 
 trigger:
 - master
 
+# From starter template
 pool:
   vmImage: 'ubuntu-latest'
 
+# Examples from starter template
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
@@ -20,6 +21,7 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
+#JM specified version 4.5.1 but can use latest default
 - task: NuGetToolInstaller@1
   inputs:
     versionSpec: '4.5.1'
