@@ -28,6 +28,8 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     vstsFeed: '86153590-b7da-4504-b416-f06a4b16a355'
+    versioningScheme: byBuildNumber
+
 
 - task: MSBuild@1
   inputs:
