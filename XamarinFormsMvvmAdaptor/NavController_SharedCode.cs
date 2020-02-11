@@ -8,6 +8,15 @@ using INavigation = Xamarin.Forms.INavigation;
 
 namespace XamarinFormsMvvmAdaptor
 {
+    /// <summary>
+    /// MvvM Navigation Controller. Each instance contains its own Navigation stack.
+    /// Navigation engine depends on the user sticking to a naming convention:
+    /// Views are expected to be in the <see cref="DEFAULT_V_NAMESPACE"/> subnamespace
+    /// and end with suffix <see cref="DEFAULT_V_SUFFIX"/>.
+    /// ViewModels are expected to be in the <see cref="DEFAULT_VM_NAMESPACE"/> subnamespace
+    /// and end with suffix <see cref="DEFAULT_VM_SUFFIX"/>.
+    /// This behaviour can be customised with <see cref="SetNamingConventions(string, string, string, string)"/>
+    /// </summary>
     public partial class NavController
     {
         #region Settings
@@ -21,7 +30,13 @@ namespace XamarinFormsMvvmAdaptor
         static string _viewModelSuffix = DEFAULT_VM_SUFFIX;
         static string _viewSuffix = DEFAULT_V_SUFFIX;
 
-
+        /// <summary>
+        /// Customise the controller's expected naming convention
+        /// </summary>
+        /// <param name="viewModelSubNamespace"></param>
+        /// <param name="viewSubNamespace"></param>
+        /// <param name="viewModelSuffix"></param>
+        /// <param name="viewSuffix"></param>
         public static void SetNamingConventions(
             string viewModelSubNamespace = DEFAULT_VM_NAMESPACE
             , string viewSubNamespace = DEFAULT_V_NAMESPACE
@@ -35,9 +50,16 @@ namespace XamarinFormsMvvmAdaptor
         }
         #endregion
 
+        /// <summary>
+        /// Exposes the root page's Xamarin.Forms' navigation engine which
+        /// houses the NavigationStack, ModalStack, and Pop functionality
+        /// </summary>
         public INavigation Navigation => RootPage.Navigation;
 
         Page rootPage;
+        /// <summary>
+        /// Page at the root of the navigation stack
+        /// </summary>
         public Page RootPage
         {
             get
@@ -49,9 +71,16 @@ namespace XamarinFormsMvvmAdaptor
             private set { rootPage = value; }
         }
 
-        public IMvvmAdaptorViewModel RootViewModel => RootPage.BindingContext as IMvvmAdaptorViewModel;
+        /// <summary>
+        /// Viewmodel corresponding to the root page
+        /// </summary>
+        public IBaseViewModel RootViewModel => RootPage.BindingContext as IBaseViewModel;
 
-        public IMvvmAdaptorViewModel PreviousPageViewModel
+        /// <summary>
+        /// Viewmodel corresponding to the previous page in the
+        /// navigation stack (n-1)
+        /// </summary>
+        public IBaseViewModel PreviousPageViewModel
         {
             get
             {
@@ -60,7 +89,7 @@ namespace XamarinFormsMvvmAdaptor
 
                 return RootPage.Navigation.NavigationStack
                     [RootPage.Navigation.NavigationStack.Count - 2].BindingContext
-                    as IMvvmAdaptorViewModel;
+                    as IBaseViewModel;
             }
         }
 
@@ -88,12 +117,16 @@ namespace XamarinFormsMvvmAdaptor
             return viewType;
         }
 
-        private static void BindPageToViewModel(Page page, IMvvmAdaptorViewModel viewModel)
+        private static void BindPageToViewModel(Page page, IBaseViewModel viewModel)
         {
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }
 
-#region Stack Manipulation Helpers
+        #region Stack Manipulation Helpers
+        /// <summary>
+        /// Removes the previous page (n-1) of the navigation stack
+        /// </summary>
+        /// <returns></returns>
         public Task RemoveLastFromBackStackAsync()
         {
             if (RootPage != null)
@@ -105,6 +138,11 @@ namespace XamarinFormsMvvmAdaptor
             return Task.FromResult(true);
         }
 
+        /// <summary>
+        /// Removes all pages in the navigation stack except for
+        /// the current page at the top of the stack
+        /// </summary>
+        /// <returns></returns>
         public Task RemoveBackStackAsync()
         {
             if (RootPage != null)
@@ -118,29 +156,48 @@ namespace XamarinFormsMvvmAdaptor
 
             return Task.FromResult(true);
         }
-#endregion
+        #endregion
 
-#region Static Helpers
-        public static Page CreatePageForAsync(IMvvmAdaptorViewModel viewModel)
+        #region Static Helpers
+        /// <summary>
+        /// Instantiates the page associated with a given ViewModel
+        /// and sets the ViewModel as its binding context
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        public static Page CreatePageForAsync(IBaseViewModel viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
             BindPageToViewModel(page, viewModel);
             return page;
         }
 
+        /// <summary>
+        /// Trigers the <see cref="BaseViewModel.InitializeAsync(object)"/> method
+        /// in the <see cref="IBaseViewModel" associated with a given page/>
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="initialisationParameter"></param>
+        /// <param name="continueOnCapturedContext"></param>
+        /// <returns></returns>
         public static async Task InitializeVmForPage(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
         {
             if (page.BindingContext != null
-                && page.BindingContext is IMvvmAdaptorViewModel)
-                await (page.BindingContext as IMvvmAdaptorViewModel).InitializeAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
+                && page.BindingContext is IBaseViewModel)
+                await (page.BindingContext as IBaseViewModel).InitializeAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
             //todo throw two different errors
             //throw new InvalidCastException()
             //throw new NullReferenceException()
         }
-#endregion
+        #endregion
 
-#region Forms.INavigation Adaptation
-        public void RemovePageFor<TViewModel>() where TViewModel : IMvvmAdaptorViewModel
+        #region Forms.INavigation Adaptation
+        /// <summary>
+        /// Removes a page from the navigation stack
+        /// that corresponds to a given ViewModel
+        /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
+        public void RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel
         {
             Type pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
@@ -153,7 +210,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             }
         }
-#endregion
+        #endregion
     }
 
     class RootPageNotSetException : Exception
