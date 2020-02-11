@@ -174,7 +174,7 @@ namespace XamarinFormsMvvmAdaptor
 
         /// <summary>
         /// Trigers the <see cref="BaseViewModel.InitializeAsync(object)"/> method
-        /// in the <see cref="IBaseViewModel" associated with a given page/>
+        /// in the <see cref="IBaseViewModel"/> associated with a given page
         /// </summary>
         /// <param name="page"></param>
         /// <param name="initialisationParameter"></param>
