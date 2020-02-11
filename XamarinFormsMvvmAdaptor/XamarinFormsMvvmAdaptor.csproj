@@ -5,6 +5,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
         <PackageIcon>icon.png</PackageIcon>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- AUTO       -->
         <TargetFramework>netstandard2.0</TargetFramework>
         <PackageVersion>1.0.3-beta</PackageVersion>
