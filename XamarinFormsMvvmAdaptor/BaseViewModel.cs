@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-using MvvmHelpers;
-
 namespace XamarinFormsMvvmAdaptor
 {
-    public abstract class MvvmAdaptorViewModel : BaseViewModel, IMvvmAdaptorViewModel
+    public abstract class BaseViewModel : MvvmHelpers.BaseViewModel, IBaseViewModel
     {
         public virtual Task InitializeAsync(object navigationData)
         {
