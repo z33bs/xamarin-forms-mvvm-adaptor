@@ -1,5 +1,4 @@
-![Logo](https://raw.githubusercontent.com/z33bs/xamarin-forms-mvvm-adaptor/master/XamarinFormsMvvmAdaptor/Art/icon.png)
-#Xamarin Forms Mvvm Adaptor
+# ![Logo](https://raw.githubusercontent.com/z33bs/xamarin-forms-mvvm-adaptor/master/XamarinFormsMvvmAdaptor/Art/icon.png) Xamarin Forms Mvvm Adaptor
 A **ViewModel-First** Mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing Mvvm engine.
 
 **Build Status:** [![Build Status](https://dev.azure.com/guy-antoine/xamarin-forms-mvvm-adaptor/_apis/build/status/z33bs.xamarin-forms-mvvm-adaptor%20(1)?branchName=master)](https://dev.azure.com/guy-antoine/xamarin-forms-mvvm-adaptor/_build/latest?definitionId=2&branchName=master)
