@@ -6,9 +6,12 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class NavController
     {
-        public NavController(Page rootPage)
+        public NavController(Page rootPage, bool isWrappedInNavigationPage = true)
         {
-            RootPage = rootPage;
+            if (isWrappedInNavigationPage)
+                RootPage = new NavigationPage(rootPage);
+            else
+                RootPage = rootPage;
         }
 
         private Task<Page> GetPageForPush<TViewModel>(object initialisationParameter)

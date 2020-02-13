@@ -6,13 +6,17 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class NavController
     {
-        public NavController(IBaseViewModel rootViewModel)
+        public NavController(IAdaptorViewModel rootViewModel, bool isWrappedInNavigationPage = true)
         {
-            RootPage = InstantiatePage(rootViewModel.GetType());
-            BindPageToViewModel(RootPage, rootViewModel);
+            var page = InstantiatePage(rootViewModel.GetType());
+            BindPageToViewModel(page, rootViewModel);
+            if (isWrappedInNavigationPage)
+                RootPage = new NavigationPage(page);
+            else
+                RootPage = page;
         }
 
-        private Task<Page> GetPageForPush(IBaseViewModel viewModel, object initialisationParameter)
+        private Task<Page> GetPageForPush(IAdaptorViewModel viewModel, object initialisationParameter)
         {
             if (Navigation is null)
                 throw new RootPageNotSetException();
