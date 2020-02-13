@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -113,7 +113,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public Task PushModalAsync(IBaseViewModel viewModel)
+        public Task PushModalAsync(IAdaptorViewModel viewModel)
         {
             return PushModalAsync(viewModel, null, true);
         }
@@ -146,13 +146,15 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="BaseViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        public async Task PushModalAsync(IBaseViewModel viewModel, object navigationData, bool animated)
+        public async Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = await GetPageForPush(viewModel, navigationData).ConfigureAwait(false);
-            await Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+            Device.BeginInvokeOnMainThread(
+                async () =>
+                    await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
         }
         #endregion
         #endregion

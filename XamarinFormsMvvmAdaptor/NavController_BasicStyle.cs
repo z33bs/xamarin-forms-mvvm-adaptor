@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -102,13 +102,15 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="BaseViewModel.InitializeAsync(object)"/>  method</param>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
         public async Task PushAsync<TViewModel>(object navigationData, bool animated)
         {
             var page = await GetPageForPush<TViewModel>(navigationData).ConfigureAwait(false);
-            await Navigation.PushAsync(page, animated).ConfigureAwait(false);
+            Device.BeginInvokeOnMainThread(
+                async () =>
+                    await Navigation.PushAsync(page, animated));
         }
         #endregion
 
@@ -149,13 +151,15 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new Modal page onto the navigation stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="BaseViewModel.InitializeAsync(object)"/>  method</param>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
         public async Task PushModalAsync<TViewModel>(object navigationData, bool animated)
         {
             var page = await GetPageForPush<TViewModel>(navigationData);
-            await Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+            Device.BeginInvokeOnMainThread(
+                async () =>
+                    await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
         }
         #endregion
         #endregion
