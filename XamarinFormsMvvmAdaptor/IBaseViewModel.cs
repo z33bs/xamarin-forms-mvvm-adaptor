@@ -2,7 +2,7 @@
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public interface IBaseViewModel
+    public interface IAdaptorViewModel
     {
         Task InitializeAsync(object navigationData);
     }

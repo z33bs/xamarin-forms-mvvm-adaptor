@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -52,7 +52,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <typeparam name="TViewModelExisting"></typeparam>
         /// <typeparam name="TViewModelNew"></typeparam>
         /// <param name="navigationData">Optional navigation data that will be passed to
-        /// <see cref="BaseViewModel.InitializeAsync(object)"/></param>
+        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/></param>
         /// <returns></returns>
         public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null)
         {
@@ -95,7 +95,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="BaseViewModel.InitializeAsync(object)"/>  method</param>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
         /// <returns></returns>
         public Task PushAsync<TViewModel>(object navigationData)
         {
@@ -143,7 +143,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new Modal page onto the navigation stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="BaseViewModel.InitializeAsync(object)"/>  method</param>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
         /// <returns></returns>
         public Task PushModalAsync<TViewModel>(object navigationData)
         {

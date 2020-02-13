@@ -74,13 +74,13 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Viewmodel corresponding to the root page
         /// </summary>
-        public IBaseViewModel RootViewModel => RootPage.BindingContext as IBaseViewModel;
+        public IAdaptorViewModel RootViewModel => RootPage.BindingContext as IAdaptorViewModel;
 
         /// <summary>
         /// Viewmodel corresponding to the previous page in the
         /// navigation stack (n-1)
         /// </summary>
-        public IBaseViewModel PreviousPageViewModel
+        public IAdaptorViewModel PreviousPageViewModel
         {
             get
             {
@@ -89,7 +89,7 @@ namespace XamarinFormsMvvmAdaptor
 
                 return RootPage.Navigation.NavigationStack
                     [RootPage.Navigation.NavigationStack.Count - 2].BindingContext
-                    as IBaseViewModel;
+                    as IAdaptorViewModel;
             }
         }
 
@@ -117,7 +117,7 @@ namespace XamarinFormsMvvmAdaptor
             return viewType;
         }
 
-        private static void BindPageToViewModel(Page page, IBaseViewModel viewModel)
+        private static void BindPageToViewModel(Page page, IAdaptorViewModel viewModel)
         {
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }
@@ -165,7 +165,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static Page CreatePageForAsync(IBaseViewModel viewModel)
+        public static Page CreatePageForAsync(IAdaptorViewModel viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
             BindPageToViewModel(page, viewModel);
@@ -173,8 +173,8 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Trigers the <see cref="BaseViewModel.InitializeAsync(object)"/> method
-        /// in the <see cref="IBaseViewModel"/> associated with a given page
+        /// Trigers the <see cref="AdaptorViewModel.InitializeAsync(object)"/> method
+        /// in the <see cref="IAdaptorViewModel"/> associated with a given page
         /// </summary>
         /// <param name="page"></param>
         /// <param name="initialisationParameter"></param>
@@ -183,8 +183,8 @@ namespace XamarinFormsMvvmAdaptor
         public static async Task InitializeVmForPage(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
         {
             if (page.BindingContext != null
-                && page.BindingContext is IBaseViewModel)
-                await (page.BindingContext as IBaseViewModel).InitializeAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
+                && page.BindingContext is IAdaptorViewModel)
+                await (page.BindingContext as IAdaptorViewModel).InitializeAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
             //todo throw two different errors
             //throw new InvalidCastException()
             //throw new NullReferenceException()
@@ -197,7 +197,7 @@ namespace XamarinFormsMvvmAdaptor
         /// that corresponds to a given ViewModel
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        public void RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel
+        public void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
         {
             Type pageType = GetPageTypeForViewModel(typeof(TViewModel));
 

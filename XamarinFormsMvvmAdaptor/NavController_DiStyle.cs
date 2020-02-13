@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -24,7 +24,7 @@ namespace XamarinFormsMvvmAdaptor
             return CreatePageAndInitializeVmFor(viewModel, initialisationParameter);
         }
 
-        private async Task<Page> CreatePageAndInitializeVmFor(IBaseViewModel viewModel, object initialisationParameter = null)
+        private async Task<Page> CreatePageAndInitializeVmFor(IAdaptorViewModel viewModel, object initialisationParameter = null)
         {
             await viewModel.InitializeAsync(initialisationParameter).ConfigureAwait(false);
 
@@ -44,9 +44,9 @@ namespace XamarinFormsMvvmAdaptor
         /// <typeparam name="TViewModelExisting"></typeparam>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Optional navigation data that will be passed to the
-        /// <see cref="BaseViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <returns></returns>
-        public async Task InsertPageBefore<TViewModelExisting>(IBaseViewModel viewModel, object navigationData = null)
+        public async Task InsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null)
         {
             var page = await CreatePageAndInitializeVmFor(viewModel.GetType(), navigationData).ConfigureAwait(false);
             BindPageToViewModel(page, viewModel);
@@ -68,7 +68,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public Task PushAsync(IBaseViewModel viewModel)
+        public Task PushAsync(IAdaptorViewModel viewModel)
         {
             return PushAsync(viewModel, null, true);
         }
@@ -79,7 +79,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="viewModel"></param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        public Task PushAsync(IBaseViewModel viewModel, bool animated)
+        public Task PushAsync(IAdaptorViewModel viewModel, bool animated)
         {
             return PushAsync(viewModel, null, animated);
         }
@@ -89,9 +89,9 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="BaseViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <returns></returns>
-        public Task PushAsync(IBaseViewModel viewModel, object navigationData)
+        public Task PushAsync(IAdaptorViewModel viewModel, object navigationData)
         {
             return PushAsync(viewModel, navigationData, true);
         }
@@ -101,13 +101,15 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="BaseViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        public async Task PushAsync(IBaseViewModel viewModel, object navigationData, bool animated)
+        public async Task PushAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = await GetPageForPush(viewModel, navigationData).ConfigureAwait(false);
-            await Navigation.PushAsync(page, animated).ConfigureAwait(false);
+            Device.BeginInvokeOnMainThread(
+                async () =>
+                    await Navigation.PushAsync(page, animated).ConfigureAwait(false));
         }
         #endregion
 
@@ -128,7 +130,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="viewModel"></param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        public Task PushModalAsync(IBaseViewModel viewModel, bool animated)
+        public Task PushModalAsync(IAdaptorViewModel viewModel, bool animated)
         {
             return PushModalAsync(viewModel, null, animated);
         }
@@ -138,9 +140,9 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="BaseViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <returns></returns>
-        public Task PushModalAsync(IBaseViewModel viewModel, object navigationData)
+        public Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData)
         {
             return PushModalAsync(viewModel, navigationData, true);
         }
