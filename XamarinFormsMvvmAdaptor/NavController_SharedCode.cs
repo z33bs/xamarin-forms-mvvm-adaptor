@@ -88,7 +88,7 @@ namespace XamarinFormsMvvmAdaptor
                     return null;
 
                 return RootPage.Navigation.NavigationStack
-                    [RootPage.Navigation.NavigationStack.Count - 2].BindingContext
+                    [RootPage.Navigation.NavigationStack.Count - 1].BindingContext
                     as IAdaptorViewModel;
             }
         }
