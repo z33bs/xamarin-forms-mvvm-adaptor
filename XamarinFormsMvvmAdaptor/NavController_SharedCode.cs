@@ -87,11 +87,10 @@ namespace XamarinFormsMvvmAdaptor
         {
             get
             {
-                if (RootPage.Navigation.NavigationStack.Count < 2)
+                if (NavigationStack.Count < 2)
                     return null;
 
-                return RootPage.Navigation.NavigationStack
-                    [RootPage.Navigation.NavigationStack.Count - 1].BindingContext
+                return NavigationStack[NavigationStack.Count - 2].BindingContext
                     as IAdaptorViewModel;
             }
         }
