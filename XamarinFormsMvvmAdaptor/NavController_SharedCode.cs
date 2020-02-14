@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 using Page = Xamarin.Forms.Page;
 using INavigation = Xamarin.Forms.INavigation;
+using Xamarin.Forms;
+using System.Collections.Generic;
 
 namespace XamarinFormsMvvmAdaptor
 {
@@ -211,6 +213,85 @@ namespace XamarinFormsMvvmAdaptor
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// Asynchronously removes the most recent <see cref="T:Xamarin.Forms.Page" /> from the navigation stack.
+        /// </summary>
+        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack</returns>
+        public Task<IAdaptorViewModel> PopAsync()
+        {
+            return PopAsync(true);
+        }
+
+        /// <summary>
+        /// Asynchronously removes the most recent <see cref="T:Xamarin.Forms.Page" /> from the navigation stack, with optional animation.
+        /// </summary>
+        /// <param name="animated">Whether to animate the pop.</param>
+        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack</returns>
+        public Task<IAdaptorViewModel> PopAsync(bool animated)
+        {
+            var tcs = new TaskCompletionSource<IAdaptorViewModel>();
+            Device.BeginInvokeOnMainThread(async () =>
+                {
+                    await RootPage.Navigation.PopAsync(animated);
+                    tcs.TrySetResult(
+                        NavigationStack[NavigationStack.Count-1].BindingContext
+                        as IAdaptorViewModel);
+                });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Pops all but the root <see cref="Xamarin.Forms.Page" /> off the navigation stack.
+        /// </summary>
+        /// <returns></returns>
+        public Task PopToRootAsync()
+        {
+            return PopToRootAsync(true);
+        }
+
+        /// <summary>
+        /// Pops all but the root <see cref="Xamarin.Forms.Page" /> off the navigation stack, with optional animation.
+        /// </summary>
+        /// <param name="animated">Whether to animate the pop.</param>
+        /// <returns></returns>
+        public Task PopToRootAsync(bool animated)
+        {
+            var tcs = new TaskCompletionSource<object>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                await RootPage.Navigation.PopToRootAsync(animated);
+                tcs.TrySetResult(null);
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Asynchronously dismisses the most recent modally presented <see cref="Xamarin.Forms.Page" />.
+        /// </summary>
+        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack (not the modal stack)</returns>
+        public Task<IAdaptorViewModel> PopModalAsync()
+        {
+            return PopModalAsync(true);
+        }
+
+        /// <summary>
+        /// Asynchronously dismisses the most recent modally presented <see cref="Xamarin.Forms.Page" />, with optional animation.
+        /// </summary>
+        /// <param name="animated">Whether to animate the pop.</param>
+        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack (not the modal stack)</returns>
+        public Task<IAdaptorViewModel> PopModalAsync(bool animated)
+        {
+            var tcs = new TaskCompletionSource<IAdaptorViewModel>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                await RootPage.Navigation.PopModalAsync(animated);
+                tcs.TrySetResult(
+                    NavigationStack[NavigationStack.Count-1].BindingContext
+                    as IAdaptorViewModel);
+            });
+            return tcs.Task;
         }
         #endregion
     }
