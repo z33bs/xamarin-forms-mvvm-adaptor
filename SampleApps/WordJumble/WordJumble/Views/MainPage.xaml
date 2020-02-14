@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="WordJumble.Views.MainPage"
+             xmlns:vm="clr-namespace:WordJumble.ViewModels"
+             Visual="Material"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             mc:Ignorable="d">
+    <ContentPage.BindingContext>
+        <vm:MainViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <StackLayout
+            VerticalOptions="CenterAndExpand"
+            Margin="50"
+            d:BackgroundColor="Beige">
+            <ActivityIndicator                
+                IsRunning="{Binding IsBusy}"
+                d:IsRunning="True"/>
+            <Label Text="Did you know?"
+                   FontSize="Large"
+                   Padding="0,0,0,20"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding IsNotBusy}"/>
+            <Label Text="The Scrabble dictionary has
+                   4030 four-letter words!"
+                   HorizontalTextAlignment="Center"
+                   Padding="0,0,0,20"
+                   IsVisible="{Binding IsNotBusy}"/>
+            <Label
+                Text="{Binding Instruction}"
+                FontAttributes="Bold"
+                d:Text="Enter a four letter word:"
+                IsVisible="{Binding IsNotBusy}"/>
+            <Entry
+                   Placeholder="_ _ _ _"                
+                   MaxLength="4"
+                   Text="{Binding Word}"
+                   HorizontalTextAlignment="Center"
+                   ReturnType="Send"                   
+                   ReturnCommand="{Binding JumbleWordCommand}"
+                   ReturnCommandParameter="{Binding Source={RelativeSource Self},Path=Text}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
