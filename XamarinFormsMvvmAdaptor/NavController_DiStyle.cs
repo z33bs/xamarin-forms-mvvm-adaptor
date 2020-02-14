@@ -114,6 +114,7 @@ namespace XamarinFormsMvvmAdaptor
                 async () =>
                     await Navigation.PushAsync(page, animated).ConfigureAwait(false));
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+            await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
         #endregion
 
@@ -166,6 +167,7 @@ namespace XamarinFormsMvvmAdaptor
                 async () =>
                     await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+            await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
         #endregion
         #endregion
