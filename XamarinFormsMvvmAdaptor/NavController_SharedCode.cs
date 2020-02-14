@@ -51,10 +51,13 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         /// <summary>
-        /// Exposes the root page's Xamarin.Forms' navigation engine which
-        /// houses the NavigationStack, ModalStack, and Pop functionality
+        /// Gets the stack of pages in the navigation
         /// </summary>
-        public INavigation Navigation => RootPage.Navigation;
+        public IReadOnlyList<Page> NavigationStack => RootPage.Navigation.NavigationStack;
+        /// <summary>
+        /// Gets the modal navigation stack
+        /// </summary>
+        public IReadOnlyList<Page> ModalStack => RootPage.Navigation.ModalStack;
 
         Page rootPage;
         /// <summary>
