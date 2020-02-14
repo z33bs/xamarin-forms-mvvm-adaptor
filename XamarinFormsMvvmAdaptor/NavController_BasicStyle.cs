@@ -14,23 +14,24 @@ namespace XamarinFormsMvvmAdaptor
                 RootPage = rootPage;
         }
 
-        private Task<Page> GetPageForPush<TViewModel>(object initialisationParameter)
-        {
-            if (Navigation is null)
-                throw new RootPageNotSetException();
+        //private Task<Page> GetPageForPush<TViewModel>()
+        //{
+        //    if (Navigation is null)
+        //        throw new RootPageNotSetException();
 
-            return CreatePageAndInitializeVmFor(typeof(TViewModel), initialisationParameter);
-        }
+        //    return InstantiatePage(typeof(TViewModel));
+        //}
 
 
-        private async Task<Page> CreatePageAndInitializeVmFor(Type viewModelType, object initialisationParameter = null)
-        {
-            var page = InstantiatePage(viewModelType);
-            //Vm is autoWired in your page class
-            await InitializeVmForPage(page, initialisationParameter).ConfigureAwait(false);
+        //private Task<Page> CreatePageAndInitializeVmFor(Type viewModelType, object initialisationParameter = null)
+        //{
+        //    var page = InstantiatePage(viewModelType);
+        //    //Vm is autoWired in your page class
 
-            return page;
-        }
+        //    //await InitializeVmForPage(page, initialisationParameter).ConfigureAwait(false);
+
+        //    return page;
+        //}
 
         #region Navigation Helpers
         /// <summary>
@@ -56,7 +57,8 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null)
         {
-            var page = await CreatePageAndInitializeVmFor(typeof(TViewModelNew), navigationData).ConfigureAwait(false);
+            //var page = await CreatePageAndInitializeVmFor(typeof(TViewModelNew), navigationData).ConfigureAwait(false);
+            var page = InstantiatePage(typeof(TViewModelNew));
 
             Type pageTypeOfPageBefore = GetPageTypeForViewModel(typeof(TViewModelExisting));
 
@@ -65,6 +67,7 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageTypeOfPageBefore)
                 {
                     RootPage.Navigation.InsertPageBefore(page, item);
+                    await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
                 }
             }
         }
@@ -110,10 +113,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task PushAsync<TViewModel>(object navigationData, bool animated)
         {
-            var page = await GetPageForPush<TViewModel>(navigationData).ConfigureAwait(false);
+            var page = InstantiatePage(typeof(TViewModel));
             Device.BeginInvokeOnMainThread(
                 async () =>
                     await Navigation.PushAsync(page, animated));
+            await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
         }
         #endregion
 
@@ -159,10 +163,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task PushModalAsync<TViewModel>(object navigationData, bool animated)
         {
-            var page = await GetPageForPush<TViewModel>(navigationData);
+            var page = InstantiatePage(typeof(TViewModel));
             Device.BeginInvokeOnMainThread(
                 async () =>
                     await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
+            await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
         }
         #endregion
         #endregion
