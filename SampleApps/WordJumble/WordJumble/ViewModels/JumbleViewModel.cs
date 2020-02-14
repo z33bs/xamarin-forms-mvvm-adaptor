@@ -30,13 +30,14 @@ namespace WordJumble.ViewModels
             await DrawWord().ConfigureAwait(false);
         }
 
-        public Task OnAppearing(object data)
+        public override Task OnAppearing()
         {
             OnPropertyChanged(nameof(Flexi0));
             OnPropertyChanged(nameof(Flexi1));
             OnPropertyChanged(nameof(Flexi2));
             OnPropertyChanged(nameof(Flexi3));
-            return Task.FromResult(false);
+
+            return base.OnAppearing();
         }
 
         Task Pause()

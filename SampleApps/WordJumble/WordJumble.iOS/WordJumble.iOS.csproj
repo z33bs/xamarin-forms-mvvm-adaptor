@@ -14,6 +14,7 @@
     <AssemblyName>WordJumble.iOS</AssemblyName>
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
+    <ReleaseVersion>1.1.$(rev:r)</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -139,7 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WordJumble\WordJumble.csproj">
-      <Project>{10A4A29B-2C97-4629-AE01-BA643B77C4D4}</Project>
+      <Project>{36BCF058-8D3A-4369-A431-6205C69ED679}</Project>
       <Name>WordJumble</Name>
     </ProjectReference>
   </ItemGroup>
