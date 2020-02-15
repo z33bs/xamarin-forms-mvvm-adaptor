@@ -2,7 +2,7 @@
 # https://montemagno.com/continuous-integration-delivery-for-net-libraries-with-vsts/
 
 # Set buildnumber here and add versioningScheme: byBuildNumber to NugetCommand@2
-name: 2.0.0$(rev:.r)
+name: 3.0.0$(rev:.r)
 
 trigger:
 - master
