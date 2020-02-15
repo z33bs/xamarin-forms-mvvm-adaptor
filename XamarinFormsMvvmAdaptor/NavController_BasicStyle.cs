@@ -20,37 +20,6 @@ namespace XamarinFormsMvvmAdaptor
                 RootPage = rootPage;
         }
 
-        //private Task<Page> GetPageForPush<TViewModel>()
-        //{
-        //    if (Navigation is null)
-        //        throw new RootPageNotSetException();
-
-        //    return InstantiatePage(typeof(TViewModel));
-        //}
-
-
-        //private Task<Page> CreatePageAndInitializeVmFor(Type viewModelType, object initialisationParameter = null)
-        //{
-        //    var page = InstantiatePage(viewModelType);
-        //    //Vm is autoWired in your page class
-
-        //    //await InitializeVmForPage(page, initialisationParameter).ConfigureAwait(false);
-
-        //    return page;
-        //}
-
-        #region Navigation Helpers
-        /// <summary>
-        /// Instantiates a page associated with the given ViewModel
-        /// </summary>
-        /// <typeparam name="ViewModelType"></typeparam>
-        /// <returns></returns>
-        public static Page CreatePageForAsync<ViewModelType>()
-        {
-            return InstantiatePage(typeof(ViewModelType));
-        }
-        #endregion
-
         #region Forms.INavigation Adaptation
         /// <summary>
         /// Inserts a page in the navigation stack before

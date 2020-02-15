@@ -24,25 +24,10 @@ namespace XamarinFormsMvvmAdaptor
 
         private Page GetPageForPush(IAdaptorViewModel viewModel)
         {
-            if (RootPage.Navigation is null)
-                throw new RootPageNotSetException();
-
             var page = InstantiatePage(viewModel.GetType());
-            BindPageToViewModel(page, viewModel);
+            BindViewModelToPage(page, viewModel);
             return page;
         }
-
-        private async Task<Page> CreatePageAndInitializeVmFor(IAdaptorViewModel viewModel, object initialisationParameter = null)
-        {
-            await viewModel.InitializeAsync(initialisationParameter).ConfigureAwait(false);
-
-            var page = InstantiatePage(viewModel.GetType());
-            BindPageToViewModel(page, viewModel);
-
-            return page;
-        }
-
-
 
         #region Forms.INavigation Adaptation
         /// <summary>
