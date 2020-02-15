@@ -56,57 +56,130 @@ namespace XamarinFormsMvvmAdaptor
         /// Gets the stack of pages in the navigation
         /// </summary>
         public IReadOnlyList<Page> NavigationStack => RootPage.Navigation.NavigationStack;
+
         /// <summary>
         /// Gets the modal navigation stack. The <see cref="ModalStack"/> always hides the <see cref="NavigationStack"/>
         /// </summary>
         public IReadOnlyList<Page> ModalStack => RootPage.Navigation.ModalStack;
 
-        Page rootPage;
         /// <summary>
-        /// Page at the root of the navigation stack
+        /// Page at the root/bottom of the <see cref="NavigationStack"/>
         /// </summary>
-        public Page RootPage
+        public Page RootPage { get; private set; }
+
+        /// <summary>
+        /// Currently visible <see cref="Page"/> at the top of the <see cref="NavigationStack"/>
+        /// or <see cref="ModalStack"/> if it has any <see cref="Page"/>s in it
+        /// </summary>
+        public Page TopPage
         {
             get
             {
-                if (rootPage is null)
-                    throw new RootPageNotSetException();
-                return rootPage;
+                if (ModalStack.Count > 0)
+                    return ModalStack[ModalStack.Count - 1];
+
+                return NavigationStack[NavigationStack.Count - 1];
             }
-            private set { rootPage = value; }
         }
 
         /// <summary>
-        /// Viewmodel corresponding to the root page
+        /// <see cref="Page"/> beneath the <see cref="TopPage"/>
+        /// It will be the page that appears when the currently visible
+        /// <see cref="Page"/> is Popped.
+        /// Returns null if <see cref="TopPage"/> is the <see cref="RootPage"/>
         /// </summary>
-        public IAdaptorViewModel RootViewModel => RootPage.BindingContext as IAdaptorViewModel;
-
-        /// <summary>
-        /// Viewmodel corresponding to the previous page in the
-        /// navigation stack (n-1)
-        /// </summary>
-        public IAdaptorViewModel PreviousPageViewModel
+        public Page HiddenPage
         {
             get
             {
-                if (NavigationStack.Count < 2)
+                if (ModalStack.Count > 0)
+                {
+                    if (ModalStack.Count > 1)
+                        return ModalStack[ModalStack.Count - 2];
+
+                    return NavigationStack[NavigationStack.Count - 1];
+                }
+
+                if (NavigationStack.Count > 1)
+                    return NavigationStack[NavigationStack.Count - 2];
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Viewmodel corresponding to the <see cref="RootPage"/>
+        /// <exception><see cref="NullReferenceException"/> is thrown when the <see cref="RootPage"/>s
+        /// BindingContext has not been set.</exception>
+        /// </summary>
+        public IAdaptorViewModel RootViewModel
+        {
+            get
+            {
+                try { return RootPage.BindingContext as IAdaptorViewModel; }
+                catch (NullReferenceException ex)
+                {
+                    throw new NullReferenceException($"{nameof(RootPage)}'s BindingContext has not been set", ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Viewmodel corresponding to the <see cref="TopPage"/>
+        /// <exception><see cref="NullReferenceException"/> is thrown when the <see cref="TopPage"/>s
+        /// BindingContext has not been set.</exception>
+        /// </summary>
+        public IAdaptorViewModel TopViewModel
+        {
+            get
+            {
+                try { return TopPage.BindingContext as IAdaptorViewModel; }
+                catch (NullReferenceException ex)
+                {
+                    throw new NullReferenceException($"{nameof(TopPage)}'s BindingContext has not been set", ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Viewmodel corresponding to the <see cref="HiddenPage"/>
+        /// Returns null if <see cref="TopPage"/> is the <see cref="RootPage"/>
+        /// <exception><see cref="NullReferenceException"/> is thrown when the <see cref="HiddenPage"/>s
+        /// BindingContext has not been set.</exception>
+        /// </summary>
+        public IAdaptorViewModel HiddenViewModel
+        {
+            get
+            {
+                if (HiddenPage is null)
                     return null;
 
-                return NavigationStack[NavigationStack.Count - 2].BindingContext
-                    as IAdaptorViewModel;
+                try { return HiddenPage.BindingContext as IAdaptorViewModel; }
+                catch (NullReferenceException ex)
+                {
+                    throw new NullReferenceException($"{nameof(HiddenPage)}'s BindingContext has not been set", ex);
+                }
             }
         }
 
         private static Page InstantiatePage(Type viewModelType)
         {
-            var pageType = GetPageTypeForViewModel(viewModelType);
-            if (pageType == null)
+            try
             {
-                throw new Exception($"Cannot locate page type for {viewModelType.GetType()}");
+                return Activator.CreateInstance(
+                    GetPageTypeForViewModel(viewModelType))
+                    as Page;
             }
-            //Create page
-            return Activator.CreateInstance(pageType) as Page;
-            //todo throw 2 errors null and type
+            catch (NullReferenceException ex)
+            {
+                throw new NullReferenceException("Could not find the Page associated with the given ViewModel." +
+                    "Check that your Namespace and File Names follow the required MvvmAdaptor conventions.", ex);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new InvalidCastException("The View associated with your ViewModel doesn't appear to be of type" +
+                    " Xamarin.Forms.Page", ex);
+            }
         }
 
         private static Type GetPageTypeForViewModel(Type viewModelType)
@@ -117,67 +190,64 @@ namespace XamarinFormsMvvmAdaptor
             var viewModelAssemblyName = viewModelType.GetTypeInfo().Assembly.FullName;
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", viewName, viewModelAssemblyName);
             var viewType = Type.GetType(viewAssemblyName);
-            //todo handle if cant find view
             return viewType;
         }
 
-        private static void BindPageToViewModel(Page page, IAdaptorViewModel viewModel)
+        private static void BindViewModelToPage(Page page, IAdaptorViewModel viewModel)
         {
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }
 
         #region Stack Manipulation Helpers
         /// <summary>
-        /// Removes the previous page (n-1) of the navigation stack
+        /// Removes the <see cref="HiddenPage"/> from the <see cref="NavigationStack"/> or <see cref="ModalStack"/>
         /// </summary>
         /// <returns></returns>
-        public Task RemoveLastFromBackStackAsync()
+        public void RemoveHiddenPageFromStack()
         {
-            if (RootPage != null)
-            {
-                RootPage.Navigation.RemovePage(
-                    RootPage.Navigation.NavigationStack[RootPage.Navigation.NavigationStack.Count - 2]);
-            }
-
-            return Task.FromResult(true);
+            if (HiddenPage != null)
+                RootPage.Navigation.RemovePage(HiddenPage);
         }
 
         /// <summary>
-        /// Removes all pages in the navigation stack except for
-        /// the current page at the top of the stack
+        /// Removes all pages in the <see cref="NavigationStack"/> except for
+        /// the <see cref="TopPage"/>, which becomes the <see cref="RootPage"/> of the stack.
         /// </summary>
-        /// <returns></returns>
-        public Task RemoveBackStackAsync()
+        public void CollapseStack()
         {
-            if (RootPage != null)
+            if (NavigationStack.Count > 1)
             {
-                for (int i = 0; i < RootPage.Navigation.NavigationStack.Count - 1; i++)
+                foreach (var page in NavigationStack)
                 {
-                    var page = RootPage.Navigation.NavigationStack[i];
-                    RootPage.Navigation.RemovePage(page);
-                }
-            }
+                    if (page != TopPage)
+                        RootPage.Navigation.RemovePage(page);
 
-            return Task.FromResult(true);
+                }
+                //for (int i = 0; i < RootPage.Navigation.NavigationStack.Count - 1; i++)
+                //{
+                //    var page = RootPage.Navigation.NavigationStack[i];
+                //    RootPage.Navigation.RemovePage(page);
+                //}
+            }
         }
         #endregion
 
         #region Static Helpers
         /// <summary>
-        /// Instantiates the page associated with a given ViewModel
-        /// and sets the ViewModel as its binding context
+        /// Instantiates the <see cref="Page"/> associated with a given <see cref="IAdaptorViewModel"/>
+        /// and sets the ViewModel as its BindingContext
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
         public static Page CreatePageForAsync(IAdaptorViewModel viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
-            BindPageToViewModel(page, viewModel);
+            BindViewModelToPage(page, viewModel);
             return page;
         }
 
         /// <summary>
-        /// Trigers the <see cref="AdaptorViewModel.InitializeAsync(object)"/> method
+        /// Trigers the <see cref="IAdaptorViewModel.InitializeAsync(object)"/> method
         /// in the <see cref="IAdaptorViewModel"/> associated with a given page
         /// </summary>
         /// <param name="page"></param>
@@ -186,26 +256,32 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public static async Task InitializeVmForPage(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
         {
-            if (page.BindingContext != null
-                && page.BindingContext is IAdaptorViewModel)
+            try
+            {
                 await (page.BindingContext as IAdaptorViewModel).InitializeAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
-            //todo throw two different errors
-            //throw new InvalidCastException()
-            //throw new NullReferenceException()
+            }
+            catch (NullReferenceException ex)
+            {
+                throw new NullReferenceException("Check if your ViewModel is attached to the Page", ex);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new InvalidCastException($"Check if your ViewModel implements {nameof(IAdaptorViewModel)}", ex);
+            }
         }
         #endregion
 
         #region Forms.INavigation Adaptation
         /// <summary>
-        /// Removes a page from the navigation stack
+        /// Removes a <see cref="Page"/> from the <see cref="NavigationStack"/>
         /// that corresponds to a given ViewModel
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
         public void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
         {
-            Type pageType = GetPageTypeForViewModel(typeof(TViewModel));
+            var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
-            foreach (var item in RootPage.Navigation.NavigationStack)
+            foreach (var item in NavigationStack)
             {
                 if (item.GetType() == pageType)
                 {
@@ -216,34 +292,27 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Asynchronously removes the most recent <see cref="T:Xamarin.Forms.Page" /> from the navigation stack.
+        /// Asynchronously removes the <see cref="TopPage" /> from the navigation stack.
         /// </summary>
-        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack</returns>
-        public Task<IAdaptorViewModel> PopAsync()
+        public Task PopAsync()
         {
             return PopAsync(true);
         }
 
         /// <summary>
-        /// Asynchronously removes the most recent <see cref="T:Xamarin.Forms.Page" /> from the navigation stack, with optional animation.
+        /// Asynchronously removes the <see cref="TopPage" /> from the navigation stack, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack</returns>
-        public Task<IAdaptorViewModel> PopAsync(bool animated)
+        public async Task PopAsync(bool animated)
         {
-            var tcs = new TaskCompletionSource<IAdaptorViewModel>();
             Device.BeginInvokeOnMainThread(async () =>
-                {
-                    await RootPage.Navigation.PopAsync(animated);
-                    tcs.TrySetResult(
-                        NavigationStack[NavigationStack.Count-1].BindingContext
-                        as IAdaptorViewModel);
-                });
-            return tcs.Task;
+                await RootPage.Navigation.PopAsync(animated));
+
+            await TopViewModel.OnAppearing().ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Pops all but the root <see cref="Xamarin.Forms.Page" /> off the navigation stack.
+        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="RootPage"/>
         /// </summary>
         /// <returns></returns>
         public Task PopToRootAsync()
@@ -252,70 +321,37 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Pops all but the root <see cref="Xamarin.Forms.Page" /> off the navigation stack, with optional animation.
+        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="RootPage"/>, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
         /// <returns></returns>
-        public Task PopToRootAsync(bool animated)
+        public async Task PopToRootAsync(bool animated)
         {
-            var tcs = new TaskCompletionSource<object>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                await RootPage.Navigation.PopToRootAsync(animated);
-                tcs.TrySetResult(null);
-            });
-            return tcs.Task;
+            Device.BeginInvokeOnMainThread(async () =>            
+                await RootPage.Navigation.PopToRootAsync(animated));
+
+            await RootViewModel.OnAppearing().ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Asynchronously dismisses the most recent modally presented <see cref="Xamarin.Forms.Page" />.
+        /// Asynchronously dismisses the most recent modally presented <see cref="Page" />.
         /// </summary>
-        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack (not the modal stack)</returns>
-        public Task<IAdaptorViewModel> PopModalAsync()
+        public Task PopModalAsync()
         {
             return PopModalAsync(true);
         }
 
         /// <summary>
-        /// Asynchronously dismisses the most recent modally presented <see cref="Xamarin.Forms.Page" />, with optional animation.
+        /// Asynchronously dismisses the most recent modally presented <see cref="Page" />, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        /// <returns>The <see cref="IAdaptorViewModel"/> that had been at the top of the navigation stack (not the modal stack)</returns>
-        public Task<IAdaptorViewModel> PopModalAsync(bool animated)
+        public async Task PopModalAsync(bool animated)
         {
-            var tcs = new TaskCompletionSource<IAdaptorViewModel>();
             Device.BeginInvokeOnMainThread(async () =>
-            {
-                await RootPage.Navigation.PopModalAsync(animated);
-                tcs.TrySetResult(
-                    NavigationStack[NavigationStack.Count-1].BindingContext
-                    as IAdaptorViewModel);
-            });
-            return tcs.Task;
+                await RootPage.Navigation.PopModalAsync(animated));
+
+            await TopViewModel.OnAppearing().ConfigureAwait(false);
         }
         #endregion
-    }
-
-    class RootPageNotSetException : Exception
-    {
-        public RootPageNotSetException() : base($"Root Page not Set.")
-        {
-        }
-    }
-
-    class RootViewModelNotSetException : Exception
-    {
-        public RootViewModelNotSetException() : base($"Root ViewModel not Set.")
-        {
-        }
-    }
-
-
-    public class MvvmNavigationException : Exception
-    {
-        public MvvmNavigationException(string message)
-            : base(message)
-        {
-        }
     }
 }
