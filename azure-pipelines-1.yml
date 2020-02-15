@@ -37,13 +37,13 @@ steps:
 
 - task: MSBuild@1
   inputs:
-    solution: '**/*.csproj'
+    solution: '**/XamarinFormsMvvmAdaptor.csproj'
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
 
 - task: MSBuild@1
   inputs:
-    solution: '**/*.csproj'
+    solution: '**/XamarinFormsMvvmAdaptor.csproj'
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/public  /p:AssemblyFileVersion=$(Build.BuildNumber)'
 
