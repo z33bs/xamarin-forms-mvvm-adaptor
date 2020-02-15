@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -6,6 +6,12 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class NavController
     {
+        /// <summary>
+        /// Constructs the <see cref="NavController"/> with the given <see cref="RootPage"/>
+        /// </summary>
+        /// <param name="rootPage"></param>
+        /// <param name="isWrappedInNavigationPage">If true then the
+        /// <see cref="RootPage"/> will be wrapped in a <see cref="NavigationPage"/></param>
         public NavController(Page rootPage, bool isWrappedInNavigationPage = true)
         {
             if (isWrappedInNavigationPage)

@@ -1,14 +1,16 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using MvvmHelpers;
 
 namespace XamarinFormsMvvmAdaptor
 {
+    /// <summary>
+    /// An optional BaseViewModel that implements the <see cref="IAdaptorViewModel"/> interface
+    /// and extends <see cref="BaseViewModel"/> from the dependency <see cref="MvvmHelpers"/>
+    /// </summary>
     public abstract class AdaptorViewModel : BaseViewModel, IAdaptorViewModel
     {
         /// <summary>
-        /// Runs automatically once the associated page is pushed onto the stack
-        /// Useful to pass data from the previous ViewModel to this one
-        /// Using the <param name="navigationData"></param>
+        /// Runs automatically once the associated page is pushed onto the <see cref="NavController.NavigationStack"/>
         /// </summary>
         /// <param name="navigationData">Any data which could be useful for ViewModel Initialisation</param>
         /// <returns></returns>

@@ -57,7 +57,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         public IReadOnlyList<Page> NavigationStack => RootPage.Navigation.NavigationStack;
         /// <summary>
-        /// Gets the modal navigation stack
+        /// Gets the modal navigation stack. The <see cref="ModalStack"/> always hides the <see cref="NavigationStack"/>
         /// </summary>
         public IReadOnlyList<Page> ModalStack => RootPage.Navigation.ModalStack;
 
