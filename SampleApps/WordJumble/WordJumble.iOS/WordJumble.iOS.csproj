@@ -140,7 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WordJumble\WordJumble.csproj">
-      <Project>{36BCF058-8D3A-4369-A431-6205C69ED679}</Project>
+      <Project>{3450452D-BDEF-45F7-BB7F-6FF05544474B}</Project>
       <Name>WordJumble</Name>
     </ProjectReference>
   </ItemGroup>

@@ -95,7 +95,7 @@ namespace WordJumble.ViewModels
         public ICommand ClosePageCommand => new Command(
             async () =>
             {
-                await App.MainNavController.Navigation.PopAsync();
+                await App.MainNavController.PopAsync();
             });
         public ICommand LaunchDetailCommand => new Command<FlexiChar>(
             async (flexiChar) =>
