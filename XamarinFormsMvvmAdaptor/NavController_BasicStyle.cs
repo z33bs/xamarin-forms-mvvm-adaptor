@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -32,17 +32,16 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null)
         {
-            //var page = await CreatePageAndInitializeVmFor(typeof(TViewModelNew), navigationData).ConfigureAwait(false);
-            var page = InstantiatePage(typeof(TViewModelNew));
+            var newPage = InstantiatePage(typeof(TViewModelNew));
 
-            Type pageTypeOfPageBefore = GetPageTypeForViewModel(typeof(TViewModelExisting));
+            Type pageTypeAnchorPage = GetPageTypeForViewModel(typeof(TViewModelExisting));
 
-            foreach (var item in RootPage.Navigation.NavigationStack)
+            foreach (var existingPage in NavigationStack)
             {
-                if (item.GetType() == pageTypeOfPageBefore)
+                if (existingPage.GetType() == pageTypeAnchorPage)
                 {
-                    RootPage.Navigation.InsertPageBefore(page, item);
-                    await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+                    RootPage.Navigation.InsertPageBefore(existingPage,newPage);
+                    await InitializeVmForPage(newPage, navigationData).ConfigureAwait(false);
                 }
             }
         }
@@ -92,6 +91,7 @@ namespace XamarinFormsMvvmAdaptor
             Device.BeginInvokeOnMainThread(
                 async () =>
                     await RootPage.Navigation.PushAsync(page, animated));
+
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
             await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
@@ -143,6 +143,7 @@ namespace XamarinFormsMvvmAdaptor
             Device.BeginInvokeOnMainThread(
                 async () =>
                     await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
+
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
             await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
