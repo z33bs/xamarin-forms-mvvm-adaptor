@@ -116,7 +116,7 @@ namespace XamarinFormsMvvmAdaptor
             var page = InstantiatePage(typeof(TViewModel));
             Device.BeginInvokeOnMainThread(
                 async () =>
-                    await Navigation.PushAsync(page, animated));
+                    await RootPage.Navigation.PushAsync(page, animated));
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
             await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
@@ -167,7 +167,7 @@ namespace XamarinFormsMvvmAdaptor
             var page = InstantiatePage(typeof(TViewModel));
             Device.BeginInvokeOnMainThread(
                 async () =>
-                    await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
+                    await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
             await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }

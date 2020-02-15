@@ -18,7 +18,7 @@ namespace XamarinFormsMvvmAdaptor
 
         private Page GetPageForPush(IAdaptorViewModel viewModel)
         {
-            if (Navigation is null)
+            if (RootPage.Navigation is null)
                 throw new RootPageNotSetException();
 
             var page = InstantiatePage(viewModel.GetType());
@@ -112,7 +112,7 @@ namespace XamarinFormsMvvmAdaptor
             var page = GetPageForPush(viewModel);
             Device.BeginInvokeOnMainThread(
                 async () =>
-                    await Navigation.PushAsync(page, animated).ConfigureAwait(false));
+                    await RootPage.Navigation.PushAsync(page, animated).ConfigureAwait(false));
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
             await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
@@ -165,7 +165,7 @@ namespace XamarinFormsMvvmAdaptor
             var page = GetPageForPush(viewModel);
             Device.BeginInvokeOnMainThread(
                 async () =>
-                    await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
+                    await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
             await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
             await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
         }
