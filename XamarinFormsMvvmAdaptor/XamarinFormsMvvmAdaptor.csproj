@@ -26,6 +26,9 @@
         <DebugType>
         </DebugType>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
     <ItemGroup>
         <!-- MANUALLY ADDED        -->
         <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
