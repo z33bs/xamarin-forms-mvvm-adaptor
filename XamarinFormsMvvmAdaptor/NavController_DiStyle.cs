@@ -102,12 +102,26 @@ namespace XamarinFormsMvvmAdaptor
         public async Task PushAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = GetPageForPush(viewModel);
-            Device.BeginInvokeOnMainThread(
-                async () =>
-                    await RootPage.Navigation.PushAsync(page, animated).ConfigureAwait(false));
 
-            await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
-            await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
+            var isPushedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await RootPage.Navigation.PushAsync(page, animated);
+                    isPushedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPushedTcs.Task)
+            {
+                await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+                await TopViewModel.OnAppearing().ConfigureAwait(false);
+            }
         }
         #endregion
 
@@ -156,12 +170,26 @@ namespace XamarinFormsMvvmAdaptor
         public async Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = GetPageForPush(viewModel);
-            Device.BeginInvokeOnMainThread(
-                async () =>
-                    await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
 
-            await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
-            await (page.BindingContext as IAdaptorViewModel).OnAppearing().ConfigureAwait(false);
+            var isPushedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    isPushedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPushedTcs.Task)
+            {
+                await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+                await TopViewModel.OnAppearing().ConfigureAwait(false);
+            }
         }
         #endregion
         #endregion

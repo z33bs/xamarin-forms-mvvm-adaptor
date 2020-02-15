@@ -19,7 +19,7 @@ namespace XamarinFormsMvvmAdaptor
     /// and end with suffix <see cref="DEFAULT_VM_SUFFIX"/>.
     /// This behaviour can be customised with <see cref="SetNamingConventions(string, string, string, string)"/>
     /// </summary>
-    public partial class NavController
+    public partial class NavController : INavController
     {
         #region Settings
         const string DEFAULT_VM_NAMESPACE = "ViewModels";
@@ -305,10 +305,23 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="animated">Whether to animate the pop.</param>
         public async Task PopAsync(bool animated)
         {
+            var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
-                await RootPage.Navigation.PopAsync(animated));
+            {
+                try
+                {
+                    await RootPage.Navigation.PopAsync(animated);
+                    isPoppedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPoppedTcs.SetException(ex);
+                }
+            });
 
-            await TopViewModel.OnAppearing().ConfigureAwait(false);
+            if (await isPoppedTcs.Task)
+                await TopViewModel.OnAppearing().ConfigureAwait(false);
+
         }
 
         /// <summary>
@@ -327,10 +340,23 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task PopToRootAsync(bool animated)
         {
-            Device.BeginInvokeOnMainThread(async () =>            
-                await RootPage.Navigation.PopToRootAsync(animated));
+            var isPoppedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await RootPage.Navigation.PopToRootAsync(animated);
+                    isPoppedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPoppedTcs.SetException(ex);
+                }
+            });
 
-            await RootViewModel.OnAppearing().ConfigureAwait(false);
+            if (await isPoppedTcs.Task)
+                await RootViewModel.OnAppearing().ConfigureAwait(false);
+
         }
 
         /// <summary>
@@ -347,10 +373,22 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="animated">Whether to animate the pop.</param>
         public async Task PopModalAsync(bool animated)
         {
+            var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
-                await RootPage.Navigation.PopModalAsync(animated));
+            {
+                try
+                {
+                    await RootPage.Navigation.PopModalAsync(animated);
+                    isPoppedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPoppedTcs.SetException(ex);
+                }
+            });
 
-            await TopViewModel.OnAppearing().ConfigureAwait(false);
+            if (await isPoppedTcs.Task)
+                await TopViewModel.OnAppearing().ConfigureAwait(false);
         }
         #endregion
     }
