@@ -6,10 +6,17 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class NavController
     {
+        /// <summary>
+        /// Constructs the <see cref="NavController"/> with the given <see cref="RootViewModel"/>
+        /// </summary>
+        /// <param name="rootViewModel"></param>
+        /// <param name="isWrappedInNavigationPage">If true then the
+        /// <see cref="RootPage"/> will be wrapped in a <see cref="NavigationPage"/></param>
         public NavController(IAdaptorViewModel rootViewModel, bool isWrappedInNavigationPage = true)
         {
             var page = InstantiatePage(rootViewModel.GetType());
-            BindPageToViewModel(page, rootViewModel);
+            BindViewModelToPage(page, rootViewModel);
+
             if (isWrappedInNavigationPage)
                 RootPage = new NavigationPage(page);
             else
@@ -18,25 +25,10 @@ namespace XamarinFormsMvvmAdaptor
 
         private Page GetPageForPush(IAdaptorViewModel viewModel)
         {
-            if (Navigation is null)
-                throw new RootPageNotSetException();
-
             var page = InstantiatePage(viewModel.GetType());
-            BindPageToViewModel(page, viewModel);
+            BindViewModelToPage(page, viewModel);
             return page;
         }
-
-        private async Task<Page> CreatePageAndInitializeVmFor(IAdaptorViewModel viewModel, object initialisationParameter = null)
-        {
-            await viewModel.InitializeAsync(initialisationParameter).ConfigureAwait(false);
-
-            var page = InstantiatePage(viewModel.GetType());
-            BindPageToViewModel(page, viewModel);
-
-            return page;
-        }
-
-
 
         #region Forms.INavigation Adaptation
         /// <summary>
@@ -50,17 +42,17 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task InsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null)
         {
-            var page = GetPageForPush(viewModel);
-            BindPageToViewModel(page, viewModel);
+            var newPage = GetPageForPush(viewModel);
+            BindViewModelToPage(newPage, viewModel);
 
-            var pageTypeOfPageBefore = GetPageTypeForViewModel(typeof(TViewModelExisting));
+            var anchorPage = GetPageTypeForViewModel(typeof(TViewModelExisting));
 
-            foreach (var item in RootPage.Navigation.NavigationStack)
+            foreach (var existingPage in RootPage.Navigation.NavigationStack)
             {
-                if (item.GetType() == pageTypeOfPageBefore)
+                if (existingPage.GetType() == anchorPage)
                 {
-                    RootPage.Navigation.InsertPageBefore(page, item);
-                    await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+                    RootPage.Navigation.InsertPageBefore(existingPage, newPage);
+                    await InitializeVmForPage(newPage, navigationData).ConfigureAwait(false);
                 }
             }
         }
@@ -110,10 +102,26 @@ namespace XamarinFormsMvvmAdaptor
         public async Task PushAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = GetPageForPush(viewModel);
-            Device.BeginInvokeOnMainThread(
-                async () =>
-                    await Navigation.PushAsync(page, animated).ConfigureAwait(false));
-            await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+
+            var isPushedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await RootPage.Navigation.PushAsync(page, animated);
+                    isPushedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPushedTcs.Task)
+            {
+                await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+                await TopViewModel.OnAppearing().ConfigureAwait(false);
+            }
         }
         #endregion
 
@@ -162,10 +170,26 @@ namespace XamarinFormsMvvmAdaptor
         public async Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = GetPageForPush(viewModel);
-            Device.BeginInvokeOnMainThread(
-                async () =>
-                    await Navigation.PushModalAsync(page, animated).ConfigureAwait(false));
-            await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+
+            var isPushedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    isPushedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPushedTcs.Task)
+            {
+                await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
+                await TopViewModel.OnAppearing().ConfigureAwait(false);
+            }
         }
         #endregion
         #endregion

@@ -15,3 +15,43 @@ A **ViewModel-First** Mvvm framework for Xamarin.Forms. Lightweight, it adapts X
 Comming soon.... give me a couple days
 
 
+
+## Sample Apps
+
+### WordJumble
+
+Demonstrates:
+
+* Instantiate the Navigation Controller
+* Push a page onto the stack, while passing data to that page
+* Pop a page off the stack
+* Push a modal page onto the modal stack
+* Pop a modal page
+
+Uses the following features:
+
+* Material Design for Visuals
+  * link
+* Designtime Data
+  * link
+
+### WordJumbleDi
+
+Identical to WordJumble, but XFMvvmA is consumed with Dependency injection
+
+Additional features:
+
+* Uses AutoFac for dependency injection
+
+### PageStackManipulator
+
+In addition to features covered in WordJumble
+
+* InsertPageBefore
+* RemoveBackStack
+* RemoveLastFromBackStack
+* RemovePageFor
+
+### PageStackManipulatorDi
+
+Identical to PageStackManipulator, but XFMvvmA is consumed with Dependency injection

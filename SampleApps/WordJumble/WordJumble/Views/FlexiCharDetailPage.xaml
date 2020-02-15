@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WordJumble.Views.FlexiCharDetailPage"
+             xmlns:vm="clr-namespace:WordJumble.ViewModels"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             ios:Page.UseSafeArea="True"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             mc:Ignorable="d"
+             Visual="Material">
+    <ContentPage.BindingContext>
+        <vm:FlexiCharDetailViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <StackLayout
+            VerticalOptions="Fill"
+            HorizontalOptions="Fill"
+            d:BackgroundColor="Beige">
+            <StackLayout.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding PopPageCommand}"/>
+            </StackLayout.GestureRecognizers>
+
+            <Label Text="Tap to close"
+                   FontAttributes="Italic"
+                   HorizontalOptions="Center"
+                   Margin="0,20,0,0"/>
+
+            <Label
+                Text="{Binding FlexiChar.Character}"
+                Rotation="{Binding FlexiChar.Rotation}"
+                FontSize="{Binding FlexiChar.FontSize}"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                d:Text="W"
+                d:Rotation="40"
+                d:FontSize="80"/>
+
+            <Button
+                Text="Rotate"
+                VerticalOptions="End"
+                Command="{Binding RotateCommand}"
+                Margin="10,0,10,20"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

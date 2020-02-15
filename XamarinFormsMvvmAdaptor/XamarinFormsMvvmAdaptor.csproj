@@ -8,7 +8,6 @@
         <!-- AUTO       -->
         <TargetFramework>netstandard2.0</TargetFramework>
         <PackageVersion>1.0.3-beta</PackageVersion>
-        <PackOnBuild>true</PackOnBuild>
         <Authors>Guy Antoine</Authors>
         <Copyright>2020 Guy Antoine</Copyright>
         <NeutralLanguage>en</NeutralLanguage>
@@ -20,11 +19,16 @@
         <Title>Xamarin Forms Mvvm Adaptor</Title>
         <Description>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Description>
         <PackageId>XamarinFormsMvvmAdaptor</PackageId>
-        <ReleaseVersion>1.1.$(rev:r)</ReleaseVersion>
+        <ReleaseVersion></ReleaseVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>
         </DebugType>
+        <LangVersion>8.0</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+      <LangVersion>8.0</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <!-- MANUALLY ADDED        -->
