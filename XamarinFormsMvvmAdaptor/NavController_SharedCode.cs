@@ -116,7 +116,13 @@ namespace XamarinFormsMvvmAdaptor
         {
             get
             {
-                try { return RootPage.BindingContext as IAdaptorViewModel; }
+                try
+                {
+                    if (RootPage is NavigationPage)
+                        return ((NavigationPage)RootPage).RootPage.BindingContext as IAdaptorViewModel;
+
+                    return RootPage.BindingContext as IAdaptorViewModel;
+                }
                 catch (NullReferenceException ex)
                 {
                     throw new NullReferenceException($"{nameof(RootPage)}'s BindingContext has not been set", ex);
