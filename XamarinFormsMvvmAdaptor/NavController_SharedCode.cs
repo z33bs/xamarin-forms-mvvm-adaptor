@@ -254,7 +254,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="initialisationParameter"></param>
         /// <param name="continueOnCapturedContext"></param>
         /// <returns></returns>
-        public static async Task InitializeVmForPageAsync(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
+        private async Task InitializeVmForPageAsync(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
         {
             try
             {
