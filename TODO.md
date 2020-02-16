@@ -11,6 +11,7 @@ Everything that consumes InstantiatePage can throw null or type exception
 How many swearwords?
 Text alignment
 Icon and image
+Clean and Comment
 
 Not elegant with grid clipping. Use absolute positioning instead?
 
