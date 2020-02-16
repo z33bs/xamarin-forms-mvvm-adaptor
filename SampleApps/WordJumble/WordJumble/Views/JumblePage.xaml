@@ -7,7 +7,8 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              mc:Ignorable="d"
              Visual="Material"
-             ios:Page.UseSafeArea="True">
+             ios:Page.UseSafeArea="True"
+             Title="{Binding Title}">
     <ContentPage.BindingContext>
         <vm:JumbleViewModel/>
     </ContentPage.BindingContext>

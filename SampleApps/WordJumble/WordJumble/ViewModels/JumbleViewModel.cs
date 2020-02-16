@@ -16,6 +16,7 @@ namespace WordJumble.ViewModels
         public JumbleViewModel()
         {
             flexiCharGenerator = new FlexiCharGeneratorService();
+            Title = "Jumble";
         }
 
         public override async Task InitializeAsync(object navigationData)
