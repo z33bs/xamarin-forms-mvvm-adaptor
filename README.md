@@ -1,4 +1,4 @@
-# ![Logo](https://raw.githubusercontent.com/z33bs/xamarin-forms-mvvm-adaptor/master/XamarinFormsMvvmAdaptor/Art/icon.png) Xamarin Forms Mvvm Adaptor
+# ![Logo](XamarinFormsMvvmAdaptor/Art/icon.png) Xamarin Forms Mvvm Adaptor
 **ViewModel-First** Mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing Mvvm engine.
 
 **Build Status:** [![Build Status](https://dev.azure.com/guy-antoine/xamarin-forms-mvvm-adaptor/_apis/build/status/z33bs.xamarin-forms-mvvm-adaptor%20(1)?branchName=master)](https://dev.azure.com/guy-antoine/xamarin-forms-mvvm-adaptor/_build/latest?definitionId=2&branchName=master)
@@ -219,11 +219,11 @@ to properties that allow you to access these pages or their corresponding
 view-models. The Top, and Root pages are self-explanatory. The Hidden page is
 always beneath the Top page. It is 'hidden' by the top page, and will always
 be the <u>first to appear when the Top page is popped off the stack</u>. 
-![Stack](XamarinFormsMvvmAdaptor\Art\stack.png)
+![Stack](XamarinFormsMvvmAdaptor/Art/stack.png)
 This last point is important to consider if you have pages in a modal stack. Remember that the modal-stack always hides the navigation-stack. If there is one page in the modal-stack, the hidden page is at the top of the navigation-stack (see below), as it will appear next when the modal stack is popped.
-![Stack](XamarinFormsMvvmAdaptor\Art\stack_with_1modal.png)
+![Stack](XamarinFormsMvvmAdaptor/Art/stack_with_1modal.png)
 If the modal stack has two pages, the 'hidden' page is beneath the top page of the modal-stack (figure below) because it will appear next when the top modal page is popped.
-![Stack](XamarinFormsMvvmAdaptor\Art\stack_with_2modals.png)
+![Stack](XamarinFormsMvvmAdaptor/Art/stack_with_2modals.png)
 
 For any other pages you can always specify the index of the stack:
 
@@ -245,7 +245,7 @@ On the MainPage the user types a four letter word into an entry dialogue. A new 
 
 |                                                      |                                                      |
 | :--------------------------------------------------: | :--------------------------------------------------: |
-| ![](XamarinFormsMvvmAdaptor\Art\Screenshot_Word.png) | ![](XamarinFormsMvvmAdaptor\Art\Screenshot_Hips.png) |
+| ![ScreenShot iOS](XamarinFormsMvvmAdaptor/Art/Screenshot_Word.png) | ![ScreenShot Droid](XamarinFormsMvvmAdaptor/Art/Screenshot_Hips.png) |
 
 WordJumble demonstrates the [Vanilla implementation](#Vanilla implementation) of the XamarinFormsMvvmAdaptor. Specifically:
 
