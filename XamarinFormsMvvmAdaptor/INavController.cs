@@ -31,9 +31,14 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.HiddenViewModel"/>
         IAdaptorViewModel HiddenViewModel { get; }
 
-
         /// <inheritdoc cref="NavController.CollapseStack"/>
         void CollapseStack();
+
+        /// <inheritdoc cref="NavController.InitAsync()"/>/>
+        Task InitAsync();
+
+        /// <inheritdoc cref="NavController.InitAsync(object)"/>/>
+        Task InitAsync(object initialisationData);
 
         /// <inheritdoc cref="NavController.InsertPageBefore{TViewModelExisting, TViewModelNew}(object)"/>
         Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null);

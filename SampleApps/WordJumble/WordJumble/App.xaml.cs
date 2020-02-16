@@ -10,7 +10,6 @@ namespace WordJumble
 {
     public partial class App : Application
     {
-        //public static NavController MainNavController { get; } = new NavController(new NavigationPage(new MainPage()));
         public static NavController NavController { get; } = new NavController(new MainViewModel());
 
         public App()
@@ -20,8 +19,9 @@ namespace WordJumble
             MainPage = NavController.RootPage;
         }
 
-        protected override void OnStart()
+        protected override async void OnStart()
         {
+            await NavController.InitAsync();
         }
 
         protected override void OnSleep()

@@ -20,6 +20,23 @@ namespace XamarinFormsMvvmAdaptor
                 RootPage = rootPage;
         }
 
+        /// <summary>
+        /// Initialize the <see cref="RootViewModel"/>, running its <see cref="IAdaptorViewModel.InitializeAsync(object)"/>
+        /// and <see cref="IAdaptorViewModel.OnAppearingAsync"/> methods.
+        /// </summary>
+        /// <returns></returns>
+        public Task InitAsync()
+        {
+            return InitAsync(null);
+        }
+
+        /// <inheritdoc cref="InitAsync()"/>
+        public async Task InitAsync(object initialisationData)
+        {
+            await RootViewModel.InitializeAsync(initialisationData).ConfigureAwait(false);
+            await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+        }
+
         #region Forms.INavigation Adaptation
         /// <summary>
         /// Inserts a page in the navigation stack before
