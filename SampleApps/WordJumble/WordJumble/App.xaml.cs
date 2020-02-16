@@ -11,13 +11,13 @@ namespace WordJumble
     public partial class App : Application
     {
         //public static NavController MainNavController { get; } = new NavController(new NavigationPage(new MainPage()));
-        public static NavController MainNavController { get; } = new NavController(new MainViewModel());
+        public static NavController NavController { get; } = new NavController(new MainViewModel());
 
         public App()
         {
             InitializeComponent();
 
-            MainPage = MainNavController.RootPage;
+            MainPage = NavController.RootPage;
         }
 
         protected override void OnStart()

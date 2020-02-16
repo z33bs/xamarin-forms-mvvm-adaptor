@@ -21,6 +21,6 @@ namespace XamarinFormsMvvmAdaptor
         /// or <see cref="NavController.ModalStack"/>
         /// </summary>
         /// <returns></returns>
-        Task OnAppearing();
+        Task OnAppearingAsync();
     }
 }

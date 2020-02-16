@@ -24,7 +24,7 @@ namespace XamarinFormsMvvmAdaptor
         /// More precisely, if the page is pushed, or if a page above it was popped
         /// </summary>
         /// <returns></returns>
-        public virtual Task OnAppearing()
+        public virtual Task OnAppearingAsync()
         {
             return Task.FromResult(false);
         }

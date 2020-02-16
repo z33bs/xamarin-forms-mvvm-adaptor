@@ -29,7 +29,7 @@ namespace WordJumble.ViewModels
         public ICommand PopPageCommand
             => new Command(
                 async () =>
-                    await App.MainNavController.PopModalAsync());
+                    await App.NavController.PopModalAsync());
 
         public ICommand RotateCommand
             => new Command(Rotate);

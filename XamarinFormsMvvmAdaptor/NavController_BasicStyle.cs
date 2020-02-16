@@ -41,7 +41,7 @@ namespace XamarinFormsMvvmAdaptor
                 if (existingPage.GetType() == pageTypeAnchorPage)
                 {
                     RootPage.Navigation.InsertPageBefore(existingPage, newPage);
-                    await InitializeVmForPage(newPage, navigationData).ConfigureAwait(false);
+                    await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
                 }
             }
         }
@@ -105,8 +105,8 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPushedTcs.Task)
             {
-                await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
-                await TopViewModel.OnAppearing().ConfigureAwait(false);
+                await InitializeVmForPageAsync(page, navigationData).ConfigureAwait(false);
+                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
             }
         }
         #endregion
@@ -171,8 +171,8 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPushedTcs.Task)
             {
-                await InitializeVmForPage(page, navigationData).ConfigureAwait(false);
-                await TopViewModel.OnAppearing().ConfigureAwait(false);
+                await InitializeVmForPageAsync(page, navigationData).ConfigureAwait(false);
+                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
             }
         }
         #endregion

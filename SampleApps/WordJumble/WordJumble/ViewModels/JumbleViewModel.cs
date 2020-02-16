@@ -31,14 +31,14 @@ namespace WordJumble.ViewModels
             await DrawWord().ConfigureAwait(false);
         }
 
-        public override Task OnAppearing()
+        public override Task OnAppearingAsync()
         {
             OnPropertyChanged(nameof(Flexi0));
             OnPropertyChanged(nameof(Flexi1));
             OnPropertyChanged(nameof(Flexi2));
             OnPropertyChanged(nameof(Flexi3));
 
-            return base.OnAppearing();
+            return base.OnAppearingAsync();
         }
 
         Task Pause()
@@ -96,12 +96,12 @@ namespace WordJumble.ViewModels
         public ICommand ClosePageCommand => new Command(
             async () =>
             {
-                await App.MainNavController.PopAsync();
+                await App.NavController.PopAsync();
             });
         public ICommand LaunchDetailCommand => new Command<FlexiChar>(
             async (flexiChar) =>
             {
-                await App.MainNavController.PushModalAsync<FlexiCharDetailViewModel>(flexiChar);
+                await App.NavController.PushModalAsync<FlexiCharDetailViewModel>(flexiChar);
             });
     }
 }

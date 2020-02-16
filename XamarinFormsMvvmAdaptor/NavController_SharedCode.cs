@@ -254,7 +254,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="initialisationParameter"></param>
         /// <param name="continueOnCapturedContext"></param>
         /// <returns></returns>
-        public static async Task InitializeVmForPage(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
+        public static async Task InitializeVmForPageAsync(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
         {
             try
             {
@@ -320,7 +320,7 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             if (await isPoppedTcs.Task)
-                await TopViewModel.OnAppearing().ConfigureAwait(false);
+                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
 
         }
 
@@ -355,7 +355,7 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             if (await isPoppedTcs.Task)
-                await RootViewModel.OnAppearing().ConfigureAwait(false);
+                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
 
         }
 
@@ -388,7 +388,7 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             if (await isPoppedTcs.Task)
-                await TopViewModel.OnAppearing().ConfigureAwait(false);
+                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
         }
         #endregion
     }

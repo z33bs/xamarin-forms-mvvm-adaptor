@@ -45,7 +45,7 @@ namespace WordJumble.ViewModels
             }
             
             IsBusy = true;
-            await App.MainNavController.PushAsync<JumbleViewModel>(word);
+            await App.NavController.PushAsync<JumbleViewModel>(word);
             Instruction = DEFAULT_INSTRUCTION;
             Word = string.Empty;
             IsBusy = false;
