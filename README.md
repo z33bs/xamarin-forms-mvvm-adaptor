@@ -243,7 +243,9 @@ var viewModel = page.BindingContext as IAdaptorViewModel;
 
 On the MainPage the user types a four letter word into an entry dialogue. A new page appears with the word's letters jumbled randomly on the page. The user can tap a letter to open a dialogue which allows her to rotate the letter.
 
-
+|                                                      |                                                      |
+| :--------------------------------------------------: | :--------------------------------------------------: |
+| ![](XamarinFormsMvvmAdaptor\Art\Screenshot_Word.png) | ![](XamarinFormsMvvmAdaptor\Art\Screenshot_Hips.png) |
 
 WordJumble demonstrates the [Vanilla implementation](#Vanilla implementation) of the XamarinFormsMvvmAdaptor. Specifically:
 
