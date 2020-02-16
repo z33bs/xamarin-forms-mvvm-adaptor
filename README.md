@@ -140,7 +140,7 @@ public partial class App : Application
   protected override async void OnStart()
   {
     //InitializeAsync and OnAppearing won't run on the RootViewModel
-	  //unless you do this. For consistency make it a habit to run Init()
+    //unless you do this. For consistency make it a habit to run Init()
     //even if the above methods are empty.
     await NavController.InitAsync();
   }
