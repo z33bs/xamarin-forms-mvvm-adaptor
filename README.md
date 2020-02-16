@@ -31,8 +31,8 @@ Xamarin has fantastic Mvvm functionality, however the pattern is geared towards 
 
 MvvmAdaptor can be consumed in **two flavours**:
 
-* [Vanilla](#Vanilla implementation) implementation
-* With [Dependency Injection (DI)](#DI implementation)
+* [Vanilla](#Vanilla-implementation) implementation
+* With [Dependency Injection (DI)](#DI-implementation)
 
 Skip to the flavour that suits you.
 
@@ -51,7 +51,7 @@ public partial class App : Application
 
 You would access the NavController by calling `App.NavController` anywhwere in your application.
 
-Another way would be to use a dependency service. If you prefer this approach, you will probably be consuming the [Dependency Injection (DI)](#DI implementation) flavour.
+Another way would be to use a dependency service. If you prefer this approach, you will probably be consuming the [Dependency Injection (DI)](#DI-implementation) flavour.
 
 **Keep to the following naming conventions**. The MvvmAdaptor works by assuming that you name your View and ViewModel classes consistently. The default expectation is that:
 
@@ -186,7 +186,7 @@ Checkout the [WordJumble Sample App](#WordJumble) for a simple example using thi
 
 ### Navigation
 
-The Navigation framework simply follows the Xamarin.Forms approach. If you are unfamiliar or rusty, please refer to Microsoft's docs on [Performing Navigation](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/navigation/hierarchical#performing-navigation) (10min read). In addition to the familar methods, I have added some [additional stack manipulation helpers](#Additional helpers).
+The Navigation framework simply follows the Xamarin.Forms approach. If you are unfamiliar or rusty, please refer to Microsoft's docs on [Performing Navigation](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/navigation/hierarchical#performing-navigation) (10min read). In addition to the familar methods, I have added some [additional stack manipulation helpers](#Additional-helpers).
 
 #### Available in Xamarin.Forms:
 
@@ -203,7 +203,7 @@ The Navigation framework simply follows the Xamarin.Forms approach. If you are u
 #### Additional helpers:
 
 * Properties:
-  * HiddenPage (see [detail](#Shortcuts for accessing Pages and ViewModels in the stack) below for explaination) in addition to RootPage and TopPage
+  * HiddenPage (see [detail](#Shortcuts-for-accessing-Pages-and-ViewModels-in-the-stack) below for explaination) in addition to RootPage and TopPage
   * RootViewModel, TopViewModel, and HiddenViewModel corresponding to the pages above
 * Methods:
   * CollapseStack()
@@ -218,11 +218,16 @@ The image below represents a stack of four pages, with labels corresponding
 to properties that allow you to access these pages or their corresponding
 view-models. The Top, and Root pages are self-explanatory. The Hidden page is
 always beneath the Top page. It is 'hidden' by the top page, and will always
-be the <u>first to appear when the Top page is popped off the stack</u>. 
+be the <u>first to appear when the Top page is popped off the stack</u>.
+
 ![Stack](XamarinFormsMvvmAdaptor/Art/stack.png)
+
 This last point is important to consider if you have pages in a modal stack. Remember that the modal-stack always hides the navigation-stack. If there is one page in the modal-stack, the hidden page is at the top of the navigation-stack (see below), as it will appear next when the modal stack is popped.
+
 ![Stack](XamarinFormsMvvmAdaptor/Art/stack_with_1modal.png)
+
 If the modal stack has two pages, the 'hidden' page is beneath the top page of the modal-stack (figure below) because it will appear next when the top modal page is popped.
+
 ![Stack](XamarinFormsMvvmAdaptor/Art/stack_with_2modals.png)
 
 For any other pages you can always specify the index of the stack:
@@ -243,11 +248,11 @@ var viewModel = page.BindingContext as IAdaptorViewModel;
 
 On the MainPage the user types a four letter word into an entry dialogue. A new page appears with the word's letters jumbled randomly on the page. The user can tap a letter to open a dialogue which allows her to rotate the letter.
 
-|                                                      |                                                      |
+| iOS                                                  | Droid                                                |
 | :--------------------------------------------------: | :--------------------------------------------------: |
 | ![ScreenShot iOS](XamarinFormsMvvmAdaptor/Art/Screenshot_Word.png) | ![ScreenShot Droid](XamarinFormsMvvmAdaptor/Art/Screenshot_Hips.png) |
 
-WordJumble demonstrates the [Vanilla implementation](#Vanilla implementation) of the XamarinFormsMvvmAdaptor. Specifically:
+WordJumble demonstrates the [Vanilla implementation](#Vanilla-implementation) of the XamarinFormsMvvmAdaptor. Specifically:
 
 * Initialising the Navigation Controller
 * Push a page onto the stack from the view-model
@@ -265,5 +270,5 @@ In addition to XamarinFormsMvvmAdaptor, the sample uses the following features w
 
 ### WordJumbleDi
 
-Identical to [WordJumble](#WordJumble), but implemented with the [DI flavour](#DI implementation) of XamarinFormsMvvmAdaptor. For this example, I have used [AutoFac](https://autofac.org) for the dependecy injection.
+Identical to [WordJumble](#WordJumble), but implemented with the [DI flavour](#DI-implementation) of XamarinFormsMvvmAdaptor. For this example, I have used [AutoFac](https://autofac.org) for the dependecy injection.
 
