@@ -53,6 +53,25 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         /// <summary>
+        /// Constructs the <see cref="NavController"/>
+        /// Remember to initialize before use
+        /// </summary>
+        public NavController()
+        {
+        }
+
+        /// <summary>
+        /// Returns true if InitAsync has run successfully
+        /// </summary>
+        public bool IsInitialized { get; private set; }
+        void ThrowIfNotInitialized()
+        {
+            if (!IsInitialized)
+                throw new NotInitializedException(
+                    $"{nameof(NavController)} is not initialized. Please run {nameof(InitAsync)} first.");
+        }
+
+        /// <summary>
         /// Gets the stack of pages in the navigation
         /// </summary>
         public IReadOnlyList<Page> NavigationStack => RootPage.Navigation.NavigationStack;
@@ -62,10 +81,19 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         public IReadOnlyList<Page> ModalStack => RootPage.Navigation.ModalStack;
 
+        Page rootPage;
         /// <summary>
         /// Page at the root/bottom of the <see cref="NavigationStack"/>
         /// </summary>
-        public Page RootPage { get; private set; }
+        public Page RootPage
+        {
+            get
+            {
+                ThrowIfNotInitialized();
+                return rootPage;
+            }
+            private set => rootPage = value;
+        }
 
         /// <summary>
         /// Currently visible <see cref="Page"/> at the top of the <see cref="NavigationStack"/>
@@ -75,6 +103,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             get
             {
+                ThrowIfNotInitialized();
                 if (ModalStack.Count > 0)
                     return ModalStack[ModalStack.Count - 1];
 
@@ -92,6 +121,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             get
             {
+                ThrowIfNotInitialized();
                 if (ModalStack.Count > 0)
                 {
                     if (ModalStack.Count > 1)
@@ -397,5 +427,19 @@ namespace XamarinFormsMvvmAdaptor
                 await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
         }
         #endregion
+    }
+
+    /// <summary>The <see cref="NavController"/> is not initialized</summary>
+    public class NotInitializedException : Exception
+    {
+        /// <summary>The <see cref="NavController"/> is not initialized</summary>
+        public NotInitializedException()
+        { }
+        /// <summary>The <see cref="NavController"/> is not initialized</summary>
+        public NotInitializedException(string message) : base(message)
+        { }
+        /// <summary>The <see cref="NavController"/> is not initialized</summary>
+        public NotInitializedException(string message, Exception innerException) : base(message,innerException)
+        { }
     }
 }

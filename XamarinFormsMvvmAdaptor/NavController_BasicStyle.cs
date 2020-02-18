@@ -7,34 +7,34 @@ namespace XamarinFormsMvvmAdaptor
     public partial class NavController
     {
         /// <summary>
-        /// Constructs the <see cref="NavController"/> with the given <see cref="RootPage"/>
+        /// Set the <see cref="RootPage"/>, and initialize its ViewModel,
+        /// running the <see cref="IAdaptorViewModel.InitializeAsync(object)"/>
+        /// and <see cref="IAdaptorViewModel.OnAppearingAsync"/> methods.
         /// </summary>
-        /// <param name="rootPage"></param>
-        /// <param name="isWrappedInNavigationPage">If true then the
-        /// <see cref="RootPage"/> will be wrapped in a <see cref="NavigationPage"/></param>
-        public NavController(Page rootPage, bool isWrappedInNavigationPage = true)
+        /// <returns></returns>
+        public Task InitAsync(Page rootPage, bool isWrappedInNavigationPage = true)
+        {
+            return InitAsync(rootPage, null, isWrappedInNavigationPage);
+        }
+
+        /// <inheritdoc cref="InitAsync(Page,bool)"/>
+        public async Task InitAsync(Page rootPage, object initialisationData, bool isWrappedInNavigationPage = true)
         {
             if (isWrappedInNavigationPage)
                 RootPage = new NavigationPage(rootPage);
             else
                 RootPage = rootPage;
-        }
-
-        /// <summary>
-        /// Initialize the <see cref="RootViewModel"/>, running its <see cref="IAdaptorViewModel.InitializeAsync(object)"/>
-        /// and <see cref="IAdaptorViewModel.OnAppearingAsync"/> methods.
-        /// </summary>
-        /// <returns></returns>
-        public Task InitAsync()
-        {
-            return InitAsync(null);
-        }
-
-        /// <inheritdoc cref="InitAsync()"/>
-        public async Task InitAsync(object initialisationData)
-        {
-            await RootViewModel.InitializeAsync(initialisationData).ConfigureAwait(false);
-            await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+            try
+            {
+                IsInitialized = true;
+                await RootViewModel.InitializeAsync(initialisationData).ConfigureAwait(false);
+                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+            }
+            catch(Exception ex)
+            {
+                IsInitialized = false;
+                throw new NotInitializedException("Initialization failed", ex);
+            }
         }
 
         #region Forms.INavigation Adaptation

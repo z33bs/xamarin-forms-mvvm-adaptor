@@ -6,13 +6,15 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class NavController
     {
-        /// <summary>
-        /// Constructs the <see cref="NavController"/> with the given <see cref="RootViewModel"/>
-        /// </summary>
-        /// <param name="rootViewModel"></param>
-        /// <param name="isWrappedInNavigationPage">If true then the
-        /// <see cref="RootPage"/> will be wrapped in a <see cref="NavigationPage"/></param>
-        public NavController(IAdaptorViewModel rootViewModel, bool isWrappedInNavigationPage = true)
+
+        /// <inheritdoc cref="InitAsync(Page,bool)"/>
+        public Task InitAsync(IAdaptorViewModel rootViewModel, bool isWrappedInNavigationPage = true)
+        {
+            return InitAsync(rootViewModel, null, isWrappedInNavigationPage);
+        }
+
+        /// <inheritdoc cref="InitAsync(Page,bool)"/>
+        public async Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData, bool isWrappedInNavigationPage = true)
         {
             var page = InstantiatePage(rootViewModel.GetType());
             BindViewModelToPage(page, rootViewModel);
@@ -21,7 +23,20 @@ namespace XamarinFormsMvvmAdaptor
                 RootPage = new NavigationPage(page);
             else
                 RootPage = page;
+
+            try
+            {
+                IsInitialized = true;
+                await RootViewModel.InitializeAsync(initialisationData).ConfigureAwait(false);
+                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                IsInitialized = false;
+                throw new NotInitializedException("Initialization failed", ex);
+            }
         }
+
 
         private Page GetPageForPush(IAdaptorViewModel viewModel)
         {
