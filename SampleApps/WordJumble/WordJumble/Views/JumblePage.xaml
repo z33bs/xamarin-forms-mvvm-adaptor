@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="WordJumble.Views.JumblePage"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WordJumble.Views.JumblePage"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
-             xmlns:vm="clr-namespace:WordJumble.ViewModels"
-             xmlns:local="clr-namespace:WordJumble"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              mc:Ignorable="d"
@@ -19,24 +19,22 @@
                 HorizontalOptions="Center"
                 Margin="0,20,0,0"/>
 
-            <Grid
+            <AbsoluteLayout
                 VerticalOptions="FillAndExpand"
                 Margin="{Binding GridMargin}"
                 d:Margin="50"
                 d:BackgroundColor="LightSkyBlue">
                 <Label
                     Text="{Binding Flexi0.Character}"
-                    Grid.Column="{Binding Flexi0.PositionX}"
-                    Grid.Row="{Binding Flexi0.PositionY}"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"                    
+                    AbsoluteLayout.LayoutBounds=
+                        "{Binding Flexi0.LayoutRectangle}"
+                    d:AbsoluteLayout.LayoutBounds=
+                        "0.5,0.5,AutoSize,AutoSize"
                     Rotation="{Binding Flexi0.Rotation}"
                     FontSize="{Binding Flexi0.FontSize}"
-                    d:BackgroundColor="AliceBlue"
                     d:Text="W"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
-                    d:Grid.Column="0"
-                    d:Grid.Row="0"
-                    d:Rotation="10"
+                    d:Rotation="25"
                     d:FontSize="80">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer
@@ -46,16 +44,14 @@
                 </Label>
                 <Label
                     Text="{Binding Flexi1.Character}"
-                    Grid.Column="{Binding Flexi1.PositionX}"
-                    Grid.Row="{Binding Flexi1.PositionY}"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"                    
+                    AbsoluteLayout.LayoutBounds=
+                        "{Binding Flexi1.LayoutRectangle}"
+                    d:AbsoluteLayout.LayoutBounds=
+                        "0.8,0.2,AutoSize,AutoSize"
                     Rotation="{Binding Flexi1.Rotation}"
                     FontSize="{Binding Flexi1.FontSize}"
                     d:Text="o"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
-                    d:BackgroundColor="AliceBlue"
-                    d:Grid.Column="2"
-                    d:Grid.Row="0"
                     d:Rotation="25"
                     d:FontSize="80">
                     <Label.GestureRecognizers>
@@ -66,16 +62,14 @@
                 </Label>
                 <Label
                     Text="{Binding Flexi2.Character}"
-                    Grid.Column="{Binding Flexi2.PositionX}"
-                    Grid.Row="{Binding Flexi2.PositionY}"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"                    
+                    AbsoluteLayout.LayoutBounds=
+                        "{Binding Flexi2.LayoutRectangle}"
+                    d:AbsoluteLayout.LayoutBounds=
+                        "0.3,0.6,AutoSize,AutoSize"
                     Rotation="{Binding Flexi2.Rotation}"
                     FontSize="{Binding Flexi2.FontSize}"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
                     d:Text="r"
-                    d:BackgroundColor="AliceBlue"
-                    d:Grid.Column="3"
-                    d:Grid.Row="2"
                     d:Rotation="70"
                     d:FontSize="50">
                     <Label.GestureRecognizers>
@@ -86,17 +80,15 @@
                 </Label>
                 <Label
                     Text="{Binding Flexi3.Character}"
-                    Grid.Column="{Binding Flexi3.PositionX}"
-                    Grid.Row="{Binding Flexi3.PositionY}"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"                    
+                    AbsoluteLayout.LayoutBounds=
+                        "{Binding Flexi3.LayoutRectangle}"
+                    d:AbsoluteLayout.LayoutBounds=
+                        "0.2,0.2,AutoSize,AutoSize"
                     Rotation="{Binding Flexi3.Rotation}"
                     FontSize="{Binding Flexi3.FontSize}"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
                     d:Text="d"
-                    d:BackgroundColor="AliceBlue"
-                    d:Grid.Column="1"
-                    d:Grid.Row="1"
-                    d:Rotation="85"
+                    d:Rotation="-70"
                     d:FontSize="100">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer
@@ -104,7 +96,7 @@
                             CommandParameter="{Binding Flexi3}"/>
                     </Label.GestureRecognizers>
                 </Label>
-            </Grid>
+            </AbsoluteLayout>
             <StackLayout
                 Orientation="Horizontal"
                 VerticalOptions="End"

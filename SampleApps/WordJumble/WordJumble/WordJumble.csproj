@@ -29,6 +29,6 @@
     <ItemGroup>
         <PackageReference Include="Xamarin.Forms" Version="4.4.0.991640" />
         <PackageReference Include="Autofac" Version="5.1.2" />
-        <PackageReference Include="XamarinFormsMvvmAdaptor" Version="3.0.0.11-beta" />
+        <PackageReference Include="XamarinFormsMvvmAdaptor" Version="3.0.0.12-beta" />
     </ItemGroup>
 </Project>

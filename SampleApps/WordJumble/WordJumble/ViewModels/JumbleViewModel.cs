@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
 using Autofac;
-using MvvmHelpers;
 using WordJumble.Models;
 using WordJumble.Services;
 using Xamarin.Forms;
@@ -99,7 +96,9 @@ namespace WordJumble.ViewModels
             set => SetProperty(ref flexi3, value);
         }
 
-        public ICommand RedrawCommand => new Command(async () => await DrawWord());
+        public ICommand RedrawCommand => new Command(
+            async () => await DrawWord());
+
         public ICommand ClosePageCommand => new Command(
             async () =>
             {
