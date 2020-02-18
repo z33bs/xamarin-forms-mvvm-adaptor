@@ -78,6 +78,17 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
+        /// <returns></returns>
+        public Task PushAsync<TViewModel>(object navigationData)
+        {
+            return PushAsync<TViewModel>(navigationData, true);
+        }
+
+        /// <summary>
+        /// Pushes a new page onto the stack
+        /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
         /// <param name="animated"></param>
         /// <returns></returns>
         public Task PushAsync<TViewModel>(bool animated)
@@ -85,16 +96,6 @@ namespace XamarinFormsMvvmAdaptor
             return PushAsync<TViewModel>(null, animated);
         }
 
-        /// <summary>
-        /// Pushes a new page onto the stack
-        /// </summary>
-        /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
-        /// <returns></returns>
-        public Task PushAsync<TViewModel>(object navigationData)
-        {
-            return PushAsync<TViewModel>(navigationData, true);
-        }
         /// <summary>
         /// Pushes a new page onto the stack
         /// </summary>
@@ -143,22 +144,22 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new Modal page onto the navigation stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="animated"></param>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
         /// <returns></returns>
-        public Task PushModalAsync<TViewModel>(bool animated)
+        public Task PushModalAsync<TViewModel>(object navigationData)
         {
-            return PushModalAsync<TViewModel>(null, animated);
+            return PushModalAsync<TViewModel>(navigationData, true);
         }
 
         /// <summary>
         /// Pushes a new Modal page onto the navigation stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
+        /// <param name="animated"></param>
         /// <returns></returns>
-        public Task PushModalAsync<TViewModel>(object navigationData)
+        public Task PushModalAsync<TViewModel>(bool animated)
         {
-            return PushModalAsync<TViewModel>(navigationData, true);
+            return PushModalAsync<TViewModel>(null, animated);
         }
 
         /// <summary>

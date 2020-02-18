@@ -73,11 +73,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.PushAsync{TViewModel}()"/>
         Task PushAsync<TViewModel>();
 
-        /// <inheritdoc cref="NavController.PushAsync{TViewModel}(bool)"/>
-        Task PushAsync<TViewModel>(bool animated);
-
         /// <inheritdoc cref="NavController.PushAsync{TViewModel}(object)"/>
         Task PushAsync<TViewModel>(object navigationData);
+
+        /// <inheritdoc cref="NavController.PushAsync{TViewModel}(bool)"/>
+        Task PushAsync<TViewModel>(bool animated);
 
         /// <inheritdoc cref="NavController.PushAsync{TViewModel}(object, bool)"/>
         Task PushAsync<TViewModel>(object navigationData, bool animated);
@@ -85,11 +85,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.PushAsync(IAdaptorViewModel)"/>
         Task PushAsync(IAdaptorViewModel viewModel);
 
-        /// <inheritdoc cref="NavController.PushAsync(IAdaptorViewModel, bool)"/>
-        Task PushAsync(IAdaptorViewModel viewModel, bool animated);
-
         /// <inheritdoc cref="NavController.PushAsync(IAdaptorViewModel, object)"/>
         Task PushAsync(IAdaptorViewModel viewModel, object navigationData);
+
+        /// <inheritdoc cref="NavController.PushAsync(IAdaptorViewModel, bool)"/>
+        Task PushAsync(IAdaptorViewModel viewModel, bool animated);
 
         /// <inheritdoc cref="NavController.PushAsync(IAdaptorViewModel, object, bool)"/>
         Task PushAsync(IAdaptorViewModel viewModel, object navigationData, bool animated);
@@ -97,11 +97,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.PushModalAsync{TViewModel}()"/>
         Task PushModalAsync<TViewModel>();
 
-        /// <inheritdoc cref="NavController.PushModalAsync{TViewModel}(bool)"/>
-        Task PushModalAsync<TViewModel>(bool animated);
-
         /// <inheritdoc cref="NavController.PushModalAsync{TViewModel}(object)"/>
         Task PushModalAsync<TViewModel>(object navigationData);
+
+        /// <inheritdoc cref="NavController.PushModalAsync{TViewModel}(bool)"/>
+        Task PushModalAsync<TViewModel>(bool animated);
 
         /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel, object, bool)"/>
         Task PushModalAsync<TViewModel>(object navigationData, bool animated);
@@ -109,11 +109,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel)"/>
         Task PushModalAsync(IAdaptorViewModel viewModel);
 
-        /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel, bool)"/>
-        Task PushModalAsync(IAdaptorViewModel viewModel, bool animated);
-
         /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel, object)"/>
         Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData);
+
+        /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel, bool)"/>
+        Task PushModalAsync(IAdaptorViewModel viewModel, bool animated);
 
         /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel, object, bool)"/>
         Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated);

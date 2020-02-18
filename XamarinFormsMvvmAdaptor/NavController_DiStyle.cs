@@ -87,23 +87,23 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack
         /// </summary>
         /// <param name="viewModel"></param>
-        /// <param name="animated"></param>
-        /// <returns></returns>
-        public Task PushAsync(IAdaptorViewModel viewModel, bool animated)
-        {
-            return PushAsync(viewModel, null, animated);
-        }
-
-        /// <summary>
-        /// Pushes a new page onto the stack
-        /// </summary>
-        /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
         /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <returns></returns>
         public Task PushAsync(IAdaptorViewModel viewModel, object navigationData)
         {
             return PushAsync(viewModel, navigationData, true);
+        }
+
+        /// <summary>
+        /// Pushes a new page onto the stack
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="animated"></param>
+        /// <returns></returns>
+        public Task PushAsync(IAdaptorViewModel viewModel, bool animated)
+        {
+            return PushAsync(viewModel, null, animated);
         }
 
         /// <summary>
@@ -155,23 +155,23 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new modal page onto the modal stack
         /// </summary>
         /// <param name="viewModel"></param>
-        /// <param name="animated"></param>
-        /// <returns></returns>
-        public Task PushModalAsync(IAdaptorViewModel viewModel, bool animated)
-        {
-            return PushModalAsync(viewModel, null, animated);
-        }
-
-        /// <summary>
-        /// Pushes a new modal page onto the modal stack
-        /// </summary>
-        /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
         /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <returns></returns>
         public Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData)
         {
             return PushModalAsync(viewModel, navigationData, true);
+        }
+
+        /// <summary>
+        /// Pushes a new modal page onto the modal stack
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="animated"></param>
+        /// <returns></returns>
+        public Task PushModalAsync(IAdaptorViewModel viewModel, bool animated)
+        {
+            return PushModalAsync(viewModel, null, animated);
         }
 
         /// <summary>
