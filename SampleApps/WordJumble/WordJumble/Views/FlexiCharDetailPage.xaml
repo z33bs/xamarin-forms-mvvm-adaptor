@@ -9,9 +9,7 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              mc:Ignorable="d"
              Visual="Material">
-    <ContentPage.BindingContext>
-        <vm:FlexiCharDetailViewModel/>
-    </ContentPage.BindingContext>
+    <!--See code-behind for BindingContext-->
     <ContentPage.Content>
         <StackLayout
             VerticalOptions="Fill"

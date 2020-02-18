@@ -5,9 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              mc:Ignorable="d">
-    <ContentPage.BindingContext>
-        <vm:MainViewModel/>
-    </ContentPage.BindingContext>
+    <!--See code-behind for BindingContext-->
     <ContentPage.Content>
         <StackLayout
             VerticalOptions="CenterAndExpand"
@@ -16,29 +14,33 @@
             <ActivityIndicator                
                 IsRunning="{Binding IsBusy}"
                 d:IsRunning="True"/>
-            <Label Text="Did you know?"
-                   FontSize="Large"
-                   Padding="0,0,0,20"
-                   HorizontalTextAlignment="Center"
-                   IsVisible="{Binding IsNotBusy}"/>
-            <Label Text="The Scrabble dictionary has
-                   4030 four-letter words!"
-                   HorizontalTextAlignment="Center"
-                   Padding="0,0,0,20"
-                   IsVisible="{Binding IsNotBusy}"/>
             <Label
                 Text="{Binding Instruction}"
                 FontAttributes="Bold"
                 d:Text="Enter a four letter word:"
+                FontSize="Medium"
                 IsVisible="{Binding IsNotBusy}"/>
             <Entry
                    Placeholder="_ _ _ _"                
                    MaxLength="4"
                    Text="{Binding Word}"
+                   FontSize="Medium" 
                    HorizontalTextAlignment="Center"
                    ReturnType="Send"                   
                    ReturnCommand="{Binding JumbleWordCommand}"
                    ReturnCommandParameter="{Binding Source={RelativeSource Self},Path=Text}"/>
+
+            <Label Text="Did you know?"
+                   FontSize="Large"
+                   Padding="0,0,0,20"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding IsNotBusy}"/>
+            <Label Text="The Scrabble dictionary has ±4000 four-letter words! Keep it clean, only ±30 of them are swear words ;-)"
+                   FontSize="Medium"
+                   HorizontalTextAlignment="Center"
+                   Padding="0,0,0,20"
+                   IsVisible="{Binding IsNotBusy}"/>
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

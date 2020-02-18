@@ -3,22 +3,27 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WordJumble.Models;
 using Xamarin.Forms;
+using XamarinFormsMvvmAdaptor;
 
 namespace WordJumble.ViewModels
 {
     public class FlexiCharDetailViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
     {
         readonly Random random = new Random();
+#if WITH_DI
+        readonly INavController navController;
+#endif
 
-        FlexiChar flexiChar;
-        public FlexiChar FlexiChar
+#if WITH_DI
+        public FlexiCharDetailViewModel(INavController navController)
         {
-            get => flexiChar;
-            set => SetProperty(ref flexiChar, value);
+            this.navController = navController;
         }
+#else
         public FlexiCharDetailViewModel()
         {
         }
+#endif
 
         public override Task InitializeAsync(object navigationData)
         {
@@ -26,10 +31,22 @@ namespace WordJumble.ViewModels
             return base.InitializeAsync(navigationData);
         }
 
+        FlexiChar flexiChar;
+        public FlexiChar FlexiChar
+        {
+            get => flexiChar;
+            set => SetProperty(ref flexiChar, value);
+        }
+
         public ICommand PopPageCommand
-            => new Command(
-                async () =>
-                    await App.NavController.PopModalAsync());
+            => new Command(async () =>
+                {
+#if WITH_DI
+                    await navController.PopModalAsync();
+#else
+                    await App.NavController.PopModalAsync();
+#endif
+                });
 
         public ICommand RotateCommand
             => new Command(Rotate);

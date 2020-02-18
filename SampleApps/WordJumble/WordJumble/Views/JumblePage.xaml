@@ -9,9 +9,9 @@
              Visual="Material"
              ios:Page.UseSafeArea="True"
              Title="{Binding Title}">
-    <ContentPage.BindingContext>
-        <vm:JumbleViewModel/>
-    </ContentPage.BindingContext>
+
+    <!--See code-behind for BindingContext-->
+
     <ContentPage.Content>
         <StackLayout d:BackgroundColor="Beige">
             <Label Text="Tap a letter"

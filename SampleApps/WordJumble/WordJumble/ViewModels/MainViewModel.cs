@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using Autofac;
 using Xamarin.Forms;
 using XamarinFormsMvvmAdaptor;
 
@@ -10,10 +8,20 @@ namespace WordJumble.ViewModels
 {
     public class MainViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
     {
+#if WITH_DI
+        readonly INavController navController;
+#endif
 
+#if WITH_DI
+        public MainViewModel(INavController navController)
+        {
+            this.navController = navController;
+        }
+#else
         public MainViewModel()
         {
         }
+#endif
 
         const string DEFAULT_INSTRUCTION = "Enter a four letter word:";
         string instruction = DEFAULT_INSTRUCTION;
@@ -45,7 +53,11 @@ namespace WordJumble.ViewModels
             }
             
             IsBusy = true;
+#if WITH_DI
+            await navController.PushAsync(App.DiContainer.Resolve<JumbleViewModel>(), word);
+#else
             await App.NavController.PushAsync<JumbleViewModel>(word);
+#endif
             Instruction = DEFAULT_INSTRUCTION;
             Word = string.Empty;
             IsBusy = false;

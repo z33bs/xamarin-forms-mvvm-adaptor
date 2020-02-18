@@ -3,7 +3,7 @@ using WordJumble.Models;
 
 namespace WordJumble.Services
 {
-    public class FlexiCharGeneratorService
+    public class FlexiCharGeneratorService : IFlexiCharGeneratorService
     {
         readonly Random random = new Random();
 

@@ -1,22 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
-    <ReleaseVersion></ReleaseVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <LangVersion>latestmajor</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <LangVersion>latestmajor</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.4.0.991640" />  
-    <PackageReference Include="XamarinFormsMvvmAdaptor" Version="3.0.0.5-beta" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+        <ReleaseVersion>
+        </ReleaseVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DebugType>portable</DebugType>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <DebugSymbols>true</DebugSymbols>
+        <LangVersion>latestmajor</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <LangVersion>latestmajor</LangVersion>
+        <DebugType>
+        </DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WithDi|AnyCPU' ">
+        <IntermediateOutputPath>obj\WithDi</IntermediateOutputPath>
+        <DebugSymbols>true</DebugSymbols>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\WithDi</OutputPath>
+        <DefineConstants>TRACE;DEBUG;WITH_DI;NETSTANDARD;NETSTANDARD2_1</DefineConstants>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoStdLib>false</NoStdLib>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Xamarin.Forms" Version="4.4.0.991640" />
+        <PackageReference Include="Autofac" Version="5.1.2" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\XamarinFormsMvvmAdaptor\XamarinFormsMvvmAdaptor.csproj" />
+    </ItemGroup>
 </Project>

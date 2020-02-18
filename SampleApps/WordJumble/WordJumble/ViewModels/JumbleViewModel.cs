@@ -2,31 +2,38 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Autofac;
 using MvvmHelpers;
 using WordJumble.Models;
 using WordJumble.Services;
 using Xamarin.Forms;
+using XamarinFormsMvvmAdaptor;
 
 namespace WordJumble.ViewModels
 {
     public class JumbleViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
     {
-        readonly FlexiCharGeneratorService flexiCharGenerator;
+        readonly IFlexiCharGeneratorService flexiCharGenerator;
+#if WITH_DI
+        readonly INavController navController;
+#endif
 
+#if WITH_DI
+        public JumbleViewModel(INavController navController, IFlexiCharGeneratorService flexiCharGeneratorService)
+        {
+            flexiCharGenerator = flexiCharGeneratorService;
+            this.navController = navController;
+        }
+#else
         public JumbleViewModel()
         {
             flexiCharGenerator = new FlexiCharGeneratorService();
-            Title = "Jumble";
         }
+#endif
 
         public override async Task InitializeAsync(object navigationData)
         {
-            //foreach (var character in navigationData as string)
-            //{
-            //    FlexiChars.Add(flexiCharGenerator.GetRandomFlexiChar(character));
-            //    await Task.Delay(100).ConfigureAwait(false);
-            //    OnPropertyChanged(nameof(FlexiChars));
-            //}
+            Title = "Jumble";
             word = navigationData as string;
             await DrawWord().ConfigureAwait(false);
         }
@@ -62,7 +69,7 @@ namespace WordJumble.ViewModels
         }
 
 
-        public int GridMargin { get; } = (Constants.FONTSIZE_MAX - Constants.FONTSIZE_MIN)/2;
+        public int GridMargin { get; } = (Constants.FONTSIZE_MAX - Constants.FONTSIZE_MIN) / 2;
 
         FlexiChar flexi0;
         public FlexiChar Flexi0
@@ -96,12 +103,21 @@ namespace WordJumble.ViewModels
         public ICommand ClosePageCommand => new Command(
             async () =>
             {
+#if WITH_DI
+                await navController.PopAsync();
+#else
                 await App.NavController.PopAsync();
+#endif
             });
+
         public ICommand LaunchDetailCommand => new Command<FlexiChar>(
             async (flexiChar) =>
             {
+#if WITH_DI
+                await navController.PushModalAsync(App.DiContainer.Resolve<FlexiCharDetailViewModel>(),flexiChar);
+#else
                 await App.NavController.PushModalAsync<FlexiCharDetailViewModel>(flexiChar);
+#endif
             });
     }
 }

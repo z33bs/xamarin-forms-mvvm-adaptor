@@ -30,6 +30,9 @@ Global
 		Release|iPhoneSimulator = Release|iPhoneSimulator
 		Debug|iPhone = Debug|iPhone
 		Release|iPhone = Release|iPhone
+		WithDi|iPhoneSimulator = WithDi|iPhoneSimulator
+		WithDi|iPhone = WithDi|iPhone
+		WithDi|Any CPU = WithDi|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,6 +47,12 @@ Global
 		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.Debug|iPhone.Build.0 = Debug|Any CPU
 		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.Release|iPhone.Build.0 = Release|Any CPU
+		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.WithDi|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.WithDi|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.WithDi|iPhone.ActiveCfg = Debug|Any CPU
+		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.WithDi|iPhone.Build.0 = Debug|Any CPU
+		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.WithDi|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E507E6-07DC-43BD-BFBA-58EB8C8E7084}.WithDi|Any CPU.Build.0 = Debug|Any CPU
 		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,6 +65,12 @@ Global
 		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.Debug|iPhone.Build.0 = Debug|Any CPU
 		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.Release|iPhone.Build.0 = Release|Any CPU
+		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.WithDi|iPhoneSimulator.ActiveCfg = WithDi|Any CPU
+		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.WithDi|iPhoneSimulator.Build.0 = WithDi|Any CPU
+		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.WithDi|iPhone.ActiveCfg = WithDi|Any CPU
+		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.WithDi|iPhone.Build.0 = WithDi|Any CPU
+		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.WithDi|Any CPU.ActiveCfg = WithDi|Any CPU
+		{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}.WithDi|Any CPU.Build.0 = WithDi|Any CPU
 		{9C6A112E-E500-4886-B043-D8A932CA9791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9C6A112E-E500-4886-B043-D8A932CA9791}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C6A112E-E500-4886-B043-D8A932CA9791}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,6 +83,10 @@ Global
 		{9C6A112E-E500-4886-B043-D8A932CA9791}.Debug|iPhone.Build.0 = Debug|Any CPU
 		{9C6A112E-E500-4886-B043-D8A932CA9791}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{9C6A112E-E500-4886-B043-D8A932CA9791}.Release|iPhone.Build.0 = Release|Any CPU
+		{9C6A112E-E500-4886-B043-D8A932CA9791}.WithDi|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{9C6A112E-E500-4886-B043-D8A932CA9791}.WithDi|iPhone.ActiveCfg = Debug|Any CPU
+		{9C6A112E-E500-4886-B043-D8A932CA9791}.WithDi|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6A112E-E500-4886-B043-D8A932CA9791}.WithDi|Any CPU.Build.0 = Debug|Any CPU
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
@@ -80,6 +99,11 @@ Global
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.Debug|iPhone.Build.0 = Debug|iPhone
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.Release|iPhone.ActiveCfg = Release|iPhone
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.Release|iPhone.Build.0 = Release|iPhone
+		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|iPhone.ActiveCfg = Debug|iPhone
+		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|iPhone.Build.0 = Debug|iPhone
+		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|Any CPU.ActiveCfg = Debug|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		version = 
