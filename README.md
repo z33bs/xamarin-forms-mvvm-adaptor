@@ -440,7 +440,7 @@ On the MainPage the user types a four letter word into an entry dialogue. A new 
 | :--------------------------------------------------: | :--------------------------------------------------: |
 | ![ScreenShot iOS](XamarinFormsMvvmAdaptor/Art/Screenshot_Word.png) | ![ScreenShot Droid](XamarinFormsMvvmAdaptor/Art/Screenshot_Hips.png) |
 
-WordJumble demonstrates both flavours of the XamarinFormsMvvmAdaptor. When [browsing the code](/tree/master/SampleApps/WordJumble), look for the conditional compilation symbol `#if WITH_DI` for the the [DI flavour](#DI-implementation) of XamarinFormsMvvmAdaptor. If building the app, be aware of what configuration you are building.
+WordJumble demonstrates both flavours of the XamarinFormsMvvmAdaptor. When [browsing the code](SampleApps/WordJumble), look for the conditional compilation symbol `#if WITH_DI` for the the [DI flavour](#DI-implementation) of XamarinFormsMvvmAdaptor. If building the app, be aware of what configuration you are building.
 
 This app demonstrates:
 
