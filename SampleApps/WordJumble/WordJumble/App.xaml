@@ -3,9 +3,13 @@
     <Application.Resources>
         <ResourceDictionary>
             <!--Global Styles-->
-            <Color x:Key="NavigationPrimary">#2196F3</Color>
+            <Color x:Key="NavigationPrimary">#EA90FC</Color>
+            <Color x:Key="ColorPrimary">#EA90FC</Color>
+            <Color x:Key="ColorPrimaryDark">#DA44F3</Color>
+            <Color x:Key="ColorAccent">#7A00C9</Color>
+<!--2196F3-->
             <Style TargetType="NavigationPage">
-                <Setter Property="BarBackgroundColor" Value="{StaticResource NavigationPrimary}" />
+                <Setter Property="BarBackgroundColor" Value="{StaticResource ColorPrimary}" />
                 <Setter Property="BarTextColor" Value="White" />
             </Style>
         </ResourceDictionary>

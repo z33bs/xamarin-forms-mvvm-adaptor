@@ -40,6 +40,7 @@
                 Text="Rotate"
                 VerticalOptions="End"
                 Command="{Binding RotateCommand}"
+                BackgroundColor="{StaticResource ColorPrimary}"
                 Margin="10,0,10,20"/>
         </StackLayout>
     </ContentPage.Content>

@@ -104,11 +104,12 @@
                 <Button                
                     Text="Redraw"
                     Command="{Binding RedrawCommand}"
-                    HorizontalOptions="FillAndExpand"/>
+                    HorizontalOptions="FillAndExpand"
+                    BackgroundColor="{StaticResource ColorPrimary}"/>
                 <Button
                     Text="Close"
                     Command="{Binding ClosePageCommand}"
-                    BackgroundColor="DarkRed"
+                    BackgroundColor="{StaticResource ColorPrimaryDark}"
                     HorizontalOptions="FillAndExpand"/>
             </StackLayout>
         </StackLayout>

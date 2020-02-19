@@ -76,34 +76,13 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon1024.png">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon180.png">
-      <Visible>false</Visible>
-    </ImageAsset>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon167.png">
       <Visible>false</Visible>
     </ImageAsset>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon152.png">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon120.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon87.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon80.png">
-      <Visible>false</Visible>
-    </ImageAsset>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon76.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon60.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon58.png">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon40.png">
       <Visible>false</Visible>
     </ImageAsset>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon29.png">
@@ -122,6 +101,17 @@
     <BundleResource Include="Resources\xamarin_logo%402x.png" />
     <BundleResource Include="Resources\xamarin_logo%403x.png" />
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
+    <BundleResource Include="Resources\large-icon.png" />
+    <BundleResource Include="Resources\large-icon%402x.png" />
+    <BundleResource Include="Resources\large-icon%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon20%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon20%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon29%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon29%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon40%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon40%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon60%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon60%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
