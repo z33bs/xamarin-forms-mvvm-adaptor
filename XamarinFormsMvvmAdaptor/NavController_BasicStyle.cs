@@ -7,30 +7,27 @@ namespace XamarinFormsMvvmAdaptor
     public partial class NavController
     {
         /// <summary>
-        /// Set the <see cref="RootPage"/>, and initialize its ViewModel,
+        /// Set the <see cref="RootNavigationPage"/>, and initialize its ViewModel,
         /// running the <see cref="IAdaptorViewModel.InitializeAsync(object)"/>
         /// and <see cref="IAdaptorViewModel.OnAppearingAsync"/> methods.
         /// </summary>
         /// <returns></returns>
-        public Task InitAsync(Page rootPage, bool isWrappedInNavigationPage = true)
+        public Task InitAsync(Page rootPage)
         {
-            return InitAsync(rootPage, null, isWrappedInNavigationPage);
+            return InitAsync(rootPage, null);
         }
 
-        /// <inheritdoc cref="InitAsync(Page,bool)"/>
-        public async Task InitAsync(Page rootPage, object initialisationData, bool isWrappedInNavigationPage = true)
+        /// <inheritdoc cref="InitAsync(Page)"/>
+        public async Task InitAsync(Page rootPage, object initialisationData)
         {
-            if (isWrappedInNavigationPage)
-                RootPage = new NavigationPage(rootPage);
-            else
-                RootPage = rootPage;
+            RootNavigationPage = new NavigationPage(rootPage);
             try
             {
                 IsInitialized = true;
                 await RootViewModel.InitializeAsync(initialisationData).ConfigureAwait(false);
                 await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 IsInitialized = false;
                 throw new NotInitializedException("Initialization failed", ex);
@@ -57,7 +54,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (existingPage.GetType() == pageTypeAnchorPage)
                 {
-                    RootPage.Navigation.InsertPageBefore(existingPage, newPage);
+                    RootNavigationPage.Navigation.InsertPageBefore(existingPage, newPage);
                     await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
                 }
             }
@@ -112,7 +109,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootPage.Navigation.PushAsync(page, animated);
+                    await RootNavigationPage.Navigation.PushAsync(page, animated);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -178,7 +175,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    await RootNavigationPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)

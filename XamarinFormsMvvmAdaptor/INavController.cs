@@ -37,17 +37,17 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.CollapseStack"/>
         void CollapseStack();
 
-        /// <inheritdoc cref="NavController.InitAsync(Page,bool)"/>/>
-        Task InitAsync(Page rootPage, bool isWrappedInNavigationPage = true);
+        /// <inheritdoc cref="NavController.InitAsync(Page)"/>/>
+        Task InitAsync(Page rootPage);
 
-        /// <inheritdoc cref="NavController.InitAsync(Page,object,bool)"/>/>
-        Task InitAsync(Page rootPage, object initialisationData, bool isWrappedInNavigationPage = true);
+        /// <inheritdoc cref="NavController.InitAsync(Page,object)"/>/>
+        Task InitAsync(Page rootPage, object initialisationData);
 
-        /// <inheritdoc cref="NavController.InitAsync(IAdaptorViewModel,bool)"/>/>
-        Task InitAsync(IAdaptorViewModel rootViewModel, bool isWrappedInNavigationPage = true);
+        /// <inheritdoc cref="NavController.InitAsync(IAdaptorViewModel)"/>/>
+        Task InitAsync(IAdaptorViewModel rootViewModel);
 
-        /// <inheritdoc cref="NavController.InitAsync(IAdaptorViewModel,object,bool)"/>/>
-        Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData, bool isWrappedInNavigationPage = true);
+        /// <inheritdoc cref="NavController.InitAsync(IAdaptorViewModel,object)"/>/>
+        Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData);
 
         /// <inheritdoc cref="NavController.InsertPageBefore{TViewModelExisting, TViewModelNew}(object)"/>
         Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null);

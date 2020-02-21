@@ -37,38 +37,17 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             await navController.InitAsync(new TestPage0());
             Assert.IsTrue(navController.IsInitialized);
         }
-        //[Test]
-        //public async Task InitAsync_Vm_IsInitialized_True()
-        //{
-        //    await navController.InitAsync(new TestViewModel0());
-        //    Assert.IsTrue(navController.IsInitialized);
-        //}
 
 
-        [Test]
-        public async Task RootPage_Default_Is_NavigationPage()
-        {
-            await navController.InitAsync(new TestPage0());
-            Assert.IsInstanceOf<NavigationPage>(navController.RootPage);
-        }
-
-        [Test]
-        public async Task RootPage_CanBe_Page()
-        {
-            await navController.InitAsync(new TestPage0(),isWrappedInNavigationPage:false);
-            Assert.IsInstanceOf<Page>(navController.RootPage);
-            Assert.IsNotInstanceOf<NavigationPage>(navController.RootPage);
-        }
 
         [Test]
         public async Task PageProperties_Return_Expected_Pages_After_Stack_Manipulation()
         {
-            TestContext.Out.WriteLine("Out WriteLIne");
             TestContext.WriteLine("Straight WriteLIne");
 
             await navController.InitAsync(new TestPage0());
             //todo refactor so get the page
-            Assert.IsInstanceOf<TestPage0>((navController.RootPage as NavigationPage).RootPage);
+            Assert.IsInstanceOf<TestPage0>(navController.RootPage);
 
             await navController.PushAsync<TestViewModel1>();
             await navController.PushAsync<TestViewModel2>();
