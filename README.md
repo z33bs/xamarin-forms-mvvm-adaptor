@@ -38,7 +38,7 @@ Skip to the flavour that suits you.
 
 ### Vanilla implementation
 
-**Initialize the controller** in a way that can easily be accessed throughout your project as a single instance. One way to do this is with a static property in your `app.xaml.cs` file:
+**Instantiate the controller as a single instance**. One way to do this is with a static property in your `app.xaml.cs` file:
 
 ```c#
 public partial class App : Application
@@ -381,7 +381,7 @@ The Navigation framework simply follows the Xamarin.Forms approach. If you are u
 * Properties
   * NavigationStack
   * ModalStack
-  * RootPage and TopPage (called CurrentPage in Xamarin)
+  * RootPage
 * Methods:
   * PushAsync & PushModalAsync
   * PopAsync & PopModalAsync
@@ -391,6 +391,7 @@ The Navigation framework simply follows the Xamarin.Forms approach. If you are u
 #### Additional helpers:
 
 * Properties:
+  * TopPage
   * HiddenPage (see [detail](#Shortcuts-for-accessing-Pages-and-ViewModels-in-the-stack) below for explaination) in addition to RootPage and TopPage
   * RootViewModel, TopViewModel, and HiddenViewModel corresponding to the pages above
 * Methods:
