@@ -7,6 +7,9 @@ namespace XamarinFormsMvvmAdaptor
     /// <inheritdoc cref="NavController"/>
     public interface INavController
     {
+        /// <inheritdoc cref="NavController.IsInitialized"/>
+        bool IsInitialized { get; }
+
         /// <inheritdoc cref="NavController.NavigationStack"/>
         IReadOnlyList<Page> NavigationStack { get; }
 
