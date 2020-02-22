@@ -238,13 +238,14 @@ namespace XamarinFormsMvvmAdaptor
 
         #region Stack Manipulation Helpers
         /// <summary>
-        /// Removes the <see cref="HiddenPage"/> from the <see cref="NavigationStack"/> or <see cref="ModalStack"/>
+        /// Removes the <see cref="HiddenPage"/> from the <see cref="NavigationStack"/> but not the <see cref="ModalStack"/>
         /// </summary>
         /// <returns></returns>
-        public void RemoveHiddenPageFromStack()
+        public void RemovePreviousPageFromMainStack()
         {
-            if (HiddenPage != null)
-                RootNavigationPage.Navigation.RemovePage(HiddenPage);
+                if (NavigationStack.Count > 1)
+                    RootNavigationPage.Navigation.RemovePage(
+                        NavigationStack[NavigationStack.Count-2]);            
         }
 
         /// <summary>

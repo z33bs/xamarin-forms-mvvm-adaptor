@@ -121,8 +121,8 @@ namespace XamarinFormsMvvmAdaptor
         /// <inheritdoc cref="NavController.PushModalAsync(IAdaptorViewModel, object, bool)"/>
         Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated);
 
-        /// <inheritdoc cref="NavController.RemoveHiddenPageFromStack"/>
-        void RemoveHiddenPageFromStack();
+        /// <inheritdoc cref="NavController.RemovePreviousPageFromMainStack"/>
+        void RemovePreviousPageFromMainStack();
 
         /// <inheritdoc cref="NavController.RemovePageFor{TViewModel}"/>
         void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel;
