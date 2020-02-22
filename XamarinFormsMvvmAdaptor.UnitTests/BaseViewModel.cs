@@ -9,12 +9,12 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         {
         }
 
-        public Task InitializeAsync(object navigationData)
+        public virtual Task InitializeAsync(object navigationData)
         {
             return Task.FromResult(true);
         }
 
-        public Task OnAppearingAsync()
+        public virtual Task OnAppearingAsync()
         {
             return Task.FromResult(false);
         }
