@@ -39,7 +39,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="navigationData">Optional navigation data that will be passed to
         /// <see cref="AdaptorViewModel.InitializeAsync(object)"/></param>
         /// <returns></returns>
-        public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null)
+        public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IAdaptorViewModel
         {
             var newPage = InstantiatePage(typeof(TViewModelNew));
 

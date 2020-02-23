@@ -20,21 +20,21 @@ namespace XamarinFormsMvvmAdaptor
 
         #region Vanilla Implementation
         Task InitAsync(Page rootPage, object initialisationData = null);
-        Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null);
+        Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IAdaptorViewModel;
         Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
         Task PushModalAsync<TViewModel>(object navigationData, bool animated) where TViewModel : IAdaptorViewModel;
-        void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel;
         #endregion
         #region Di Implementation
-        Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData = null);
+        Task DiInitAsync(IAdaptorViewModel rootViewModel, object initialisationData = null);
         Task DiPushAsync(IAdaptorViewModel viewModel, object navigationData = null, bool animated = true);
         Task DiPushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated);
-        Task InsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null);
+        Task DiInsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null);
         #endregion
         #region Common/Shared Methods
         Task PopAsync(bool animated = true);
         Task PopModalAsync(bool animated = true);
         Task PopToRootAsync(bool animated = true);
+        void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel;
         void CollapseMainStack();
         void RemovePreviousPageFromMainStack();
         #endregion

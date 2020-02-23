@@ -8,7 +8,7 @@ namespace XamarinFormsMvvmAdaptor
     {
 
         /// <inheritdoc cref="InitAsync(Page)"/>
-        public async Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData = null)
+        public async Task DiInitAsync(IAdaptorViewModel rootViewModel, object initialisationData = null)
         {
             var page = InstantiatePage(rootViewModel.GetType());
             BindViewModelToPage(page, rootViewModel);
@@ -46,7 +46,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="navigationData">Optional navigation data that will be passed to the
         /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <returns></returns>
-        public async Task InsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null)
+        public async Task DiInsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null)
         {
             var newPage = GetPageForPush(viewModel);
             BindViewModelToPage(newPage, viewModel);
