@@ -74,17 +74,17 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Gets the stack of pages in the navigation
         /// </summary>
-        public IReadOnlyList<Page> NavigationStack => Root.Navigation.NavigationStack;
+        public IReadOnlyList<Page> MainStack => Root.Navigation.NavigationStack;
 
         /// <summary>
-        /// Gets the modal navigation stack. The <see cref="ModalStack"/> always hides the <see cref="NavigationStack"/>
+        /// Gets the modal navigation stack. The <see cref="ModalStack"/> always hides the <see cref="MainStack"/>
         /// </summary>
         public IReadOnlyList<Page> ModalStack => Root.Navigation.ModalStack;
 
         /// <summary>
-        /// Page at the root/bottom of the <see cref="NavigationStack"/>
+        /// Page at the root/bottom of the <see cref="MainStack"/>
         /// </summary>
-        public Page RootPage => NavigationStack[0];
+        public Page RootPage => MainStack[0];
 
         private NavigationPage root;
         private NavigationPage Root
@@ -98,7 +98,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Currently visible <see cref="Page"/> at the top of the <see cref="NavigationStack"/>
+        /// Currently visible <see cref="Page"/> at the top of the <see cref="MainStack"/>
         /// or <see cref="ModalStack"/> if it has any <see cref="Page"/>s in it
         /// </summary>
         public Page TopPage
@@ -109,7 +109,7 @@ namespace XamarinFormsMvvmAdaptor
                 if (ModalStack.Count > 0)
                     return ModalStack[ModalStack.Count - 1];
 
-                return NavigationStack[NavigationStack.Count - 1];
+                return MainStack[MainStack.Count - 1];
             }
         }
 
@@ -129,11 +129,11 @@ namespace XamarinFormsMvvmAdaptor
                     if (ModalStack.Count > 1)
                         return ModalStack[ModalStack.Count - 2];
 
-                    return NavigationStack[NavigationStack.Count - 1];
+                    return MainStack[MainStack.Count - 1];
                 }
 
-                if (NavigationStack.Count > 1)
-                    return NavigationStack[NavigationStack.Count - 2];
+                if (MainStack.Count > 1)
+                    return MainStack[MainStack.Count - 2];
 
                 return null;
             }
@@ -238,25 +238,25 @@ namespace XamarinFormsMvvmAdaptor
 
         #region Stack Manipulation Helpers
         /// <summary>
-        /// Removes the <see cref="HiddenPage"/> from the <see cref="NavigationStack"/> but not the <see cref="ModalStack"/>
+        /// Removes the <see cref="HiddenPage"/> from the <see cref="MainStack"/> but not the <see cref="ModalStack"/>
         /// </summary>
         /// <returns></returns>
         public void RemovePreviousPageFromMainStack()
         {
-                if (NavigationStack.Count > 1)
+                if (MainStack.Count > 1)
                     Root.Navigation.RemovePage(
-                        NavigationStack[NavigationStack.Count-2]);            
+                        MainStack[MainStack.Count-2]);            
         }
 
         /// <summary>
-        /// Removes all pages in the <see cref="NavigationStack"/> except for
+        /// Removes all pages in the <see cref="MainStack"/> except for
         /// the <see cref="TopPage"/>, which becomes the <see cref="Root"/> of the stack.
         /// </summary>
-        public void CollapseStack()
+        public void CollapseMainStack()
         {
-            if (NavigationStack.Count > 1)
+            if (MainStack.Count > 1)
             {
-                foreach (var page in NavigationStack)
+                foreach (var page in MainStack)
                 {
                     if (page != TopPage)
                         Root.Navigation.RemovePage(page);
@@ -278,7 +278,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static Page CreatePageForAsync(IAdaptorViewModel viewModel)
+        public static Page DiCreatePageForAsync(IAdaptorViewModel viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
             BindViewModelToPage(page, viewModel);
@@ -312,7 +312,7 @@ namespace XamarinFormsMvvmAdaptor
 
         #region Forms.INavigation Adaptation
         /// <summary>
-        /// Removes a <see cref="Page"/> from the <see cref="NavigationStack"/>
+        /// Removes a <see cref="Page"/> from the <see cref="MainStack"/>
         /// that corresponds to a given ViewModel
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
@@ -320,7 +320,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
-            foreach (var item in NavigationStack)
+            foreach (var item in MainStack)
             {
                 if (item.GetType() == pageType)
                 {
@@ -364,7 +364,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="Root"/>
+        /// Pops the entire <see cref="MainStack"/>, leaving only the <see cref="Root"/>
         /// </summary>
         /// <returns></returns>
         public Task PopToRootAsync()
@@ -373,7 +373,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="Root"/>, with optional animation.
+        /// Pops the entire <see cref="MainStack"/>, leaving only the <see cref="Root"/>, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
         /// <returns></returns>

@@ -10,7 +10,7 @@ namespace XamarinFormsMvvmAdaptor
     public abstract class AdaptorViewModel : BaseViewModel, IAdaptorViewModel
     {
         /// <summary>
-        /// Runs automatically once the associated page is pushed onto the <see cref="NavController.NavigationStack"/>
+        /// Runs automatically once the associated page is pushed onto the <see cref="NavController.MainStack"/>
         /// </summary>
         /// <param name="navigationData">Any data which could be useful for ViewModel Initialisation</param>
         /// <returns></returns>

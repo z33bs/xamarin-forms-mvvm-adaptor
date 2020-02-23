@@ -15,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task InitAsync(Page rootPage, object initialisationData = null)
         {
-            Roott  = new NavigationPage(rootPage);
+            Roott = new NavigationPage(rootPage);
             try
             {
                 IsInitialized = true;
@@ -45,7 +45,7 @@ namespace XamarinFormsMvvmAdaptor
 
             Type pageTypeAnchorPage = GetPageTypeForViewModel(typeof(TViewModelExisting));
 
-            foreach (var existingPage in NavigationStack)
+            foreach (var existingPage in MainStack)
             {
                 if (existingPage.GetType() == pageTypeAnchorPage)
                 {

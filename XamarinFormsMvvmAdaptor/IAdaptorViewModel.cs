@@ -10,14 +10,14 @@ namespace XamarinFormsMvvmAdaptor
     {
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>
-        /// is pushed onto the <see cref="NavController.NavigationStack"/>.
+        /// is pushed onto the <see cref="NavController.MainStack"/>.
         /// </summary>
         /// <param name="navigationData">Any data required for ViewModel initialisation</param>
         /// <returns></returns>
         Task InitializeAsync(object navigationData);
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/> appears
-        /// at the top of the <see cref="NavController.NavigationStack"/>
+        /// at the top of the <see cref="NavController.MainStack"/>
         /// or <see cref="NavController.ModalStack"/>
         /// </summary>
         /// <returns></returns>
