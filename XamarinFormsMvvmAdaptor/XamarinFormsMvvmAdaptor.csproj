@@ -27,7 +27,7 @@
         <LangVersion>8.0</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+      <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
       <LangVersion>8.0</LangVersion>
     </PropertyGroup>
     <ItemGroup>

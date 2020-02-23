@@ -8,18 +8,12 @@ namespace XamarinFormsMvvmAdaptor
     {
 
         /// <inheritdoc cref="InitAsync(Page)"/>
-        public Task InitAsync(IAdaptorViewModel rootViewModel)
-        {
-            return InitAsync(rootViewModel, null);
-        }
-
-        /// <inheritdoc cref="InitAsync(Page)"/>
-        public async Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData)
+        public async Task InitAsync(IAdaptorViewModel rootViewModel, object initialisationData = null)
         {
             var page = InstantiatePage(rootViewModel.GetType());
             BindViewModelToPage(page, rootViewModel);
 
-            RootNavigationPage = new NavigationPage(page);
+            Roott  = new NavigationPage(page);
 
             try
             {
@@ -59,11 +53,11 @@ namespace XamarinFormsMvvmAdaptor
 
             var anchorPage = GetPageTypeForViewModel(typeof(TViewModelExisting));
 
-            foreach (var existingPage in RootNavigationPage.Navigation.NavigationStack)
+            foreach (var existingPage in Roott..Navigation.NavigationStack)
             {
                 if (existingPage.GetType() == anchorPage)
                 {
-                    RootNavigationPage.Navigation.InsertPageBefore(existingPage, newPage);
+                    Roott..Navigation.InsertPageBefore(existingPage, newPage);
                     await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
                 }
             }
@@ -74,44 +68,11 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack
         /// </summary>
         /// <param name="viewModel"></param>
-        /// <returns></returns>
-        public Task PushAsync(IAdaptorViewModel viewModel)
-        {
-            return PushAsync(viewModel, null, true);
-        }
-
-        /// <summary>
-        /// Pushes a new page onto the stack
-        /// </summary>
-        /// <param name="viewModel"></param>
-        /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
-        /// <returns></returns>
-        public Task PushAsync(IAdaptorViewModel viewModel, object navigationData)
-        {
-            return PushAsync(viewModel, navigationData, true);
-        }
-
-        /// <summary>
-        /// Pushes a new page onto the stack
-        /// </summary>
-        /// <param name="viewModel"></param>
-        /// <param name="animated"></param>
-        /// <returns></returns>
-        public Task PushAsync(IAdaptorViewModel viewModel, bool animated)
-        {
-            return PushAsync(viewModel, null, animated);
-        }
-
-        /// <summary>
-        /// Pushes a new page onto the stack
-        /// </summary>
-        /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
         /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        public async Task PushAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
+        public async Task DiPushAsync(IAdaptorViewModel viewModel, object navigationData = null, bool animated = true)
         {
             var page = GetPageForPush(viewModel);
 
@@ -120,7 +81,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootNavigationPage.Navigation.PushAsync(page, animated);
+                    await Roott..Navigation.PushAsync(page, animated);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -138,38 +99,7 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         #region Modal Push
-        /// <summary>
-        /// Pushes a new modal page onto the modal stack
-        /// </summary>
-        /// <param name="viewModel"></param>
-        /// <returns></returns>
-        public Task PushModalAsync(IAdaptorViewModel viewModel)
-        {
-            return PushModalAsync(viewModel, null, true);
-        }
 
-        /// <summary>
-        /// Pushes a new modal page onto the modal stack
-        /// </summary>
-        /// <param name="viewModel"></param>
-        /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
-        /// <returns></returns>
-        public Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData)
-        {
-            return PushModalAsync(viewModel, navigationData, true);
-        }
-
-        /// <summary>
-        /// Pushes a new modal page onto the modal stack
-        /// </summary>
-        /// <param name="viewModel"></param>
-        /// <param name="animated"></param>
-        /// <returns></returns>
-        public Task PushModalAsync(IAdaptorViewModel viewModel, bool animated)
-        {
-            return PushModalAsync(viewModel, null, animated);
-        }
 
         /// <summary>
         /// Pushes a new modal page onto the modal stack
@@ -179,7 +109,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        public async Task PushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
+        public async Task DiPushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
             var page = GetPageForPush(viewModel);
 
@@ -188,7 +118,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootNavigationPage.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    await Roott..Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)

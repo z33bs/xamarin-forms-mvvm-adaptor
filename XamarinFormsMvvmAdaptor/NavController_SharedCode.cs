@@ -19,7 +19,7 @@ namespace XamarinFormsMvvmAdaptor
     /// and end with suffix <see cref="DEFAULT_VM_SUFFIX"/>.
     /// This behaviour can be customised with <see cref="SetNamingConventions(string, string, string, string)"/>
     /// </summary>
-    public partial class NavController : INavController
+    public partial class NavController
     {
         #region Settings
         const string DEFAULT_VM_NAMESPACE = "ViewModels";
@@ -74,27 +74,27 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Gets the stack of pages in the navigation
         /// </summary>
-        public IReadOnlyList<Page> NavigationStack => RootNavigationPage.Navigation.NavigationStack;
+        public IReadOnlyList<Page> NavigationStack => Root.Navigation.NavigationStack;
 
         /// <summary>
         /// Gets the modal navigation stack. The <see cref="ModalStack"/> always hides the <see cref="NavigationStack"/>
         /// </summary>
-        public IReadOnlyList<Page> ModalStack => RootNavigationPage.Navigation.ModalStack;
+        public IReadOnlyList<Page> ModalStack => Root.Navigation.ModalStack;
 
         /// <summary>
         /// Page at the root/bottom of the <see cref="NavigationStack"/>
         /// </summary>
         public Page RootPage => NavigationStack[0];
 
-        private NavigationPage rootNavigationPage;
-        private NavigationPage RootNavigationPage
+        private NavigationPage root;
+        private NavigationPage Root
         {
             get
             {
                 ThrowIfNotInitialized();
-                return rootNavigationPage;
+                return root;
             }
-            set => rootNavigationPage = value;
+            set => root = value;
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <see cref="Page"/> beneath the <see cref="TopPage"/>
         /// It will be the page that appears when the currently visible
         /// <see cref="Page"/> is Popped.
-        /// Returns null if <see cref="TopPage"/> is the <see cref="RootNavigationPage"/>
+        /// Returns null if <see cref="TopPage"/> is the <see cref="Root"/>
         /// </summary>
         public Page HiddenPage
         {
@@ -140,8 +140,8 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Viewmodel corresponding to the <see cref="RootNavigationPage"/>
-        /// <exception><see cref="NullReferenceException"/> is thrown when the <see cref="RootNavigationPage"/>s
+        /// Viewmodel corresponding to the <see cref="Root"/>
+        /// <exception><see cref="NullReferenceException"/> is thrown when the <see cref="Root"/>s
         /// BindingContext has not been set.</exception>
         /// </summary>
         public IAdaptorViewModel RootViewModel
@@ -150,14 +150,14 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    if (RootNavigationPage is NavigationPage)
-                        return ((NavigationPage)RootNavigationPage).RootPage.BindingContext as IAdaptorViewModel;
+                    if (Root is NavigationPage)
+                        return ((NavigationPage)Root).RootPage.BindingContext as IAdaptorViewModel;
 
-                    return RootNavigationPage.BindingContext as IAdaptorViewModel;
+                    return Root.BindingContext as IAdaptorViewModel;
                 }
                 catch (NullReferenceException ex)
                 {
-                    throw new NullReferenceException($"{nameof(RootNavigationPage)}'s BindingContext has not been set", ex);
+                    throw new NullReferenceException($"{nameof(Root)}'s BindingContext has not been set", ex);
                 }
             }
         }
@@ -181,7 +181,7 @@ namespace XamarinFormsMvvmAdaptor
 
         /// <summary>
         /// Viewmodel corresponding to the <see cref="HiddenPage"/>
-        /// Returns null if <see cref="TopPage"/> is the <see cref="RootNavigationPage"/>
+        /// Returns null if <see cref="TopPage"/> is the <see cref="Root"/>
         /// <exception><see cref="NullReferenceException"/> is thrown when the <see cref="HiddenPage"/>s
         /// BindingContext has not been set.</exception>
         /// </summary>
@@ -244,13 +244,13 @@ namespace XamarinFormsMvvmAdaptor
         public void RemovePreviousPageFromMainStack()
         {
                 if (NavigationStack.Count > 1)
-                    RootNavigationPage.Navigation.RemovePage(
+                    Root.Navigation.RemovePage(
                         NavigationStack[NavigationStack.Count-2]);            
         }
 
         /// <summary>
         /// Removes all pages in the <see cref="NavigationStack"/> except for
-        /// the <see cref="TopPage"/>, which becomes the <see cref="RootNavigationPage"/> of the stack.
+        /// the <see cref="TopPage"/>, which becomes the <see cref="Root"/> of the stack.
         /// </summary>
         public void CollapseStack()
         {
@@ -259,7 +259,7 @@ namespace XamarinFormsMvvmAdaptor
                 foreach (var page in NavigationStack)
                 {
                     if (page != TopPage)
-                        RootNavigationPage.Navigation.RemovePage(page);
+                        Root.Navigation.RemovePage(page);
 
                 }
                 //for (int i = 0; i < RootPage.Navigation.NavigationStack.Count - 1; i++)
@@ -324,7 +324,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (item.GetType() == pageType)
                 {
-                    RootNavigationPage.Navigation.RemovePage(item);
+                    Root.Navigation.RemovePage(item);
                     return;
                 }
             }
@@ -349,7 +349,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootNavigationPage.Navigation.PopAsync(animated);
+                    await Root.Navigation.PopAsync(animated);
                     isPoppedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -364,7 +364,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="RootNavigationPage"/>
+        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="Root"/>
         /// </summary>
         /// <returns></returns>
         public Task PopToRootAsync()
@@ -373,7 +373,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="RootNavigationPage"/>, with optional animation.
+        /// Pops the entire <see cref="NavigationStack"/>, leaving only the <see cref="Root"/>, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
         /// <returns></returns>
@@ -384,7 +384,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootNavigationPage.Navigation.PopToRootAsync(animated);
+                    await Root.Navigation.PopToRootAsync(animated);
                     isPoppedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -417,7 +417,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await RootNavigationPage.Navigation.PopModalAsync(animated);
+                    await Root.Navigation.PopModalAsync(animated);
                     isPoppedTcs.SetResult(true);
                 }
                 catch (Exception ex)
