@@ -4,15 +4,10 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
+    ///<inheritdoc/>
     public partial class NavController : INavController
     {
-
-        /// <summary>
-        /// Set the <see cref="Roott""/>, and initialize its ViewModel,
-        /// running the <see cref="IAdaptorViewModel.InitializeAsync(object)"/>
-        /// and <see cref="IAdaptorViewModel.OnAppearingAsync"/> methods.
-        /// </summary>
-        /// <returns></returns>
+        ///<inheritdoc/>
         public async Task InitAsync(Page rootPage, object initialisationData = null)
         {
             Root = new NavigationPage(rootPage);
@@ -29,16 +24,7 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        #region Forms.INavigation Adaptation
-        /// <summary>
-        /// Inserts a page in the navigation stack before
-        /// the page associated with the given ViewModel
-        /// </summary>
-        /// <typeparam name="TViewModelExisting"></typeparam>
-        /// <typeparam name="TViewModelNew"></typeparam>
-        /// <param name="navigationData">Optional navigation data that will be passed to
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/></param>
-        /// <returns></returns>
+        ///<inheritdoc/>
         public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IAdaptorViewModel
         {
             var newPage = InstantiatePage(typeof(TViewModelNew));
@@ -55,14 +41,7 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        #region Push
-        /// <summary>
-        /// Pushes a new page onto the stack given a <typeparamref name="TViewModel"/>.
-        /// </summary>
-        /// <typeparam name="TViewModel">ViewModel to Push</typeparam>
-        /// <param name="navigationData">Optional navigation data to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method of the <typeparamref name="TViewModel"/></param>
-        /// <param name="animated">Option whether to animate the push or not</param>
-        /// <returns></returns>
+        ///<inheritdoc/>
         public async Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
         {
             var page = InstantiatePage(typeof(TViewModel));
@@ -87,17 +66,9 @@ namespace XamarinFormsMvvmAdaptor
                 await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
             }
         }
-        #endregion
 
-        #region Modal Push
-        /// <summary>
-        /// Pushes a new Modal page onto the navigation stack
-        /// </summary>
-        /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
-        /// <param name="animated">Animate the Push</param>
-        /// <returns></returns>
-        public async Task PushModalAsync<TViewModel>(object navigationData, bool animated) where TViewModel : IAdaptorViewModel
+        ///<inheritdoc/>
+        public async Task PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
         {
             var page = InstantiatePage(typeof(TViewModel));
 
@@ -121,7 +92,6 @@ namespace XamarinFormsMvvmAdaptor
                 await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
             }
         }
-        #endregion
-        #endregion
+
     }
 }
