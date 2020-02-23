@@ -331,18 +331,10 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Asynchronously removes the <see cref="TopPage" /> from the navigation stack.
-        /// </summary>
-        public Task PopAsync()
-        {
-            return PopAsync(true);
-        }
-
-        /// <summary>
         /// Asynchronously removes the <see cref="TopPage" /> from the navigation stack, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        public async Task PopAsync(bool animated)
+        public async Task PopAsync(bool animated = true)
         {
             var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
@@ -364,20 +356,11 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Pops the entire <see cref="MainStack"/>, leaving only the <see cref="Root"/>
-        /// </summary>
-        /// <returns></returns>
-        public Task PopToRootAsync()
-        {
-            return PopToRootAsync(true);
-        }
-
-        /// <summary>
         /// Pops the entire <see cref="MainStack"/>, leaving only the <see cref="Root"/>, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
         /// <returns></returns>
-        public async Task PopToRootAsync(bool animated)
+        public async Task PopToRootAsync(bool animated = true)
         {
             var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
@@ -399,18 +382,10 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Asynchronously dismisses the most recent modally presented <see cref="Page" />.
-        /// </summary>
-        public Task PopModalAsync()
-        {
-            return PopModalAsync(true);
-        }
-
-        /// <summary>
         /// Asynchronously dismisses the most recent modally presented <see cref="Page" />, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        public async Task PopModalAsync(bool animated)
+        public async Task PopModalAsync(bool animated = true)
         {
             var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
