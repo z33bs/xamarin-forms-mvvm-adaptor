@@ -19,7 +19,7 @@ namespace XamarinFormsMvvmAdaptor
     /// and end with suffix <see cref="DEFAULT_VM_SUFFIX"/>.
     /// This behaviour can be customised with <see cref="SetNamingConventions(string, string, string, string)"/>
     /// </summary>
-    public partial class NavController
+    public partial class NavController : INavController
     {
         #region Settings
         const string DEFAULT_VM_NAMESPACE = "ViewModels";
@@ -243,9 +243,9 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public void RemovePreviousPageFromMainStack()
         {
-                if (MainStack.Count > 1)
-                    Root.Navigation.RemovePage(
-                        MainStack[MainStack.Count-2]);            
+            if (MainStack.Count > 1)
+                Root.Navigation.RemovePage(
+                    MainStack[MainStack.Count - 2]);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public partial class NavController
+    public partial class NavController : INavController
     {
 
         /// <inheritdoc cref="InitAsync(Page)"/>
@@ -13,7 +13,7 @@ namespace XamarinFormsMvvmAdaptor
             var page = InstantiatePage(rootViewModel.GetType());
             BindViewModelToPage(page, rootViewModel);
 
-            Roott  = new NavigationPage(page);
+            Root = new NavigationPage(page);
 
             try
             {
@@ -53,11 +53,11 @@ namespace XamarinFormsMvvmAdaptor
 
             var anchorPage = GetPageTypeForViewModel(typeof(TViewModelExisting));
 
-            foreach (var existingPage in Roott..Navigation.NavigationStack)
+            foreach (var existingPage in Root.Navigation.NavigationStack)
             {
                 if (existingPage.GetType() == anchorPage)
                 {
-                    Roott..Navigation.InsertPageBefore(existingPage, newPage);
+                    Root.Navigation.InsertPageBefore(existingPage, newPage);
                     await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
                 }
             }
@@ -81,7 +81,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Roott..Navigation.PushAsync(page, animated);
+                    await Root.Navigation.PushAsync(page, animated);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -118,7 +118,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Roott..Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    await Root.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)

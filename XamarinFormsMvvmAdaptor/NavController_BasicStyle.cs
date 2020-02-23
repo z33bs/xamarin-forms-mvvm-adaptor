@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public partial class NavController
+    public partial class NavController : INavController
     {
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public async Task InitAsync(Page rootPage, object initialisationData = null)
         {
-            Roott = new NavigationPage(rootPage);
+            Root = new NavigationPage(rootPage);
             try
             {
                 IsInitialized = true;
@@ -49,7 +49,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (existingPage.GetType() == pageTypeAnchorPage)
                 {
-                    Roott..Navigation.InsertPageBefore(existingPage, newPage);
+                    Root.Navigation.InsertPageBefore(existingPage, newPage);
                     await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
                 }
             }
@@ -72,7 +72,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Roott..Navigation.PushAsync(page, animated);
+                    await Root.Navigation.PushAsync(page, animated);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -106,7 +106,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Roott..Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    await Root.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)
