@@ -43,7 +43,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         {
             Assert.Multiple(() =>
             {
-                Assert.AreSame(navController.NavigationStack[2], navController.HiddenPage);
+                Assert.AreSame(navController.MainStack[2], navController.HiddenPage);
                 Assert.IsInstanceOf<TestPage2>(navController.HiddenPage);
             });
         }
@@ -52,24 +52,24 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         public void RemoveHiddenPageFromStack()
         {
             Assume.That(
-                navController.NavigationStack
+                navController.MainStack
                 .GetCurrentPage()
                 is TestPage2);
-            Assume.That(navController.NavigationStack
+            Assume.That(navController.MainStack
                 .GetPreviousPage()
                 is TestPage1);
-            Assume.That(navController.NavigationStack.Count == 3);
+            Assume.That(navController.MainStack.Count == 3);
             Assume.That(navController.ModalStack.Count == 1);
             navController.RemovePreviousPageFromMainStack();
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(navController.NavigationStack.Count == 2);
+                Assert.IsTrue(navController.MainStack.Count == 2);
                 Assert.IsTrue(navController.ModalStack.Count == 1);
                 Assert.IsInstanceOf<TestPage2>(
-                    navController.NavigationStack
+                    navController.MainStack
                     .GetCurrentPage());
                 Assert.IsInstanceOf<TestPage0>(
-                    navController.NavigationStack
+                    navController.MainStack
                     .GetPreviousPage());
             });
         }

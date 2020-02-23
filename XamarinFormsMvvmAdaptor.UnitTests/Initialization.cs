@@ -79,7 +79,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         [Test]
         public void NotInitializedException_PushAsync_Di()
         {
-            Assert.ThrowsAsync<NotInitializedException>(async () => { await navController.PushAsync(new TestViewModel0()); });
+            Assert.ThrowsAsync<NotInitializedException>(async () => { await navController.DiPushAsync(new TestViewModel0()); });
         }
 
         [Test]

@@ -31,7 +31,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         [Test]
         public void TopPage_returns_top_page()
         {
-            var stack = navController.NavigationStack;
+            var stack = navController.MainStack;
             Assert.Multiple(() =>
             {
                 Assert.AreSame(stack[stack.Count - 1], navController.TopPage);
@@ -42,7 +42,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         [Test]
         public void HiddenPage_returns_hidden_page()
         {
-            var stack = navController.NavigationStack;
+            var stack = navController.MainStack;
             Assert.Multiple(() =>
             {
                 Assert.AreSame(stack[stack.Count - 2], navController.HiddenPage);
@@ -55,7 +55,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         {
             Assert.Multiple(() =>
             {
-                Assert.AreSame(navController.NavigationStack[0], navController.RootPage);
+                Assert.AreSame(navController.MainStack[0], navController.RootPage);
                 Assert.IsInstanceOf<TestPage0>(navController.RootPage);
             });
         }
@@ -100,7 +100,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             navController.RemovePreviousPageFromMainStack();
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(navController.NavigationStack.Count == 3);
+                Assert.IsTrue(navController.MainStack.Count == 3);
                 Assert.IsInstanceOf<TestPage1>(navController.HiddenPage);
             });
         }
