@@ -45,7 +45,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*.Tests.csproj'
-    arguments: '--no-build --configuration $(buildConfiguration)'
+    arguments: '--no-build --configuration Release'
     testRunTitle: 'Unit Tests'
 
 - task: MSBuild@1
