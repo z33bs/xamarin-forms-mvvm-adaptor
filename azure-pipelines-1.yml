@@ -41,6 +41,13 @@ steps:
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*.UnitTests.csproj'
+    arguments: '--no-build --configuration Release'
+    testRunTitle: 'Unit Tests'
+
 - task: MSBuild@1
   inputs:
     solution: '**/XamarinFormsMvvmAdaptor.csproj'
