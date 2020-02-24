@@ -34,19 +34,19 @@ steps:
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Install ReportGenerator'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: 'install --global dotnet-reportgenerator-globaltool'
+
+- task: DotNetCoreCLI@2
   displayName: 'Run unit tests'
   inputs:
     command: 'test'
     arguments: '--configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
     projects: '**/*.UnitTests.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Install ReportGenerator'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'install --global dotnet-reportgenerator-globaltool'
 
 - script: |
     reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines
