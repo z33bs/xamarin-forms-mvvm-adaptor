@@ -11,16 +11,12 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-# Examples from starter template
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
-
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
+  inputs:
+    version: '$(dotnetSdkVersion)'
+    
 #JM specified version 4.5.1 but can use latest default
 - task: NuGetToolInstaller@1
   inputs:
@@ -40,6 +36,7 @@ steps:
     solution: '**/XamarinFormsMvvmAdaptor.csproj'
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
+
 
 - task: DotNetCoreCLI@2
   inputs:
