@@ -47,8 +47,9 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (existingPage.GetType() == anchorPage)
                 {
-                    Root.Navigation.InsertPageBefore(existingPage, newPage);
+                    Root.Navigation.InsertPageBefore(newPage, existingPage);
                     await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
+                    break;
                 }
             }
         }

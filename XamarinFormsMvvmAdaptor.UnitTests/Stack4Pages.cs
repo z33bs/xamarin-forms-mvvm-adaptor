@@ -104,5 +104,6 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
                 Assert.IsInstanceOf<TestPage1>(navController.HiddenPage);
             });
         }
+
     }
 }
