@@ -52,7 +52,7 @@ steps:
   displayName: 'Build Unit Tests project'
   inputs:
     solution: '**/*UnitTests.csproj'
-    configuration: 'Release'
+    configuration: 'Debug'
     msbuildArguments: '/t:restore;build'
 
 - task: DotNetCoreCLI@2
@@ -60,7 +60,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*.UnitTests.csproj'
-    arguments: '--no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    arguments: '--no-build --configuration Debug /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
 
 
