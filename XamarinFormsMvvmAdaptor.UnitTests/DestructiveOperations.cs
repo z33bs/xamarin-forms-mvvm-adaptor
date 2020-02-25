@@ -45,7 +45,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             await navController.PushAsync<TestViewModel2>();
             await navController.PushModalAsync<TestViewModel3>();
             await navController.PopAsync(isAnimated);
-            var vm = navController.MainStack.GetCurrentPage().BindingContext;
+            var vm = navController.MainStack.GetCurrentViewModel();
             Assume.That(vm is TestViewModel1);            
             Assert.AreEqual(1, (vm as TestViewModel1).OnAppearingRuns);
         }
