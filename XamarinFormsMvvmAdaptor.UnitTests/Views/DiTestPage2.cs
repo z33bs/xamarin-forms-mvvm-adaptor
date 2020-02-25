@@ -1,16 +1,13 @@
 ﻿using System;
 
 using Xamarin.Forms;
-using XamarinFormsMvvmAdaptor.UnitTests.ViewModels;
 
 namespace XamarinFormsMvvmAdaptor.UnitTests.Views
 {
-    public class TestPage0 : ContentPage
+    public class DiTestPage2 : ContentPage
     {
-        public TestPage0()
+        public DiTestPage2()
         {
-            BindingContext = new  TestViewModel0();
-
             Content = new StackLayout
             {
                 Children = {
