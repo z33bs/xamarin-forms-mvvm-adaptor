@@ -35,6 +35,30 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         }
 
         [Test]
+        public async Task DiInitAsync_Page_IsInitialized_True()
+        {
+            await navController.DiInitAsync(new DiTestViewModel0());
+            Assert.IsTrue(navController.IsInitialized);
+        }
+
+        [Test]
+        public async Task InitAsync_passes_data_to_viewmodel()
+        {
+            var data = "Hello";
+            await navController.InitAsync(new TestPage1(),data);
+            Assert.AreEqual(data, (navController.RootViewModel as TestViewModel1).NavigationData as string);
+        }
+
+        [Test]
+        public async Task DiInitAsync_passes_data_to_viewmodel()
+        {
+            var data = "Hello";
+            await navController.DiInitAsync(new DiTestViewModel1(), data);
+            Assert.AreEqual(data, (navController.RootViewModel as DiTestViewModel1).NavigationData as string);
+        }
+
+
+        [Test]
         public void NotInitializedException_RootPage()
         {
             Assert.Throws<NotInitializedException>(() => { var page = navController.RootPage; });
