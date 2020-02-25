@@ -178,7 +178,7 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageType)
                 {
                     Root.Navigation.RemovePage(item);
-                    return;
+                    break;
                 }
             }
         }

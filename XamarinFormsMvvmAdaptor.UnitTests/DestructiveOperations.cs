@@ -178,5 +178,107 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             Assert.AreEqual(1, vm.OnAppearingRuns);
         }
 
+        [Test]
+        public async Task RemovePreviousPageFromMainStack_removes_previous_page()
+        {
+            await navController.PushAsync<TestViewModel1>();
+            await navController.PushAsync<TestViewModel2>();
+            await navController.PushAsync<TestViewModel3>();
+            Assume.That(navController.MainStack.Count == 4);
+            Assume.That(navController.MainStack.GetPreviousPage() is TestPage2);
+
+            navController.RemovePreviousPageFromMainStack();
+
+            Assert.Multiple(() => {
+                Assert.AreEqual(3, navController.MainStack.Count);
+                Assert.IsInstanceOf<TestPage1>(navController.MainStack.GetPreviousPage());
+            });
+        }
+
+        [Test]
+        public async Task RemovePreviousPageFromMainStack_still_removes_previous_page_of_main_if_modal()
+        {
+            await navController.PushAsync<TestViewModel1>();
+            await navController.PushAsync<TestViewModel2>();
+            await navController.PushAsync<TestViewModel3>();
+            await navController.PushModalAsync<TestViewModel4>();
+            Assume.That(navController.MainStack.Count == 4);
+            Assume.That(navController.MainStack.GetPreviousPage() is TestPage2);
+
+            navController.RemovePreviousPageFromMainStack();
+
+            Assert.Multiple(() => {
+                Assert.AreEqual(3, navController.MainStack.Count);
+                Assert.IsInstanceOf<TestPage1>(navController.MainStack.GetPreviousPage());
+            });
+        }
+
+        [Test]
+        public async Task RemovePreviousPageFromMainStack_still_removes_previous_page_if_its_rootPage()
+        {
+            await navController.PushAsync<TestViewModel1>();
+            Assume.That(navController.MainStack.Count == 2);
+            Assume.That(navController.MainStack.GetPreviousPage() is TestPage0);
+
+            navController.RemovePreviousPageFromMainStack();
+
+            Assert.Multiple(() => {
+                Assert.AreEqual(1, navController.MainStack.Count);
+                Assert.IsInstanceOf<TestPage1>(navController.RootPage);
+            });
+        }
+
+        [Test]
+        public void RemovePreviousPageFromMainStack_does_nothing_if_stackCount1()
+        {
+            Assume.That(navController.MainStack.Count == 1);
+
+            navController.RemovePreviousPageFromMainStack();
+
+            Assert.Multiple(() => {
+                Assert.AreEqual(1, navController.MainStack.Count);
+                Assert.IsInstanceOf<TestPage0>(navController.RootPage);
+            });
+        }
+
+        [Test]
+        public async Task RemovePageFor_removes_appropriate_page()
+        {
+            await navController.PushAsync<TestViewModel1>();
+            await navController.PushAsync<TestViewModel2>();
+            await navController.PushAsync<TestViewModel3>();
+            Assume.That(navController.MainStack.Count == 4);
+            Assume.That(navController.MainStack[1] is TestPage1);
+
+            navController.RemovePageFor<TestViewModel1>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(3, navController.MainStack.Count);
+                Assert.IsNotInstanceOf<TestPage1>(navController.MainStack[1]);
+            });
+        }
+
+        [Test]
+        public async Task RemovePageFor_works_with_Di_pages()
+        {
+            navController = new NavController();
+            await navController.DiInitAsync(new DiTestViewModel0());
+            await navController.DiPushAsync(new DiTestViewModel1());
+            await navController.DiPushAsync(new DiTestViewModel2());
+            await navController.DiPushAsync(new DiTestViewModel3());
+
+            Assume.That(navController.MainStack.Count == 4);
+            Assume.That(navController.MainStack[1] is DiTestPage1);
+
+            navController.RemovePageFor<DiTestViewModel1>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(3, navController.MainStack.Count);
+                Assert.IsNotInstanceOf<DiTestPage1>(navController.MainStack[1]);
+            });
+        }
+
     }
 }
