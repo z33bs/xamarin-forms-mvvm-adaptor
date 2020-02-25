@@ -65,6 +65,18 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
 
         [TestCase(true)]
         [TestCase(false)]
+        public async Task OnAppearing_runs_after_PopModalAsync_even_if_modal_stack(bool isAnimated)
+        {
+            await navController.PushModalAsync<TestViewModel1>();
+            await navController.PushModalAsync<TestViewModel2>();
+            await navController.PopModalAsync(isAnimated);
+            Assume.That(navController.TopViewModel is TestViewModel1);
+            var vm = navController.TopViewModel as TestViewModel1;
+            Assert.AreEqual(2,vm.OnAppearingRuns);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
         public async Task PopToRoot_leaves_only_rootPage(bool isAnimated)
         {
             await navController.PushAsync<TestViewModel1>();
@@ -120,5 +132,22 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             Assert.AreEqual(1,vm.OnAppearingRuns);
         }
 
+        [Test]
+        public async Task CollapseMainStack_results_in_TopPage_being_RootPage()
+        {
+            await navController.PushAsync<TestViewModel1>();
+            await navController.PushAsync<TestViewModel2>();
+            await navController.PushAsync<TestViewModel3>();
+            await navController.PushAsync<TestViewModel4>();
+            Assume.That(navController.MainStack.Count == 5);
+
+            navController.CollapseMainStack();
+
+            Assert.Multiple(() => {
+                Assert.AreEqual(1, navController.MainStack.Count);
+                Assert.IsInstanceOf<TestViewModel4>(navController.TopViewModel);
+                Assert.AreEqual(navController.TopPage, navController.RootPage);
+            });
+        }
     }
 }
