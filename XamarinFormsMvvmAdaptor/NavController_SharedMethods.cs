@@ -204,8 +204,9 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPoppedTcs.Task)
-                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
+            if (await isPoppedTcs.Task
+                && ModalStack.Count == 0)
+                    await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
 
         }
 
@@ -226,9 +227,9 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPoppedTcs.Task)
-                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
-
+            if (await isPoppedTcs.Task
+                && ModalStack.Count == 0)
+                    await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
         }
 
         ///<inheritdoc/>

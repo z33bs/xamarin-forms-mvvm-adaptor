@@ -117,7 +117,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             await navController.PopToRootAsync(isAnimated);
             Assume.That(navController.RootViewModel is TestViewModel1);
             var vm = navController.RootViewModel as TestViewModel1;
-            Assert.IsTrue(vm.OnAppearingRuns == 1);
+            Assert.AreEqual(1,vm.OnAppearingRuns);
         }
 
     }
