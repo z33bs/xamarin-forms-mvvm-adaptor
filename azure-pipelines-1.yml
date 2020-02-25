@@ -48,7 +48,7 @@ steps:
   displayName: 'Run unit tests'
   inputs:
     command: 'test'
-    arguments: '--configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    arguments: '--configuration Release --collect:"XPlat Code Coverage"'
     publishTestResults: true
     projects: '**/*.UnitTests.csproj'
 
