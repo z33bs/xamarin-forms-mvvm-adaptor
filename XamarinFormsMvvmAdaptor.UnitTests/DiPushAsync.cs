@@ -6,7 +6,7 @@ using XamarinFormsMvvmAdaptor.UnitTests.Views;
 
 namespace XamarinFormsMvvmAdaptor.UnitTests
 {
-    public class Navigation
+    public class PushAsync
     {
         INavController navController;
 
@@ -18,10 +18,11 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             await navController.InitAsync(new TestPage0());
         }
 
-        [Test]
-        public void PushAsync_fires_InitializeAsync()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void PushAsync_fires_InitializeAsync(bool isAnimated)
         {
-            navController.PushAsync<TestViewModel1>();
+            navController.PushAsync<TestViewModel1>(null,isAnimated);
             Assume.That(navController.TopViewModel is TestViewModel1);
             var vm = navController.TopViewModel as TestViewModel1;
             Assert.IsTrue(vm.IsInitialized);
@@ -47,18 +48,5 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             var vm = navController.TopViewModel as TestViewModel1;
             Assert.IsTrue(vm.OnAppearingRuns==1);
         }
-
-        [Test]
-        public void OnAppearing_runs_after_PopAsync()
-        {
-            navController.PushAsync<TestViewModel1>();
-            navController.PushAsync<TestViewModel2>();
-            navController.PopAsync();
-            Assume.That(navController.TopViewModel is TestViewModel1);
-            var vm = navController.TopViewModel as TestViewModel1;
-            Assert.IsTrue(vm.OnAppearingRuns == 2);
-        }
-
-
     }
 }
