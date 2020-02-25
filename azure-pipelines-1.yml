@@ -1,5 +1,8 @@
 # Process setup per JM
 # https://montemagno.com/continuous-integration-delivery-for-net-libraries-with-vsts/
+# Testing and coverage from
+# https://docs.microsoft.com/en-us/learn/modules/run-quality-tests-build-pipeline/4-add-unit-tests
+# https://docs.microsoft.com/en-us/learn/modules/run-quality-tests-build-pipeline/6-perform-code-coverage
 
 # Set buildnumber here and add versioningScheme: byBuildNumber to NugetCommand@2
 name: 3.0.0$(rev:.r)
@@ -7,16 +10,17 @@ name: 3.0.0$(rev:.r)
 trigger:
 - master
 
-# From starter template
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+# Needed for when install reportgenerator and use it immediately
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.x'
   inputs:
     packageType: 'sdk'
     version: '3.x'
+
 # JM specified version 4.5.1 but can use latest default
 - task: NuGetToolInstaller@1
   displayName: 'Load Nuget Tool'
@@ -55,6 +59,7 @@ steps:
     configuration: 'Debug'
     msbuildArguments: '/t:restore;build'
 
+#NB - For some reason coverage only runs on Debug configuration
 - task: DotNetCoreCLI@2
   displayName: 'Run unit tests with code coverage'
   inputs:
@@ -83,6 +88,7 @@ steps:
 
 
 - task: MSBuild@1
+  displayName: 'Public - Build & Package XamarinFormsMvvmAdaptor'
   inputs:
     solution: '**/XamarinFormsMvvmAdaptor.csproj'
     configuration: 'Release'
@@ -91,6 +97,7 @@ steps:
 #Maybe you want to add unit test runners here
 
 - task: CopyFiles@2
+  displayName: 'Copy nuget packages to artifacts directory'
   inputs:
     SourceFolder: '$(build.sourcesdirectory)'
     Contents: '**\bin\Release\**\*.nupkg'
