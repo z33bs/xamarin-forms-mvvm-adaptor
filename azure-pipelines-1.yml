@@ -12,10 +12,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: DeleteFiles@1
-  inputs:
-    SourceFolder: '$(Agent.TempDirectory)'
-    Contents: '**'
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.x'
   inputs:
@@ -23,23 +19,50 @@ steps:
     version: '3.x'
 # JM specified version 4.5.1 but can use latest default
 - task: NuGetToolInstaller@1
+  displayName: 'Load Nuget Tool'
   inputs:
     versionSpec: '4.5.1'
 
 - task: NuGetCommand@2
+  displayName: 'Restore packages for XamarinFormsMvvmAdaptor'
   inputs:
     command: 'restore'
-    restoreSolution: '**/*.sln'
+    restoreSolution: '**/XamarinFormsMvvmAdaptor.csproj'
+    feedsToUse: 'select'
+    vstsFeed: '86153590-b7da-4504-b416-f06a4b16a355'
+    versioningScheme: byBuildNumber
+
+- task: MSBuild@1
+  displayName: 'Beta - Build & Package XamarinFormsMvvmAdaptor'
+  inputs:
+    solution: '**/XamarinFormsMvvmAdaptor.csproj'
+    configuration: 'Release'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
+- task: NuGetCommand@2
+  displayName: 'Restore packages for Unit Tests'
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*UnitTests.csproj'
     feedsToUse: 'select'
     vstsFeed: '86153590-b7da-4504-b416-f06a4b16a355'
     versioningScheme: byBuildNumber
 
 
 - task: MSBuild@1
+  displayName: 'Build Unit Tests project'
   inputs:
-    solution: '**/XamarinFormsMvvmAdaptor.csproj'
+    solution: '**/*UnitTests.csproj'
     configuration: 'Release'
-    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
+    msbuildArguments: '/t:restore;build'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests with code coverage'
+  inputs:
+    command: 'test'
+    projects: '**/*.UnitTests.csproj'
+    arguments: '--no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    publishTestResults: true
+
 
 - task: DotNetCoreCLI@2
   displayName: 'Install ReportGenerator'
@@ -48,23 +71,15 @@ steps:
     custom: tool
     arguments: 'install --global dotnet-reportgenerator-globaltool'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Run unit tests'
-  inputs:
-    command: 'test'
-    arguments: '--configuration Release --collect:"XPlat Code Coverage" --results-directory:$(Build.SourcesDirectory)'
-    publishTestResults: true
-    projects: '**/*.UnitTests.csproj'
-
-#- script: |
-#    reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines -reporttypes:Badges
-#  displayName: 'Create code coverage report'
+- script: |
+    reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines -reporttypes:Badges
+  displayName: 'Create code coverage report'
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
 
 
 - task: MSBuild@1
