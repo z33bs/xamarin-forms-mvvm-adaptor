@@ -14,9 +14,10 @@ pool:
 steps:
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
+  displayName: 'Use .NET Core SDK 3.x'
   inputs:
-    version: '$(dotnetSdkVersion)'
+    packageType: 'sdk'
+    version: '3.x'
 # JM specified version 4.5.1 but can use latest default
 - task: NuGetToolInstaller@1
   inputs:
