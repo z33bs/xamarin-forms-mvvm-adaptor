@@ -154,12 +154,18 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public void CollapseMainStack()
+        public async Task CollapseMainStack()
         {
+            if (MainStack.Count == 1)
+                return;
+
             while (MainStack.Count > 1)
             {
                 Root.Navigation.RemovePage(MainStack.GetPreviousPage());
             }
+
+            if (ModalStack.Count == 0)
+                await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
         }
 
         ///<inheritdoc/>

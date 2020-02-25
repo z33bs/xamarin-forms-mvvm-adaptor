@@ -119,7 +119,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
 
         [TestCase(true)]
         [TestCase(false)]
-        public async Task OnAppearing_doesnt_runs_after_PopToRootAsync_if_modal(bool isAnimated)
+        public async Task OnAppearing_doesnt_run_after_PopToRootAsync_if_modal(bool isAnimated)
         {
             navController = new NavController();
             await navController.InitAsync(new TestPage1());
@@ -141,7 +141,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             await navController.PushAsync<TestViewModel4>();
             Assume.That(navController.MainStack.Count == 5);
 
-            navController.CollapseMainStack();
+            await navController.CollapseMainStack();
 
             Assert.Multiple(() => {
                 Assert.AreEqual(1, navController.MainStack.Count);
@@ -149,5 +149,34 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
                 Assert.AreEqual(navController.TopPage, navController.RootPage);
             });
         }
+
+        [Test]
+        public async Task OnAppearing_runs_after_CollapseMainStack()
+        {
+            navController = new NavController();
+            await navController.InitAsync(new TestPage3());
+
+            await navController.PushAsync<TestViewModel2>();
+            await navController.PushAsync<TestViewModel1>();
+            await navController.CollapseMainStack();
+            Assume.That(navController.RootViewModel is TestViewModel1);
+            var vm = navController.RootViewModel as TestViewModel1;
+            Assert.AreEqual(2,vm.OnAppearingRuns);
+        }
+
+        [Test]
+        public async Task OnAppearing_doesnt_run_after_CollapseMainStack_if_modal()
+        {
+            navController = new NavController();
+            await navController.InitAsync(new TestPage0());
+
+            await navController.PushAsync<TestViewModel1>();
+            await navController.PushModalAsync<TestViewModel2>();
+            await navController.CollapseMainStack();
+            Assume.That(navController.RootViewModel is TestViewModel1);
+            var vm = navController.RootViewModel as TestViewModel1;
+            Assert.AreEqual(1, vm.OnAppearingRuns);
+        }
+
     }
 }

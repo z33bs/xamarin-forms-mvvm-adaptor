@@ -180,7 +180,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Removes all pages in the <see cref="MainStack"/> except for
         /// the <see cref="TopPage"/>, which becomes the <see cref="RootPage"/> of the stack.
         /// </summary>
-        void CollapseMainStack();
+        Task CollapseMainStack();
 
         /// <summary>
         /// Removes the <see cref="HiddenPage"/> from the <see cref="MainStack"/> but not the <see cref="ModalStack"/>
