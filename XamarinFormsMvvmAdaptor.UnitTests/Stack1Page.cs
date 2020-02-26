@@ -27,5 +27,12 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         {
             Assert.IsNull(navController.HiddenPage);
         }
+
+        [Test]
+        public void GetPreviousViewModel_returns_null_if_only_1page()
+        {
+            Assert.IsNull(navController.ModalStack.GetPreviousViewModel());
+        }
+
     }
 }
