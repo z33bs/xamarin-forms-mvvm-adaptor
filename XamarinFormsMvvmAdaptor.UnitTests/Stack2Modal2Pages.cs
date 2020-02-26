@@ -69,5 +69,29 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             });
         }
 
+        [Test]
+        public void GetCurrentViewModel_returns_correct_vm_from_MainStack()
+        {
+            Assert.IsInstanceOf<TestViewModel1>(navController.MainStack.GetCurrentViewModel());
+        }
+
+        [Test]
+        public void GetCurrentViewModel_returns_correct_vm_from_ModalStack()
+        {
+            Assert.IsInstanceOf<TestViewModel3>(navController.ModalStack.GetCurrentViewModel());
+        }
+
+        [Test]
+        public void GetPreviousViewModel_returns_correct_vm_from_MainStack()
+        {
+            Assert.IsInstanceOf<TestViewModel0>(navController.MainStack.GetPreviousViewModel());
+        }
+
+        [Test]
+        public void GetPreviousViewModel_returns_correct_vm_from_ModalStack()
+        {
+            Assert.IsInstanceOf<TestViewModel2>(navController.ModalStack.GetPreviousViewModel());
+        }
+
     }
 }
