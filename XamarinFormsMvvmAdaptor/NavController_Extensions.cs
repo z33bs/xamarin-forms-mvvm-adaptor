@@ -38,14 +38,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public static IAdaptorViewModel GetCurrentViewModel(this IReadOnlyList<Page> stack)
         {
-            var page = stack[stack.Count - 1] as Page;
-            
-            if (page.BindingContext is null)
-                throw new BindingContextNotSetException();
-            if (!(page.BindingContext is IAdaptorViewModel))
-                throw new NotIAdaptorViewModelException();
-
-            return page.BindingContext as IAdaptorViewModel;
+            return stack[stack.Count - 1].BindingContext as IAdaptorViewModel;
         }
 
         /// <summary>
@@ -57,14 +50,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             if (stack.Count > 1)
             {
-                var page = stack[stack.Count - 2] as Page;
-
-                if (page.BindingContext is null)
-                    throw new BindingContextNotSetException();
-                if (!(page.BindingContext is IAdaptorViewModel))
-                    throw new NotIAdaptorViewModelException();
-
-                return page.BindingContext as IAdaptorViewModel;
+                return stack[stack.Count - 2].BindingContext as IAdaptorViewModel;
             }
 
             return null;
