@@ -29,13 +29,18 @@ namespace XamarinFormsMvvmAdaptor
 
         private static Type GetPageTypeForViewModel(Type viewModelType)
         {
-            var viewName = viewModelType.FullName
-                                        .Replace(_viewModelSubNamespace, _viewSubNamespace)
-                                        .Replace(_viewModelSuffix, _viewSuffix);
-            var viewModelAssemblyName = viewModelType.GetTypeInfo().Assembly.FullName;
-            var viewAssemblyName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", viewName, viewModelAssemblyName);
-            var viewType = Type.GetType(viewAssemblyName);
-            return viewType;
+            var nameSpace = viewModelType.Namespace
+                            .Replace(_viewModelSubNamespace, _viewSubNamespace);
+            var name = viewModelType.Name
+                            .Replace(_viewModelSuffix, _viewSuffix);
+
+            var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
+                , "{0}.{1}, {2}"
+                , nameSpace
+                , name
+                , viewModelType.GetTypeInfo().Assembly.FullName);
+
+            return Type.GetType(viewAssemblyName);
         }
 
         private static void BindViewModelToPage(Page page, IAdaptorViewModel viewModel)
