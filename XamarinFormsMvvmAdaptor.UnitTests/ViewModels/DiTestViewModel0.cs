@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 
 namespace XamarinFormsMvvmAdaptor.UnitTests.ViewModels
 {
-    public class DiTestViewModel0 : BaseViewModel
+    //Note this extends AdaptorViewModel to get coverage with tests
+    public class DiTestViewModel0 : AdaptorViewModel
     {
     }
 }
