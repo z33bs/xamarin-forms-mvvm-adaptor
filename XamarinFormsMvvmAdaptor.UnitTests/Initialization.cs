@@ -45,7 +45,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         public async Task InitAsync_passes_data_to_viewmodel()
         {
             var data = "Hello";
-            await navController.InitAsync(new TestPage1(),data);
+            await navController.InitAsync(new TestPage1(), data);
             Assert.AreEqual(data, (navController.RootViewModel as TestViewModel1).NavigationData as string);
         }
 
@@ -56,6 +56,121 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
             await navController.DiInitAsync(new DiTestViewModel1(), data);
             Assert.AreEqual(data, (navController.RootViewModel as DiTestViewModel1).NavigationData as string);
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            NavController.SetNamingConventions();
+        }
+
+        [Test]
+        public async Task SetNamingConventions_subNameSpace()
+        {
+            NavController.SetNamingConventions("Vms","Pages");
+            navController = new NavController();
+            await navController.InitAsync(new Pages.TestVmsPage());
+
+            Assert.IsInstanceOf<Vms.TestVmsViewModel>(navController.RootViewModel);
+
+            await navController.PushAsync<Vms.TestVmsViewModel>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(2, navController.MainStack.Count);
+                Assert.IsInstanceOf<Pages.TestVmsPage>(navController.TopPage);
+            });
+        }
+
+        [Test]
+        public async Task SetNamingConventions_subNameSpace_withDi()
+        {
+            NavController.SetNamingConventions("Vms", "Pages");
+            navController = new NavController();
+            await navController.DiInitAsync(new Vms.DiTestVmsViewModel());
+
+            Assert.IsInstanceOf<Pages.DiTestVmsPage>(navController.RootPage);
+
+            await navController.DiPushAsync(new Vms.DiTestVmsViewModel());
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(2, navController.MainStack.Count);
+                Assert.IsInstanceOf<Pages.DiTestVmsPage>(navController.TopPage);
+            });
+        }
+
+        [Test]
+        public async Task SetNamingConventions_suffix()
+        {
+            NavController.SetNamingConventions(viewModelSuffix: "Vm", viewSuffix: "Pg");
+            navController = new NavController();
+            await navController.InitAsync(new TestPg0());
+
+            Assert.IsInstanceOf<TestVm0>(navController.RootViewModel);
+
+            await navController.PushAsync<TestVm0>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(2, navController.MainStack.Count);
+                Assert.IsInstanceOf<TestPg0>(navController.TopPage);
+            });
+        }
+
+        [Test]
+        public async Task SetNamingConventions_suffix_withDi()
+        {
+            NavController.SetNamingConventions(viewModelSuffix: "Vm", viewSuffix: "Pg");
+            navController = new NavController();
+            await navController.DiInitAsync(new DiTestVm0());
+
+            Assert.IsInstanceOf<DiTestPg0>(navController.RootPage);
+
+            await navController.DiPushAsync(new DiTestVm0());
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(2, navController.MainStack.Count);
+                Assert.IsInstanceOf<DiTestPg0>(navController.TopPage);
+            });
+        }
+
+        [Test]
+        public async Task SetNamingConventions_subNameSpace_and_suffix()
+        {
+            NavController.SetNamingConventions("Vms", "Pages", "Vm", "Pg");
+            navController = new NavController();
+            await navController.InitAsync(new Pages.TestVmsPg());
+
+            Assert.IsInstanceOf<Vms.TestVmsVm>(navController.RootViewModel);
+
+            await navController.PushAsync<Vms.TestVmsVm>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(2, navController.MainStack.Count);
+                Assert.IsInstanceOf<Pages.TestVmsPg>(navController.TopPage);
+            });
+        }
+
+        [Test]
+        public async Task SetNamingConventions_subNameSpace_and_suffix_withDi()
+        {
+            NavController.SetNamingConventions("Vms", "Pages", "Vm", "Pg");
+            navController = new NavController();
+            await navController.DiInitAsync(new Vms.DiTestVmsVm());
+
+            Assert.IsInstanceOf<Pages.DiTestVmsPg>(navController.RootPage);
+
+            await navController.DiPushAsync(new Vms.DiTestVmsVm());
+
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(2, navController.MainStack.Count);
+                Assert.IsInstanceOf<Pages.DiTestVmsPg>(navController.TopPage);
+            });
+        }
+
 
 
         [Test]
