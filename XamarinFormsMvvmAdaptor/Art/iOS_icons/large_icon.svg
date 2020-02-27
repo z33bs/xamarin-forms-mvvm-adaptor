@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="286px" height="286px" viewBox="0 0 286 286" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 56.3 (81716) - https://sketch.com -->
+    <title>large_icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="48.7923746%" y1="4.12735454%" x2="48.7923746%" y2="72.1008346%" id="linearGradient-1">
+            <stop stop-color="#EA90FC" offset="0%"></stop>
+            <stop stop-color="#FAFAFA" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="large_icon" transform="translate(0.000000, -1.000000)">
+            <rect id="Rectangle" fill="url(#linearGradient-1)" x="0" y="1.11697066" width="285.487708" height="285.487708"></rect>
+            <text id="O" transform="translate(94.126300, 170.804266) rotate(-50.000000) translate(-94.126300, -170.804266) " font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="118.953212" font-weight="bold" fill="#000000">
+                <tspan x="49.6263004" y="221.304266">O</tspan>
+            </text>
+            <text id="R" transform="translate(197.124430, 101.681857) rotate(30.000000) translate(-197.124430, -101.681857) " font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="95.1625694" font-weight="bold" fill="#000000">
+                <tspan x="166.12443" y="142.181857">R</tspan>
+            </text>
+            <text id="D" transform="translate(233.401107, 221.827220) rotate(65.000000) translate(-233.401107, -221.827220) " font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="83.2672482" font-weight="bold" fill="#000000">
+                <tspan x="205.901107" y="256.82722">D</tspan>
+            </text>
+            <text id="W" transform="translate(81.714089, 73.671040) rotate(35.000000) translate(-81.714089, -73.671040) " font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="83.2672482" font-weight="bold" fill="#000000">
+                <tspan x="39.2140891" y="108.67104">W</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

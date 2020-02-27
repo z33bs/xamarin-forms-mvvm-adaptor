@@ -112,6 +112,10 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon40%403x.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon60%402x.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon60%403x.png" />
+    <ImageAsset Include="Assets.xcassets\large_icon.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\large_icon.imageset\large_icon.pdf" />
+    <ImageAsset Include="Assets.xcassets\large_icon.imageset\large_icon-1.pdf" />
+    <ImageAsset Include="Assets.xcassets\large_icon.imageset\large_icon-2.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -132,6 +136,9 @@
       <Project>{A55BC972-4BEC-40DE-A4B0-AAA4640DD314}</Project>
       <Name>WordJumble</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets.xcassets\large_icon.imageset\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
