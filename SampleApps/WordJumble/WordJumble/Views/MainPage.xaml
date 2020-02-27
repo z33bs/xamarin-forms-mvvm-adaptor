@@ -25,7 +25,7 @@
                 Text="{Binding Instruction}"
                 FontAttributes="Bold"
                 d:Text="Enter a four letter word:"
-                FontSize="Medium"
+                FontSize="Large"
                 IsVisible="{Binding IsNotBusy}"/>
             <Entry
                    Placeholder="_ _ _ _"                
@@ -42,7 +42,7 @@
                    Padding="0,0,0,20"
                    HorizontalTextAlignment="Center"
                    IsVisible="{Binding IsNotBusy}"/>
-            <Label Text="The Scrabble dictionary has ±4000 four-letter words! Keep it clean, only ±30 of them are swear words ;-)"
+            <Label Text="The Scrabble dictionary has ±4000 four-letter words! Only ±30 of them are swear words ;-)"
                    FontSize="Medium"
                    HorizontalTextAlignment="Center"
                    Padding="0,0,0,20"
