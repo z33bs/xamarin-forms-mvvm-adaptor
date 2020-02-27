@@ -39,14 +39,14 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         public void Root_returns_NotInitializedException_if_not_initialized()
         {
             NavigationPage test;
-            Assert.Throws<NotInitializedException>(()=> test = navController.Root);
+            Assert.Throws<NotInitializedException>(() => test = navController.NavigationRoot);
         }
 
         [Test]
         public async Task Root_returns_NavigationPage_if_initialized()
         {
             await navController.InitAsync(new TestPage0());
-            Assert.IsInstanceOf<NavigationPage>(navController.Root);
+            Assert.IsInstanceOf<NavigationPage>(navController.NavigationRoot);
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         [Test]
         public async Task SetNamingConventions_subNameSpace()
         {
-            NavController.SetNamingConventions("Vms","Pages");
+            NavController.SetNamingConventions("Vms", "Pages");
             navController = new NavController();
             await navController.InitAsync(new Pages.TestVmsPage());
 

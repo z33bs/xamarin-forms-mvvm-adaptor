@@ -23,7 +23,7 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         NavigationPage root;
-        public NavigationPage Root
+        public NavigationPage NavigationRoot
         {
             get
             {
@@ -37,9 +37,9 @@ namespace XamarinFormsMvvmAdaptor
         public bool IsInitialized { get; private set; }
 
         ///<inheritdoc/>
-        public IReadOnlyList<Page> MainStack => Root.Navigation.NavigationStack;
+        public IReadOnlyList<Page> MainStack => NavigationRoot.Navigation.NavigationStack;
         ///<inheritdoc/>
-        public IReadOnlyList<Page> ModalStack => Root.Navigation.ModalStack;
+        public IReadOnlyList<Page> ModalStack => NavigationRoot.Navigation.ModalStack;
 
         ///<inheritdoc/>
         public Page RootPage => MainStack[0];
@@ -83,14 +83,14 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    if (Root is NavigationPage)
-                        return ((NavigationPage)Root).RootPage.BindingContext as IAdaptorViewModel;
+                    if (NavigationRoot is NavigationPage)
+                        return ((NavigationPage)NavigationRoot).RootPage.BindingContext as IAdaptorViewModel;
 
-                    return Root.BindingContext as IAdaptorViewModel;
+                    return NavigationRoot.BindingContext as IAdaptorViewModel;
                 }
                 catch (NullReferenceException ex)
                 {
-                    throw new NullReferenceException($"{nameof(Root)}'s BindingContext has not been set", ex);
+                    throw new NullReferenceException($"{nameof(NavigationRoot)}'s BindingContext has not been set", ex);
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace XamarinFormsMvvmAdaptor
         public void RemovePreviousPageFromMainStack()
         {
             if (MainStack.Count > 1)
-                Root.Navigation.RemovePage(
+                NavigationRoot.Navigation.RemovePage(
                     MainStack[MainStack.Count - 2]);
         }
 
@@ -161,7 +161,7 @@ namespace XamarinFormsMvvmAdaptor
 
             while (MainStack.Count > 1)
             {
-                Root.Navigation.RemovePage(MainStack.GetPreviousPage());
+                NavigationRoot.Navigation.RemovePage(MainStack.GetPreviousPage());
             }
 
             if (ModalStack.Count == 0)
@@ -177,7 +177,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (item.GetType() == pageType)
                 {
-                    Root.Navigation.RemovePage(item);
+                    NavigationRoot.Navigation.RemovePage(item);
                     break;
                 }
             }
@@ -191,7 +191,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Root.Navigation.PopAsync(animated);
+                    await NavigationRoot.Navigation.PopAsync(animated);
                     isPoppedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -214,7 +214,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Root.Navigation.PopToRootAsync(animated);
+                    await NavigationRoot.Navigation.PopToRootAsync(animated);
                     isPoppedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -236,7 +236,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Root.Navigation.PopModalAsync(animated);
+                    await NavigationRoot.Navigation.PopModalAsync(animated);
                     isPoppedTcs.SetResult(true);
                 }
                 catch (Exception ex)

@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Returns the <see cref="NavigationPage"/> which is the root of the <see cref="INavController"/>.
         /// Set your <see cref="Application.MainPage"/> to this.
         /// </summary>
-        NavigationPage Root { get; }
+        NavigationPage NavigationRoot { get; }
 
         /// <summary>
         /// Gets the stack of pages in the navigation

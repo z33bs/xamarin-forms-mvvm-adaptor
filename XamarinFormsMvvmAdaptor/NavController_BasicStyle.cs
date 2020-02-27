@@ -10,7 +10,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task InitAsync(Page rootPage, object initialisationData = null)
         {
-            Root = new NavigationPage(rootPage);
+            NavigationRoot = new NavigationPage(rootPage);
             try
             {
                 IsInitialized = true;
@@ -35,7 +35,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (existingPage.GetType() == pageTypeAnchorPage)
                 {
-                    Root.Navigation.InsertPageBefore(newPage, existingPage);
+                    NavigationRoot.Navigation.InsertPageBefore(newPage, existingPage);
                     await InitializeVmForPageAsync(newPage, navigationData).ConfigureAwait(false);
                     break;
                 }
@@ -52,7 +52,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Root.Navigation.PushAsync(page, animated);
+                    await NavigationRoot.Navigation.PushAsync(page, animated);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -78,7 +78,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Root.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
+                    await NavigationRoot.Navigation.PushModalAsync(page, animated).ConfigureAwait(false);
                     isPushedTcs.SetResult(true);
                 }
                 catch (Exception ex)

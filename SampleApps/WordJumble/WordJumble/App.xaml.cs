@@ -48,10 +48,10 @@ namespace WordJumble
 #if WITH_DI
             var navController = DiContainer.Resolve<INavController>();
             await navController.DiInitAsync(DiContainer.Resolve<MainViewModel>());
-            MainPage = navController.Root;
+            MainPage = navController.NavigationRoot;
 #else            
             await NavController.InitAsync(new MainPage());
-            MainPage = NavController.Root;
+            MainPage = NavController.NavigationRoot;
 #endif
         }
     }
