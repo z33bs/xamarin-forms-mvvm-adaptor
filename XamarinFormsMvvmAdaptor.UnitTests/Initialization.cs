@@ -2,6 +2,7 @@
 using XamarinFormsMvvmAdaptor.UnitTests.Views;
 using XamarinFormsMvvmAdaptor.UnitTests.ViewModels;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor.UnitTests
 {
@@ -32,6 +33,20 @@ namespace XamarinFormsMvvmAdaptor.UnitTests
         {
             await navController.InitAsync(new TestPage0());
             Assert.IsTrue(navController.IsInitialized);
+        }
+
+        [Test]
+        public void Root_returns_NotInitializedException_if_not_initialized()
+        {
+            NavigationPage test;
+            Assert.Throws<NotInitializedException>(()=> test = navController.Root);
+        }
+
+        [Test]
+        public async Task Root_returns_NavigationPage_if_initialized()
+        {
+            await navController.InitAsync(new TestPage0());
+            Assert.IsInstanceOf<NavigationPage>(navController.Root);
         }
 
         [Test]
