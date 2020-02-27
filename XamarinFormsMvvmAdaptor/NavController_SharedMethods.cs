@@ -22,15 +22,15 @@ namespace XamarinFormsMvvmAdaptor
         static string _viewSuffix = DEFAULT_V_SUFFIX;
         #endregion
 
-        private NavigationPage root;
-        private NavigationPage Root
+        NavigationPage root;
+        public NavigationPage Root
         {
             get
             {
                 ThrowIfNotInitialized();
                 return root;
             }
-            set => root = value;
+            private set => root = value;
         }
 
         ///<inheritdoc/>

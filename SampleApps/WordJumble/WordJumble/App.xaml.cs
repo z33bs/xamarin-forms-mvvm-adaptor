@@ -47,11 +47,11 @@ namespace WordJumble
             //Important to Initialize the NavController before setting MainPage
 #if WITH_DI
             var navController = DiContainer.Resolve<INavController>();
-            await navController.InitAsync(DiContainer.Resolve<MainViewModel>());
-            MainPage = navController.RootPage;
+            await navController.DiInitAsync(DiContainer.Resolve<MainViewModel>());
+            MainPage = navController.Root;
 #else            
             await NavController.InitAsync(new MainPage());
-            MainPage = NavController.RootPage;
+            MainPage = NavController.Root;
 #endif
         }
     }
