@@ -15,10 +15,8 @@ Xamarin has fantastic Mvvm functionality, however the pattern is geared towards 
 
 * Familiar syntax, e.g. `PushAsync<TViewModel>()` is similar to Xamarin's `PushAsync(Page page)`
 * Easily pass data to the appearing view-model with `PushAsync<TViewModel>(object navigationData)`
-  * `InitializeAsync(object navigationData)` is triggered automatically when the ViewModel is pushed. This method is also handy if you want to run Async code directly after construction.
-* `OnAppearingAsync()` method within the view-model that is triggered automatically when its associated page appears at the top of the stack.
+* `OnAppearingAsync()` method within the view-model is triggered automatically when its associated page appears at the top of the stack.
 * Supports full dependency injection with the DI engine of your choice.
-* Packaged with an optional `AdaptorViewModel` that uses James Montemagno's [MvvmHelpers](https://github.com/jamesmontemagno/mvvm-helpers) (my prefered implementation). Otherwise, just implement the `IAdaptorViewModel` interface.
 * Supports multiple navigation-stacks. Useful if you want each tab of a TabbedPage to have its own separate navigation tree.
 * Lightweight because its adapts Xamarin's existing engine.
 
@@ -27,7 +25,7 @@ Xamarin has fantastic Mvvm functionality, however the pattern is geared towards 
 MvvmAdaptor can be consumed in **two flavours**:
 
 * [Vanilla](#Vanilla-implementation) implementation
-* [With DI](#DI-implementation) implementation (Dependency Injection / IoC)
+* [With DI](#DI-implementation) implementation (using Dependency Injection / IoC Engine of your choice)
 
 Skip to the flavour that suits you.
 
@@ -38,10 +36,7 @@ Skip to the flavour that suits you.
 ```c#
 public partial class App : Application
 {
-  //Initialize the controller with its RootPage
-  public static NavController NavController { get; } = new NavController(
-    new MainPage());
-
+  public static NavController NavController { get; } = new NavController();
 ```
 
 You would access the NavController by calling `App.NavController` anywhwere in your application.
@@ -59,7 +54,7 @@ You can change the expected naming convention to your personal style with the `S
 
 
 
-**ViewModels must implement the `IAdaptorViewModel` interface**. The easiest way to achieve this is to extend the `AdaptorViewModel`. This has the added benefit of including all the mvvm boilerplate code and more because it uses James Montemagno's [MvvmHelpers](https://github.com/jamesmontemagno/mvvm-helpers).
+**ViewModels must implement the `IAdaptorViewModel` interface**. The easiest way to achieve this is to extend the `AdaptorViewModel`. This has the added benefit of including all the mvvm boilerplate code and more because it uses James Montemagno's [MvvmHelpers](https://github.com/jamesmontemagno/mvvm-helpers) as a dependency.
 
 ```c#
 public class MainViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
@@ -122,7 +117,7 @@ public override Task InitializeAsync(object navigationData)
 
 **Initialize the RootViewModel** by running `InitAsync()` in the `OnStart()` override.
 
-**And set you app's MainPage** to your NavController's RootPage. 
+**And set you app's MainPage** to your NavController's NavigationRoot. 
 
 ```c#
 public partial class App : Application
@@ -132,7 +127,7 @@ public partial class App : Application
   {
     //Important to initialize before setting the MainPage
     await NavController.InitAsync(new MainPage());
-    MainPage = NavController.RootPage;
+    MainPage = NavController.NavigationRoot;
   }
 
 ```
@@ -165,7 +160,7 @@ await App.NavController.PopModalAsync();
 
 Checkout the [Navigation](#Navigation) section for a menu of the additional navigation properties and methods.
 
-Checkout the [WordJumble Sample App](#WordJumble) for a simple example using this framework.
+Checkout the [WordJumble Sample App](#WordJumble) for a simple example that uses this framework.
 
 ***
 
@@ -186,11 +181,10 @@ You can change the expected naming convention to your personal style with the `S
 
 
 
-**ViewModels must implement the `IAdaptorViewModel` interface**. The easiest way to achieve this is to extend the `AdaptorViewModel`. This has the added benefit of including all the mvvm boilerplate code (and more) because it uses James Montemagno's [MvvmHelpers](https://github.com/jamesmontemagno/mvvm-helpers).
+**ViewModels must implement the `IAdaptorViewModel` interface**. The easiest way to achieve this is to extend the `AdaptorViewModel`. This has the added benefit of including all the mvvm boilerplate code (and more) because it uses James Montemagno's [MvvmHelpers](https://github.com/jamesmontemagno/mvvm-helpers) as a dependency.
 
 ```c#
 public class MainViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
-	{
 ```
 
 Alternatively, you can roll your own BaseViewModel. Note in the example below that the two interface methods:
@@ -229,7 +223,7 @@ public override Task InitializeAsync(object navigationData)
 
 
 
-**Use DI in your ViewModel constructors**. Here is an example from the [WordJumble Sample App](#WordJumble).
+**Use DI in your ViewModel constructors**. Here is an example from the [WordJumble Sample App](#WordJumble). Note that the NavController itself is injected as a dependency, allowing you to easily stub this service in your tests.
 
 ```c#
 public class JumbleViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
@@ -251,7 +245,7 @@ public class JumbleViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
 
 **No need to set the binding-context in your Views.** MvvmAdaptor will do this for you. 
 
-> Tip: If you want intellisense to pick up bindings in your xaml, you need to give it a view-model. You can use [design time data](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-previewer/design-time-data) to do this. Notice the `:d` namespace in the snippet below. If you go this route, you will need two constructors in your view-models. An empty one to satisfy the xaml, and your primary one with all the dependencies. Autofac works on the principle of "greediest" constructor, so it will pick the right one automatically.
+> Tip: If you want intellisense to pick up bindings in your xaml, you need to give it a view-model. You can use [design time data](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-previewer/design-time-data) to do this. Notice the `:d` namespace in the snippet below. If you go this route, you will need two constructors in your view-models. An empty one to satisfy the xaml, and your primary one with all the dependencies. Autofac works on the principle of "greediest" constructor, so it will pick the right one automatically. Most DI engines follow this default.
 >
 > ```xaml
 > <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
@@ -300,9 +294,9 @@ public App()
 
 You can now access the DiContainer by calling `App.DiContainer` anywhwere in your application.
 
-**Initialize the RootViewModel** by running `InitAsync()` in the `OnStart()` override.
+**Initialize the RootViewModel** by running `DiInitAsync()` in the `OnStart()` override.
 
-**And set you app's MainPage** to your NavController's RootPage. 
+**And set you app's MainPage** to your NavController's `NavigationRoot`. 
 
 ```c#
 public partial class App : Application
@@ -312,8 +306,8 @@ public partial class App : Application
   {
     var navController = DiContainer.Resolve<INavController>();
     //Important to initialize before setting MainPage
-    await navController.InitAsync(DiContainer.Resolve<MainViewModel>());
-    MainPage = navController.RootPage;
+    await navController.DiInitAsync(DiContainer.Resolve<MainViewModel>());
+    MainPage = navController.NavigationRoot;
   }
 ```
 
@@ -339,15 +333,15 @@ public class JumbleViewModel : XamarinFormsMvvmAdaptor.AdaptorViewModel
   {
     ...
     //To Push
-    await navController.PushAsync(
+    await navController.DiPushAsync(
       App.DiContainer.Resolve<FlexiCharDetailViewModel>());
 
     //or, if you want to pass data
-    await navController.PushAsync(
+    await navController.DiPushAsync(
       App.DiContainer.Resolve<FlexiCharDetailViewModel>(),navigationData);
 
     //MODAL NAVIGATION
-    await navController.PushModalAsync(
+    await navController.DiPushModalAsync(
       App.DiContainer.Resolve<FlexiCharDetailViewModel>());
 ```
 
@@ -363,7 +357,7 @@ await navController.PopModalAsync();
 
 Checkout the [Navigation](#Navigation) section for a menu of the additional navigation properties and methods.
 
-Checkout the [WordJumble Sample App](#WordJumble) for a simple example using this framework.
+Checkout the [WordJumble Sample App](#WordJumble) for a simple example that uses this framework.
 
 ***
 
@@ -374,9 +368,10 @@ The Navigation framework simply follows the Xamarin.Forms approach. If you are u
 #### Available in Xamarin.Forms:
 
 * Properties
-  * NavigationStack
+  * NavigationStack (called MainStack here)
   * ModalStack
   * RootPage
+  * CurrentPage
 * Methods:
   * PushAsync & PushModalAsync
   * PopAsync & PopModalAsync
@@ -385,15 +380,18 @@ The Navigation framework simply follows the Xamarin.Forms approach. If you are u
 
 #### Additional helpers:
 
-* Properties:
+* Properties :
   * TopPage
   * HiddenPage (see [detail](#Shortcuts-for-accessing-Pages-and-ViewModels-in-the-stack) below for explaination) in addition to RootPage and TopPage
   * RootViewModel, TopViewModel, and HiddenViewModel corresponding to the pages above
+* Extension methods on the MainStack and ModalStack
+  * GetCurrentPage() and GetCurrentViewModel()
+  * GetPreviousPage() and GetPreviousViewModel()
 * Methods:
-  * CollapseStack()
-  * RemoveHiddenPageFromStack()
+  * CollapseMainStack()
+  * RemovePreviousPageFromMainStack()
 * Static methods that don't need a NavController instance:
-  * CreatePageForAsync(IAdaptorViewModel viewmodel)
+  * DiCreatePageForAsync(IAdaptorViewModel viewmodel)
 
 
 #### Shortcuts for accessing Pages and ViewModels in the stack
@@ -418,7 +416,7 @@ For any other pages you can always specify the index of the stack:
 
 ```c#
 // To access a page
-Page page = NavController.NavigationStack[3];
+Page page = NavController.MainStack[3];
 
 // To access it's corresponding viewmodel
 var viewModel = page.BindingContext as IAdaptorViewModel;
@@ -430,7 +428,7 @@ var viewModel = page.BindingContext as IAdaptorViewModel;
 
 ### WordJumble
 
-On the MainPage the user types a four letter word into an entry dialogue. A new page appears with the word's letters jumbled randomly on the page. The user can tap a letter to open a dialogue which allows her to rotate the letter.
+On the MainPage the user types a four letter word into an entry dialogue. A new page appears with the word's letters jumbled randomly on the page. The user can tap a letter to open a dialogue which lets them rotate the letter differently.
 
 | iOS                                                  | Droid                                                |
 | :--------------------------------------------------: | :--------------------------------------------------: |
@@ -452,6 +450,6 @@ This app demonstrates:
 In addition to XamarinFormsMvvmAdaptor, the sample uses the following features which you may or may-not be familiar with:
 
 * Xamarin.Forms Material Visual: [docs here](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/visual/material-visual) , and [blog here](https://devblogs.microsoft.com/xamarin/beautiful-material-design-android-ios/).
-* Designtime Data (great with Xaml Hot Reload): [docs here](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-previewer/design-time-data) , and [blog here](https://montemagno.com/xamarin-forms-design-time-data-tips-best-practices/).
+* DesignTime Data (great with Xaml Hot Reload): [docs here](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-previewer/design-time-data) , and [blog here](https://montemagno.com/xamarin-forms-design-time-data-tips-best-practices/).
 * [AutoFac](https://autofac.org) for the dependecy injection.
 
