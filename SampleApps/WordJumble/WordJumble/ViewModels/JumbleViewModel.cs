@@ -113,7 +113,7 @@ namespace WordJumble.ViewModels
             async (flexiChar) =>
             {
 #if WITH_DI
-                await navController.PushModalAsync(App.DiContainer.Resolve<FlexiCharDetailViewModel>(),flexiChar);
+                await navController.DiPushModalAsync(App.DiContainer.Resolve<FlexiCharDetailViewModel>(),flexiChar);
 #else
                 await App.NavController.PushModalAsync<FlexiCharDetailViewModel>(flexiChar);
 #endif

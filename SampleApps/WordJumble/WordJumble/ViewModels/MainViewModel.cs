@@ -54,7 +54,7 @@ namespace WordJumble.ViewModels
             
             IsBusy = true;
 #if WITH_DI
-            await navController.PushAsync(App.DiContainer.Resolve<JumbleViewModel>(), word);
+            await navController.DiPushAsync(App.DiContainer.Resolve<JumbleViewModel>(), word);
 #else
             await App.NavController.PushAsync<JumbleViewModel>(word);
 #endif
