@@ -13,12 +13,13 @@
         <NeutralLanguage>en</NeutralLanguage>
         <Owners>Guy Antoine</Owners>
         <PackageProjectUrl>https://github.com/z33bs/xamarin-forms-mvvm-adaptor</PackageProjectUrl>
-        <PackageReleaseNotes>See: https://github.com/z33bs/xamarin-forms-mvvm-adaptor/blob/master/CHANGELOG.md</PackageReleaseNotes>
+        <PackageReleaseNotes>See: https://github.com/z33bs/xamarin-forms-mvvm-adaptor/releases</PackageReleaseNotes>
         <Summary>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Summary>
         <PackageTags>mvvm xamarin forms viewmodel </PackageTags>
         <Title>Xamarin Forms Mvvm Adaptor</Title>
         <Description>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Description>
         <PackageId>XamarinFormsMvvmAdaptor</PackageId>
+        <ReleaseVersion></ReleaseVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>
