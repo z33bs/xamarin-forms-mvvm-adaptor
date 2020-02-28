@@ -14,8 +14,8 @@ Xamarin has fantastic Mvvm functionality, however the pattern is geared towards 
 **Features:**
 
 * Familiar syntax, e.g. `PushAsync<TViewModel>()` is similar to Xamarin's `PushAsync(Page page)`
-* Easily pass data to the appearing view-model with `PushAsync<TViewModel>(object navigationData)`
-* `OnAppearingAsync()` method within the view-model is triggered automatically when its associated page appears at the top of the stack.
+* Easily pass data to the pushed view-model with `PushAsync<TViewModel>(object navigationData)`
+* `OnAppearingAsync()` method within the pushed view-model is triggered automatically when its associated page appears at the top of the stack.
 * Supports full dependency injection with the DI engine of your choice.
 * Supports multiple navigation-stacks. Useful if you want each tab of a TabbedPage to have its own separate navigation tree.
 * Lightweight because its adapts Xamarin's existing engine.
@@ -27,7 +27,7 @@ MvvmAdaptor can be consumed in **two flavours**:
 * [Vanilla](#Vanilla-implementation) implementation
 * [With DI](#DI-implementation) implementation (using Dependency Injection / IoC Engine of your choice)
 
-Skip to the flavour that suits you.
+Skip to the flavour that suits you or check out the the [Sample App](#WordJumble).
 
 ### Vanilla implementation
 
