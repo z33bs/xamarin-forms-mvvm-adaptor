@@ -22,6 +22,8 @@ namespace XamarinFormsMvvmAdaptor
         static string _viewSuffix = DEFAULT_V_SUFFIX;
         #endregion
 
+        public IIoC IoC { get; } = new IoC();
+
         NavigationPage root;
         public NavigationPage NavigationRoot
         {
@@ -99,7 +101,15 @@ namespace XamarinFormsMvvmAdaptor
         {
             get
             {
-                try { return TopPage.BindingContext as IAdaptorViewModel; }
+                try
+                {
+                    return
+                        ( TopPage is NavigationPage
+                        ? (TopPage as NavigationPage).CurrentPage.BindingContext
+                        : TopPage.BindingContext
+                        ) as IAdaptorViewModel;
+                    //return TopPage.BindingContext as IAdaptorViewModel;
+                }
                 catch (NullReferenceException ex)
                 {
                     throw new NullReferenceException($"{nameof(TopPage)}'s BindingContext has not been set", ex);

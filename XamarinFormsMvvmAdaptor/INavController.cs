@@ -194,5 +194,11 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         void RemovePreviousPageFromMainStack();
         #endregion
+
+        #region CombinedStyle experimental
+        IIoC IoC { get; }
+        Task DiPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
+        Task DiPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
+        #endregion
     }
 }

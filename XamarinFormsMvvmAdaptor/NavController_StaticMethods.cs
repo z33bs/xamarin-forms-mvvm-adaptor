@@ -7,6 +7,38 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class NavController
     {
+        public static IIoC IoCGlobal { get; private set; } = new IoC();
+
+        public static void SetMainPage()
+        {
+
+            if(IoCGlobal.IsRegistered<INavController>())
+                Application.Current.MainPage = IoCGlobal.Resolve<INavController>().NavigationRoot;
+
+            else
+                throw new Exception("Could not resolve a NavController!");
+        }
+
+        public static void SetMainPage(string key)
+        {
+            if (IoCGlobal.IsRegistered<IMultiNavigation>())
+            {
+                var multi = IoCGlobal.Resolve<IMultiNavigation>();
+                if (multi.NavigationControllers.Count > 0)
+                    Application.Current.MainPage = multi.NavigationControllers[key].NavigationRoot;                
+            }
+            else
+                throw new Exception("Could not resolve a NavController!");
+        }
+
+        //public static void Use3rdPartyIoc(IIocContainer iocContainer)
+        //{
+        //    if (iocContainer is IIocContainer)
+        //        GlobalContainer = iocContainer;
+        //    else
+        //        throw new Exception($"Container provided does not implement {nameof(IIocContainer)}. Use the Adaptor pattern if needed");
+        //}
+
         private static Page InstantiatePage(Type viewModelType)
         {
             try
