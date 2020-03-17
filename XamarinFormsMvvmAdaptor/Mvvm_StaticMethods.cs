@@ -7,7 +7,7 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class Mvvm
     {
-        public static IIoc Ioc { get; private set; } = new IoC();
+        public static IIoc Ioc { get; private set; } = new Ioc();
 
         public static void SetMainPage()
         {

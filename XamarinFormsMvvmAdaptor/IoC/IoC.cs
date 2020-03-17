@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using XamarinFormsMvvmAdaptor.FluentGrammar;
+using XamarinFormsMvvmAdaptor.FluentApi;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    internal sealed class IoC : IIoc
-        //Interfaces controll fluent-Api grammer
-        , ICanAddCondition, ICanAddLifeCycle, ICanAddAsType
+    internal sealed class Ioc : IIoc
+    //Interfaces controll fluent-Api grammer
     {
         private IIocContainer container = new IocContainer();
 
@@ -15,10 +14,10 @@ namespace XamarinFormsMvvmAdaptor
             "Use the 3rd party's interface to register your classes " +
             "before swapping-in the container";
 
-        public void Use3rdPartyIoc(IIocContainer iocContainer)
+        public void Use3rdPartyContainer(IIocContainer iocContainerAdaptor)
         {
-            if (iocContainer is IIocContainer)
-                container = iocContainer;
+            if (iocContainerAdaptor is IIocContainer)
+                container = iocContainerAdaptor;
             else
                 throw new NotImplementedException(
                     $"Container provided does not implement {nameof(IIocContainer)}." +
@@ -27,7 +26,7 @@ namespace XamarinFormsMvvmAdaptor
 
 
         #region Registration
-        public ICanAddCondition Register<T>() where T : notnull
+        public IRegisterOptions Register<T>() where T : notnull
         {
             if (container is IInternalIocContainer internalIocContainer)
                 internalIocContainer.RegisteredObjects.Add(new RegisteredObject(
@@ -37,48 +36,19 @@ namespace XamarinFormsMvvmAdaptor
                 ));
             else
                 throw new InvalidOperationException(CANT_REGISTER_EXCEPTION);
-            return this;
+            return new RegisterOptions(container);
         }
 
-        public ICanAddAsType RegisterInstance(object concreteInstance)
+        public IInstanceRegisterOptions Register(object concreteInstance)
         {
             if (container is IInternalIocContainer internalIocContainer)
                 internalIocContainer.RegisteredObjects.Add(
                     new RegisteredObject(concreteInstance));
             else
                 throw new InvalidOperationException(CANT_REGISTER_EXCEPTION);
-            return this;
+            return new InstanceRegisterOptions(container);
         }
-
-        public ICanAddLifeCycle As<TypeToResolve>() where TypeToResolve : notnull
-        {
-            AsType<TypeToResolve>();
-            return this;
-        }
-
-        public void AsType<TypeToResolve>() where TypeToResolve : notnull
-        {
-            if (container is IInternalIocContainer internalIocContainer)
-                internalIocContainer.RegisteredObjects.Last()
-                    .TypeToResolve = typeof(TypeToResolve);
-        }
-
-        public void SingleInstance()
-        {
-            if (container is IInternalIocContainer internalIocContainer)
-                internalIocContainer.RegisteredObjects.Last()
-                    .LifeCycle = LifeCycle.Singleton;
-        }
-
-        public void MultiInstance()
-        {
-            if (container is IInternalIocContainer internalIocContainer)
-                internalIocContainer.RegisteredObjects.Last()
-                    .LifeCycle = LifeCycle.Transient;
-        }
-
         #endregion
-
         #region Resolution
         public T Resolve<T>() where T : notnull
         {
@@ -90,24 +60,73 @@ namespace XamarinFormsMvvmAdaptor
             return container.IsRegistered<T>();
         }
         #endregion
+
+        private class RegisterOptions : IRegisterOptions
+        {
+            readonly IIocContainer container;
+            public RegisterOptions(IIocContainer container)
+            {
+                this.container = container;
+            }
+            public ILifeCycleOptions As<TypeToResolve>() where TypeToResolve : notnull
+            {
+                if (container is IInternalIocContainer internalIocContainer)
+                    internalIocContainer.RegisteredObjects.Last()
+                        .TypeToResolve = typeof(TypeToResolve);
+                return this;
+            }
+
+
+            public void SingleInstance()
+            {
+                if (container is IInternalIocContainer internalIocContainer)
+                    internalIocContainer.RegisteredObjects.Last()
+                        .LifeCycle = LifeCycle.Singleton;
+            }
+
+            public void MultiInstance()
+            {
+                if (container is IInternalIocContainer internalIocContainer)
+                    internalIocContainer.RegisteredObjects.Last()
+                        .LifeCycle = LifeCycle.Transient;
+            }
+        }
+        private class InstanceRegisterOptions : IInstanceRegisterOptions
+        {
+            readonly IIocContainer container;
+            public InstanceRegisterOptions(IIocContainer container)
+            {
+                this.container = container;
+            }
+
+            public void As<TypeToResolve>() where TypeToResolve : notnull
+            {
+                if (container is IInternalIocContainer internalIocContainer)
+                    internalIocContainer.RegisteredObjects.Last()
+                        .TypeToResolve = typeof(TypeToResolve);
+            }
+
+
+
+        }
     }
 }
-namespace XamarinFormsMvvmAdaptor.FluentGrammar
-{ 
-    public interface ICanAddCondition : ICanAddLifeCycle
+namespace XamarinFormsMvvmAdaptor.FluentApi
+{
+    public interface IRegisterOptions : ILifeCycleOptions
     {
-        ICanAddLifeCycle As<TypeToResolve>() where TypeToResolve : notnull;
+        ILifeCycleOptions As<TypeToResolve>() where TypeToResolve : notnull;
     }
 
-    public interface ICanAddLifeCycle
+    public interface ILifeCycleOptions
     {
         void SingleInstance();
         void MultiInstance();
     }
 
-    public interface ICanAddAsType
+    public interface IInstanceRegisterOptions
     {
-        void AsType<TypeToResolve>() where TypeToResolve : notnull;
+        void As<TypeToResolve>() where TypeToResolve : notnull;
     }
 
 }

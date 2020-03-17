@@ -22,7 +22,7 @@ namespace XamarinFormsMvvmAdaptor
         static string _viewSuffix = DEFAULT_V_SUFFIX;
         #endregion
 
-        public IIoc IocLocal { get; } = new IoC();
+        public IIoc IocLocal { get; } = new Ioc();
 
         NavigationPage root;
         public NavigationPage NavigationRoot
