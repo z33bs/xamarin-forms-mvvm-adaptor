@@ -33,34 +33,6 @@ namespace XamarinFormsMvvmAdaptor
         private bool HasParamaterlessConstructor<T>()
             => typeof(T).GetConstructor(Type.EmptyTypes) != null;
 
-        private IAdaptorViewModel TryResolveGlobal<TViewModel>()
-        {
-            try
-            {
-                return Ioc.Resolve<TViewModel>() as IAdaptorViewModel;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-        }
-
-        private IAdaptorViewModel TryResolveLocal<TViewModel>()
-        {
-            try
-            {
-                return IocLocal.Resolve<TViewModel>() as IAdaptorViewModel;
-            }
-            catch (Exception ex)
-            {
-                //NullReferenceException
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-        }
-
-
         ///<inheritdoc/>
         public async Task DiPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
         {
