@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
 namespace XamarinFormsMvvmAdaptor
@@ -48,6 +49,14 @@ namespace XamarinFormsMvvmAdaptor
                 throw new InvalidOperationException(CANT_REGISTER_EXCEPTION);
             return new InstanceRegisterOptions(container);
         }
+
+        public IInstanceRegisterOptions Register(Func<object> @delegate)//Expression<Func<object>> expression)
+        {
+            //todo find out how to pass this context in like in autofac
+            Register(@delegate.Invoke());
+            return new InstanceRegisterOptions(container);
+        }
+
         #endregion
         #region Resolution
         public T Resolve<T>() where T : notnull
