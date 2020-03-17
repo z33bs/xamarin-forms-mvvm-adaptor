@@ -4,7 +4,7 @@ using XamarinFormsMvvmAdaptor.FluentGrammar;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    internal sealed class IoC : IIoC
+    internal sealed class IoC : IIoc
         //Interfaces controll fluent-Api grammer
         , ICanAddCondition, ICanAddLifeCycle, ICanAddAsType
     {
@@ -27,12 +27,12 @@ namespace XamarinFormsMvvmAdaptor
 
 
         #region Registration
-        public ICanAddCondition Register<TConcrete>()
+        public ICanAddCondition Register<T>() where T : notnull
         {
             if (container is IInternalIocContainer internalIocContainer)
                 internalIocContainer.RegisteredObjects.Add(new RegisteredObject(
-                typeof(TConcrete)
-                , typeof(TConcrete)
+                typeof(T)
+                , typeof(T)
                 , LifeCycle.Transient
                 ));
             else
@@ -50,17 +50,17 @@ namespace XamarinFormsMvvmAdaptor
             return this;
         }
 
-        public ICanAddLifeCycle As<TInterface>()
+        public ICanAddLifeCycle As<TypeToResolve>() where TypeToResolve : notnull
         {
-            AsType<TInterface>();
+            AsType<TypeToResolve>();
             return this;
         }
 
-        public void AsType<TInterface>()
+        public void AsType<TypeToResolve>() where TypeToResolve : notnull
         {
             if (container is IInternalIocContainer internalIocContainer)
                 internalIocContainer.RegisteredObjects.Last()
-                    .TypeToResolve = typeof(TInterface);
+                    .TypeToResolve = typeof(TypeToResolve);
         }
 
         public void SingleInstance()
@@ -96,7 +96,7 @@ namespace XamarinFormsMvvmAdaptor.FluentGrammar
 { 
     public interface ICanAddCondition : ICanAddLifeCycle
     {
-        ICanAddLifeCycle As<TInterfase>();
+        ICanAddLifeCycle As<TypeToResolve>() where TypeToResolve : notnull;
     }
 
     public interface ICanAddLifeCycle
@@ -107,7 +107,7 @@ namespace XamarinFormsMvvmAdaptor.FluentGrammar
 
     public interface ICanAddAsType
     {
-        void AsType<TInterfase>();
+        void AsType<TypeToResolve>() where TypeToResolve : notnull;
     }
 
 }

@@ -5,7 +5,7 @@ using Xamarin.Forms;
 namespace XamarinFormsMvvmAdaptor
 {
     ///<inheritdoc/>
-    public partial class NavController : INavController
+    public partial class Mvvm : IMvvm
     {
         private Page GetPageForPush(IAdaptorViewModel viewModel)
         {

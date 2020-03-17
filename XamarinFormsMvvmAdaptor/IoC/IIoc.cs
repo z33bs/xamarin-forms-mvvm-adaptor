@@ -2,9 +2,9 @@
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public interface IIoC
+    public interface IIoc
     {
-        ICanAddCondition Register<TConcrete>();
+        ICanAddCondition Register<T>() where T : notnull;
         ICanAddAsType RegisterInstance(object concreteInstance);
         T Resolve<T>() where T : notnull;
         bool IsRegistered<T>() where T : notnull;

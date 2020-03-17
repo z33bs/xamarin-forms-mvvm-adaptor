@@ -12,7 +12,7 @@ namespace XamarinFormsMvvmAdaptor
             = new Lazy<MultiNavigation>(() => new MultiNavigation());
         public static MultiNavigation Instance => instance.Value;
 
-        public Dictionary<string, INavController> NavigationControllers { get; } = new Dictionary<string, INavController>();
+        public Dictionary<string, IMvvm> NavigationControllers { get; } = new Dictionary<string, IMvvm>();
         
     }
 

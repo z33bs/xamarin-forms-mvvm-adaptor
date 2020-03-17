@@ -6,25 +6,25 @@ using Xamarin.Forms;
 namespace XamarinFormsMvvmAdaptor
 {
     ///<inheritdoc/>
-    public partial class NavController : INavController
+    public partial class Mvvm : IMvvm
     {
         //public IIocContainer LocalContainer { get; set; } = new IocContainer();
 
         private IAdaptorViewModel ResolveOrCreateViewModel<TViewModel>() where TViewModel : IAdaptorViewModel
         {
-            if (IoCGlobal.IsRegistered<TViewModel>())
-                return IoCGlobal.Resolve<TViewModel>();
+            if (Ioc.IsRegistered<TViewModel>())
+                return Ioc.Resolve<TViewModel>();
 
-            if (IoC.IsRegistered<TViewModel>())
-                return IoC.Resolve<TViewModel>();
+            if (IocLocal.IsRegistered<TViewModel>())
+                return IocLocal.Resolve<TViewModel>();
 
             if (HasParamaterlessConstructor<TViewModel>())
                 return Activator.CreateInstance<TViewModel>();
 
             throw new InvalidOperationException(
                 $"Could not Resolve or Create {typeof(TViewModel).Name}" +
-                $". It is not registered in {nameof(IoCGlobal)} or" +
-                $" in {nameof(IoC)}. Furthermore, {typeof(TViewModel).Name}" +
+                $". It is not registered in {nameof(Ioc)} or" +
+                $" in {nameof(IocLocal)}. Furthermore, {typeof(TViewModel).Name}" +
                 $" does not have a paramaterless constructor. Either" +
                 $" register the class, or give it a paramaterless" +
                 $" constructor.");
@@ -37,7 +37,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             try
             {
-                return IoCGlobal.Resolve<TViewModel>() as IAdaptorViewModel;
+                return Ioc.Resolve<TViewModel>() as IAdaptorViewModel;
             }
             catch (Exception ex)
             {
@@ -50,7 +50,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             try
             {
-                return IoC.Resolve<TViewModel>() as IAdaptorViewModel;
+                return IocLocal.Resolve<TViewModel>() as IAdaptorViewModel;
             }
             catch (Exception ex)
             {

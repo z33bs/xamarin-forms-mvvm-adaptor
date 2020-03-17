@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace XamarinFormsMvvmAdaptor
 {
     ///<inheritdoc/>
-    public partial class NavController : INavController
+    public partial class Mvvm : IMvvm
     {
         #region Settings
         const string DEFAULT_VM_NAMESPACE = "ViewModels";
@@ -22,7 +22,7 @@ namespace XamarinFormsMvvmAdaptor
         static string _viewSuffix = DEFAULT_V_SUFFIX;
         #endregion
 
-        public IIoC IoC { get; } = new IoC();
+        public IIoc IocLocal { get; } = new IoC();
 
         NavigationPage root;
         public NavigationPage NavigationRoot
@@ -104,7 +104,7 @@ namespace XamarinFormsMvvmAdaptor
                 try
                 {
                     return
-                        ( TopPage is NavigationPage
+                        (TopPage is NavigationPage
                         ? (TopPage as NavigationPage).CurrentPage.BindingContext
                         : TopPage.BindingContext
                         ) as IAdaptorViewModel;
@@ -136,7 +136,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             if (!IsInitialized)
                 throw new NotInitializedException(
-                    $"{nameof(NavController)} is not initialized. Please run {nameof(InitAsync)} first.");
+                    $"{nameof(Mvvm)} is not initialized. Please run {nameof(InitAsync)} first.");
         }
 
         private async Task InitializeVmForPageAsync(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
@@ -212,7 +212,7 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPoppedTcs.Task
                 && ModalStack.Count == 0)
-                    await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+                await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
 
         }
 
@@ -235,7 +235,7 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPoppedTcs.Task
                 && ModalStack.Count == 0)
-                    await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
         }
 
         ///<inheritdoc/>

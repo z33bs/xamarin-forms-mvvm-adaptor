@@ -7,13 +7,13 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// MvvM Navigation Controller. Each instance contains its own Navigation stack.
     /// Navigation engine depends on the user sticking to a naming convention:
-    /// Views are expected to be in the <see cref="NavController.DEFAULT_V_NAMESPACE"/> subnamespace
-    /// and end with suffix <see cref="NavController.DEFAULT_V_SUFFIX"/>.
-    /// ViewModels are expected to be in the <see cref="NavController.DEFAULT_VM_NAMESPACE"/> subnamespace
-    /// and end with suffix <see cref="NavController.DEFAULT_VM_SUFFIX"/>.
-    /// This behaviour can be customised with <see cref="NavController.SetNamingConventions(string, string, string, string)"/>
+    /// Views are expected to be in the <see cref="Mvvm.DEFAULT_V_NAMESPACE"/> subnamespace
+    /// and end with suffix <see cref="Mvvm.DEFAULT_V_SUFFIX"/>.
+    /// ViewModels are expected to be in the <see cref="Mvvm.DEFAULT_VM_NAMESPACE"/> subnamespace
+    /// and end with suffix <see cref="Mvvm.DEFAULT_VM_SUFFIX"/>.
+    /// This behaviour can be customised with <see cref="Mvvm.SetNamingConventions(string, string, string, string)"/>
     /// </summary>
-    public interface INavController
+    public interface IMvvm
     {
         #region Properties
         /// <summary>
@@ -22,7 +22,7 @@ namespace XamarinFormsMvvmAdaptor
         bool IsInitialized { get; }
 
         /// <summary>
-        /// Returns the <see cref="NavigationPage"/> which is the root of the <see cref="INavController"/>.
+        /// Returns the <see cref="NavigationPage"/> which is the root of the <see cref="IMvvm"/>.
         /// Set your <see cref="Application.MainPage"/> to this.
         /// </summary>
         NavigationPage NavigationRoot { get; }
@@ -196,7 +196,7 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         #region CombinedStyle experimental
-        IIoC IoC { get; }
+        IIoc IocLocal { get; }
         Task DiPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
         Task DiPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
         #endregion

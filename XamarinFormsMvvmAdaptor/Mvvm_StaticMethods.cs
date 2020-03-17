@@ -5,15 +5,15 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public partial class NavController
+    public partial class Mvvm
     {
-        public static IIoC IoCGlobal { get; private set; } = new IoC();
+        public static IIoc Ioc { get; private set; } = new IoC();
 
         public static void SetMainPage()
         {
 
-            if(IoCGlobal.IsRegistered<INavController>())
-                Application.Current.MainPage = IoCGlobal.Resolve<INavController>().NavigationRoot;
+            if(Ioc.IsRegistered<IMvvm>())
+                Application.Current.MainPage = Ioc.Resolve<IMvvm>().NavigationRoot;
 
             else
                 throw new Exception("Could not resolve a NavController!");
@@ -21,9 +21,9 @@ namespace XamarinFormsMvvmAdaptor
 
         public static void SetMainPage(string key)
         {
-            if (IoCGlobal.IsRegistered<IMultiNavigation>())
+            if (Ioc.IsRegistered<IMultiNavigation>())
             {
-                var multi = IoCGlobal.Resolve<IMultiNavigation>();
+                var multi = Ioc.Resolve<IMultiNavigation>();
                 if (multi.NavigationControllers.Count > 0)
                     Application.Current.MainPage = multi.NavigationControllers[key].NavigationRoot;                
             }
