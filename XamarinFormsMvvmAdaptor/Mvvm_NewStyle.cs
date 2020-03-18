@@ -34,11 +34,19 @@ namespace XamarinFormsMvvmAdaptor
             => typeof(T).GetConstructor(Type.EmptyTypes) != null;
 
         ///<inheritdoc/>
-        public Task DiPushAsync<TViewModel>(
+        public Task NewPushAsync<TViewModel>(
             object navigationData = null, bool animated = true)
             where TViewModel : IAdaptorViewModel
         {
             return InternalPushAsync<TViewModel>(navigationData, animated);
+        }
+
+        ///<inheritdoc/>
+        public Task NewPushModalAsync<TViewModel>(
+            object navigationData = null, bool animated = true)
+            where TViewModel : IAdaptorViewModel
+        {
+            return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
         }
 
         async Task InternalPushAsync<TViewModel>(
@@ -58,7 +66,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    if(isModal)
+                    if (isModal)
                         await NavigationRoot.Navigation.PushModalAsync(
                             ModalStack.Any()
                             ? page
@@ -79,12 +87,6 @@ namespace XamarinFormsMvvmAdaptor
                 await TopViewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
         }
 
-        ///<inheritdoc/>
-        public Task DiPushModalAsync<TViewModel>(
-            object navigationData = null, bool animated = true)
-            where TViewModel : IAdaptorViewModel
-        {
-            return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
-        }
+
     }
 }

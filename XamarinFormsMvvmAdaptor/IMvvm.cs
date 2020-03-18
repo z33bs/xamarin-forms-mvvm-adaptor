@@ -197,8 +197,8 @@ namespace XamarinFormsMvvmAdaptor
 
         #region CombinedStyle experimental
         IIoc IocLocal { get; }
-        Task DiPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
-        Task DiPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
+        Task NewPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
+        Task NewPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
         #endregion
     }
 }
