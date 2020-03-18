@@ -34,51 +34,38 @@ namespace XamarinFormsMvvmAdaptor
             => typeof(T).GetConstructor(Type.EmptyTypes) != null;
 
         ///<inheritdoc/>
-        public async Task DiPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
+        public Task DiPushAsync<TViewModel>(
+            object navigationData = null, bool animated = true)
+            where TViewModel : IAdaptorViewModel
         {
-            var viewModel = ResolveOrCreateViewModel<TViewModel>();
-            var page = GetPageForPush(viewModel);
-
-            var isPushedTcs = new TaskCompletionSource<bool>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    await NavigationRoot.Navigation.PushAsync(page, animated);
-                    isPushedTcs.SetResult(true);
-                }
-                catch (Exception ex)
-                {
-                    isPushedTcs.SetException(ex);
-                }
-            });
-
-            if (await isPushedTcs.Task)
-            {
-                await InitializeVmForPageAsync(page, navigationData).ConfigureAwait(false);
-                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
-            }
+            return InternalPushAsync<TViewModel>(navigationData, animated);
         }
 
-
-        ///<inheritdoc/>
-        public async Task DiPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
+        async Task InternalPushAsync<TViewModel>(
+            object navigationData = null, bool animated = true, bool isModal = false)
+            where TViewModel : IAdaptorViewModel
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
             var page = GetPageForPush(viewModel);
+
+            page.Appearing += new WeakEventHandler<EventArgs>(
+                viewModel.OnViewAppearing).Handler;
+            page.Disappearing += new WeakEventHandler<EventArgs>(
+                viewModel.OnViewDisappearing).Handler;
 
             var isPushedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
             {
                 try
                 {
-                    await NavigationRoot.Navigation
-                    .PushModalAsync(
-                        this.ModalStack.Any()
+                    if(isModal)
+                        await NavigationRoot.Navigation.PushModalAsync(
+                            ModalStack.Any()
                             ? page
                             : new NavigationPage(page)
-                        , animated)
-                    .ConfigureAwait(false);
+                            , animated);
+                    else
+                        await NavigationRoot.Navigation.PushAsync(page, animated);
 
                     isPushedTcs.SetResult(true);
                 }
@@ -89,11 +76,15 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             if (await isPushedTcs.Task)
-            {
-                //await InitializeVmForPageAsync(page, navigationData).ConfigureAwait(false);
-                await TopViewModel.InitializeAsync(navigationData).ConfigureAwait(false);
-                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
-            }
+                await TopViewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
+        }
+
+        ///<inheritdoc/>
+        public Task DiPushModalAsync<TViewModel>(
+            object navigationData = null, bool animated = true)
+            where TViewModel : IAdaptorViewModel
+        {
+            return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
         }
     }
 }

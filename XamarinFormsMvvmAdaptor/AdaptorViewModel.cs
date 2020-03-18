@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MvvmHelpers;
 
 namespace XamarinFormsMvvmAdaptor
@@ -14,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="navigationData">Any data which could be useful for ViewModel Initialisation</param>
         /// <returns></returns>
-        public virtual Task InitializeAsync(object navigationData)
+        public virtual Task OnViewPushedAsync(object navigationData)
         {
             return Task.FromResult(false);
         }
@@ -27,6 +28,14 @@ namespace XamarinFormsMvvmAdaptor
         public virtual Task OnAppearingAsync()
         {
             return Task.FromResult(false);
+        }
+
+        public virtual void OnViewAppearing(object sender, EventArgs e)
+        {
+        }
+
+        public virtual void OnViewDisappearing(object sender, EventArgs e)
+        {
         }
     }
 }

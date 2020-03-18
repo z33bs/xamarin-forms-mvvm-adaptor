@@ -82,7 +82,7 @@ namespace XamarinFormsMvvmAdaptor
         #region Vanilla Implementation
         /// <summary>
         /// Set the <see cref="RootPage"/>, and initialize its ViewModel,
-        /// running the <see cref="IAdaptorViewModel.InitializeAsync(object)"/>
+        /// running the <see cref="IAdaptorViewModel.OnViewPushedAsync(object)"/>
         /// and <see cref="IAdaptorViewModel.OnAppearingAsync"/> methods.
         /// </summary>
         /// <returns></returns>
@@ -92,7 +92,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack given a <typeparamref name="TViewModel"/>.
         /// </summary>
         /// <typeparam name="TViewModel">ViewModel to Push</typeparam>
-        /// <param name="navigationData">Optional navigation data to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method of the <typeparamref name="TViewModel"/></param>
+        /// <param name="navigationData">Optional navigation data to be passed to the <see cref="AdaptorViewModel.OnViewPushedAsync(object)"/>  method of the <typeparamref name="TViewModel"/></param>
         /// <param name="animated">Option whether to animate the push or not</param>
         /// <returns></returns>
         Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
@@ -101,7 +101,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new Modal page onto the navigation stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.InitializeAsync(object)"/>  method</param>
+        /// <param name="navigationData">Object to be passed to the <see cref="AdaptorViewModel.OnViewPushedAsync(object)"/>  method</param>
         /// <param name="animated">Animate the Push</param>
         /// <returns></returns>
         Task PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
@@ -113,7 +113,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <typeparam name="TViewModelExisting"></typeparam>
         /// <typeparam name="TViewModelNew"></typeparam>
         /// <param name="navigationData">Optional navigation data that will be passed to
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/></param>
+        /// <see cref="AdaptorViewModel.OnViewPushedAsync(object)"/></param>
         /// <returns></returns>
         Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IAdaptorViewModel;
         #endregion
@@ -127,7 +127,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.OnViewPushedAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
         Task DiPushAsync(IAdaptorViewModel viewModel, object navigationData = null, bool animated = true);
@@ -137,7 +137,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.OnViewPushedAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
         Task DiPushModalAsync(IAdaptorViewModel viewModel, object navigationData = null, bool animated = true);
@@ -149,7 +149,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <typeparam name="TViewModelExisting"></typeparam>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Optional navigation data that will be passed to the
-        /// <see cref="AdaptorViewModel.InitializeAsync(object)"/> method</param>
+        /// <see cref="AdaptorViewModel.OnViewPushedAsync(object)"/> method</param>
         /// <returns></returns>
         Task DiInsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null);
 

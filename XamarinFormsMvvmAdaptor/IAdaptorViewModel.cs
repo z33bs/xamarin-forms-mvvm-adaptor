@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace XamarinFormsMvvmAdaptor
 {
@@ -14,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="navigationData">Any data required for ViewModel initialisation</param>
         /// <returns></returns>
-        Task InitializeAsync(object navigationData);
+        Task OnViewPushedAsync(object navigationData);
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/> appears
         /// at the top of the <see cref="Mvvm.MainStack"/>
@@ -22,5 +23,8 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <returns></returns>
         Task OnAppearingAsync();
+
+        void OnViewAppearing(object sender, EventArgs e);
+        void OnViewDisappearing(object sender, EventArgs e);
     }
 }

@@ -139,11 +139,11 @@ namespace XamarinFormsMvvmAdaptor
                     $"{nameof(Mvvm)} is not initialized. Please run {nameof(InitAsync)} first.");
         }
 
-        private async Task InitializeVmForPageAsync(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
+        private async Task InitializeVmAsync(Page page, object initialisationParameter, bool continueOnCapturedContext = false)
         {
             try
             {
-                await (page.BindingContext as IAdaptorViewModel).InitializeAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
+                await (page.BindingContext as IAdaptorViewModel).OnViewPushedAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
             }
             catch (NullReferenceException ex)
             {
