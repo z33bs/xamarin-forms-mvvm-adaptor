@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -84,7 +84,7 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             if (await isPushedTcs.Task)
-                await TopViewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
+                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
         }
 
 
