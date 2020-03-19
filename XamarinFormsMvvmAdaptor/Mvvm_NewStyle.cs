@@ -53,13 +53,11 @@ namespace XamarinFormsMvvmAdaptor
             object navigationData = null, bool animated = true, bool isModal = false)
             where TViewModel : IAdaptorViewModel
         {
+            //todo clean up unused InstantiatePage and Other such things once finished with NewStyle stuff
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
-            var page = GetPageForPush(viewModel);
-
-            page.Appearing += new WeakEventHandler<EventArgs>(
-                viewModel.OnViewAppearing).Handler;
-            page.Disappearing += new WeakEventHandler<EventArgs>(
-                viewModel.OnViewDisappearing).Handler;
+            var page = CreatePageFor<TViewModel>();
+            BindViewModelToPage(page, viewModel);
+            WirePageEventsToViewModel(viewModel, page);
 
             var isPushedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
@@ -87,6 +85,18 @@ namespace XamarinFormsMvvmAdaptor
                 await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
         }
 
+        private static Page CreatePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
+        {
+            return Activator.CreateInstance(
+                    GetPageTypeForViewModel<TViewModel>()) as Page;
+        }
 
+        private static void WirePageEventsToViewModel(IAdaptorViewModel viewModel, Page page)
+        {
+            page.Appearing += new WeakEventHandler<EventArgs>(
+                viewModel.OnViewAppearing).Handler;
+            page.Disappearing += new WeakEventHandler<EventArgs>(
+                viewModel.OnViewDisappearing).Handler;
+        }
     }
 }

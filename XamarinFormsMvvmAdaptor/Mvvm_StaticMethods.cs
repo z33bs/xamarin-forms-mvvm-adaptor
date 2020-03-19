@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Reflection;
 using Xamarin.Forms;
@@ -57,6 +57,11 @@ namespace XamarinFormsMvvmAdaptor
                 throw new InvalidCastException("The View associated with your ViewModel doesn't appear to be of type" +
                     " Xamarin.Forms.Page", ex);
             }
+        }
+
+        private static Type GetPageTypeForViewModel<TViewModel>()
+        {
+            return GetPageTypeForViewModel(typeof(TViewModel));
         }
 
         private static Type GetPageTypeForViewModel(Type viewModelType)

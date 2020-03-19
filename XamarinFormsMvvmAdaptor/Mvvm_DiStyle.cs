@@ -7,7 +7,7 @@ namespace XamarinFormsMvvmAdaptor
     ///<inheritdoc/>
     public partial class Mvvm : IMvvm
     {
-        private Page GetPageForPush(IAdaptorViewModel viewModel)
+        private Page CreatePageAndWireToVm(IAdaptorViewModel viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
             BindViewModelToPage(page, viewModel);
@@ -38,7 +38,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task DiInsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null)
         {
-            var newPage = GetPageForPush(viewModel);
+            var newPage = CreatePageAndWireToVm(viewModel);
             BindViewModelToPage(newPage, viewModel);
 
             var anchorPage = GetPageTypeForViewModel(typeof(TViewModelExisting));
@@ -57,7 +57,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task DiPushAsync(IAdaptorViewModel viewModel, object navigationData = null, bool animated = true)
         {
-            var page = GetPageForPush(viewModel);
+            var page = CreatePageAndWireToVm(viewModel);
 
             var isPushedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
@@ -83,7 +83,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task DiPushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
         {
-            var page = GetPageForPush(viewModel);
+            var page = CreatePageAndWireToVm(viewModel);
 
             var isPushedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
