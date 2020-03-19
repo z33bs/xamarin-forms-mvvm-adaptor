@@ -8,7 +8,20 @@ namespace XamarinFormsMvvmAdaptor
     ///<inheritdoc/>
     public partial class Mvvm : IMvvm
     {
-        //public IIocContainer LocalContainer { get; set; } = new IocContainer();
+        public Page Initialize<TViewModel>() where TViewModel : IAdaptorViewModel
+        {
+            var viewModel = ResolveOrCreateViewModel<TViewModel>();
+            var page = CreatePageFor<TViewModel>();
+
+            BindViewModelToPage(page, viewModel);
+            WirePageEventsToViewModel(viewModel, page);
+
+            NavigationRoot = new NavigationPage(page);
+
+            IsInitialized = true;
+
+            return NavigationRoot;
+        }
 
         private IAdaptorViewModel ResolveOrCreateViewModel<TViewModel>() where TViewModel : IAdaptorViewModel
         {

@@ -199,6 +199,7 @@ namespace XamarinFormsMvvmAdaptor
         IIoc IocLocal { get; }
         Task NewPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
         Task NewPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel;
+        Page Initialize<TViewModel>() where TViewModel : IAdaptorViewModel;
         #endregion
     }
 }
