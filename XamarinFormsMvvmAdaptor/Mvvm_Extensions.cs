@@ -15,7 +15,16 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public static Page GetCurrentPage(this IReadOnlyList<Page> stack)
         {
-            return stack[stack.Count - 1];
+            return InternalGetCurrentPage(stack);
+        }
+
+        private static Page InternalGetCurrentPage(IReadOnlyList<Page> stack)
+        {
+            var page = stack[stack.Count - 1];
+            if (page is NavigationPage)
+                return (page as NavigationPage).RootPage;
+
+            return page;
         }
 
         /// <summary>
@@ -25,8 +34,19 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public static Page GetPreviousPage(this IReadOnlyList<Page> stack)
         {
-            if(stack.Count > 1)
-                return stack[stack.Count - 2];
+            return InternalGetPreviousPage(stack);
+        }
+
+        private static Page InternalGetPreviousPage(IReadOnlyList<Page> stack)
+        {
+            if (stack.Count > 1)
+            {
+                var page = stack[stack.Count - 2];
+                if (page is NavigationPage)
+                    return (page as NavigationPage).RootPage;
+
+                return page;
+            }
 
             return null;
         }
@@ -38,7 +58,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         public static IAdaptorViewModel GetCurrentViewModel(this IReadOnlyList<Page> stack)
         {
-            return stack[stack.Count - 1].BindingContext as IAdaptorViewModel;
+            return InternalGetCurrentPage(stack).BindingContext as IAdaptorViewModel;
         }
 
         /// <summary>
@@ -50,7 +70,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             if (stack.Count > 1)
             {
-                return stack[stack.Count - 2].BindingContext as IAdaptorViewModel;
+                return InternalGetPreviousPage(stack).BindingContext as IAdaptorViewModel;
             }
 
             return null;

@@ -20,6 +20,11 @@ namespace XamarinFormsMvvmAdaptor
             return Task.FromResult(false);
         }
 
+        public virtual Task OnViewRemovedAsync()
+        {
+            return Task.FromResult(true);
+        }
+
         /// <summary>
         /// Runs automatically after the associated page appears ontop of the stack
         /// More precisely, if the page is pushed, or if a page above it was popped

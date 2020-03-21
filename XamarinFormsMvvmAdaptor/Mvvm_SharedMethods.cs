@@ -156,30 +156,37 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public void RemovePreviousPageFromMainStack()
+        public async Task RemovePreviousPageFromMainStack()
         {
+            var removedViewModel = MainStack.GetPreviousViewModel();
+
             if (MainStack.Count > 1)
                 NavigationRoot.Navigation.RemovePage(
-                    MainStack[MainStack.Count - 2]);
+                    MainStack.GetPreviousPage());
+
+            await removedViewModel.OnViewRemovedAsync();
         }
 
         ///<inheritdoc/>
-        public async Task CollapseMainStack()
+        public async Task<IAdaptorViewModel> CollapseMainStack()
         {
-            if (MainStack.Count == 1)
-                return;
-
-            while (MainStack.Count > 1)
+            if (MainStack.Count > 1)
             {
-                NavigationRoot.Navigation.RemovePage(MainStack.GetPreviousPage());
-            }
+                while (MainStack.Count > 1)
+                {
+                    var removedViewModel = MainStack.GetPreviousViewModel();
+                    NavigationRoot.Navigation.RemovePage(MainStack.GetPreviousPage());
+                    await removedViewModel.OnViewRemovedAsync();
+                }
 
-            if (ModalStack.Count == 0)
-                await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+                if (ModalStack.Count == 0)
+                    await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+            }
+            return MainStack.GetCurrentViewModel();
         }
 
         ///<inheritdoc/>
-        public void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
+        public async Task RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
@@ -188,14 +195,17 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageType)
                 {
                     NavigationRoot.Navigation.RemovePage(item);
+                    await (item.BindingContext as IAdaptorViewModel).OnViewRemovedAsync();
                     break;
                 }
             }
         }
 
         ///<inheritdoc/>
-        public async Task PopAsync(bool animated = true)
+        public async Task<IAdaptorViewModel> PopAsync(bool animated = true)
         {
+            var poppedViewModel = MainStack.GetCurrentViewModel();
+
             var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
             {
@@ -210,15 +220,22 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPoppedTcs.Task
-                && ModalStack.Count == 0)
-                await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+            if (await isPoppedTcs.Task)
+            {
+                await poppedViewModel.OnViewRemovedAsync();
 
+                if (ModalStack.Count == 0)
+                    await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+            }
+
+            return MainStack.GetCurrentViewModel();
         }
 
         ///<inheritdoc/>
-        public async Task PopToRootAsync(bool animated = true)
+        public async Task<IAdaptorViewModel> PopToRootAsync(bool animated = true)
         {
+            var poppedViewModel = MainStack.GetCurrentViewModel();
+
             var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
             {
@@ -233,14 +250,22 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPoppedTcs.Task
-                && ModalStack.Count == 0)
-                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+            if (await isPoppedTcs.Task)
+            {
+                await poppedViewModel.OnViewRemovedAsync();
+
+                if (ModalStack.Count == 0)
+                    await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+            }
+
+            return RootViewModel;
         }
 
         ///<inheritdoc/>
-        public async Task PopModalAsync(bool animated = true)
+        public async Task<IAdaptorViewModel> PopModalAsync(bool animated = true)
         {
+            var poppedViewModel = ModalStack.GetCurrentViewModel();
+
             var isPoppedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
             {
@@ -256,7 +281,12 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             if (await isPoppedTcs.Task)
+            {
+                await poppedViewModel.OnViewRemovedAsync();
                 await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
+            }
+
+            return TopViewModel;
         }
     }
 }

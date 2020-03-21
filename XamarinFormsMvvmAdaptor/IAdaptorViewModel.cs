@@ -16,6 +16,9 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="navigationData">Any data required for ViewModel initialisation</param>
         /// <returns></returns>
         Task OnViewPushedAsync(object navigationData);
+
+        Task OnViewRemovedAsync();
+
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/> appears
         /// at the top of the <see cref="Mvvm.MainStack"/>

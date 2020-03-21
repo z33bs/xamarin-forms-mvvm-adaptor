@@ -157,27 +157,27 @@ namespace XamarinFormsMvvmAdaptor
         /// Asynchronously removes the <see cref="TopPage" /> from the navigation stack, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        Task PopAsync(bool animated = true);
+        Task<IAdaptorViewModel> PopAsync(bool animated = true);
 
         /// <summary>
         /// Asynchronously dismisses the most recent modally presented <see cref="Page" />, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        Task PopModalAsync(bool animated = true);
+        Task<IAdaptorViewModel> PopModalAsync(bool animated = true);
 
         /// <summary>
         /// Pops the entire <see cref="MainStack"/>, leaving only the <see cref="RootPage"/>, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
         /// <returns></returns>
-        Task PopToRootAsync(bool animated = true);
+        Task<IAdaptorViewModel> PopToRootAsync(bool animated = true);
 
         /// <summary>
         /// Removes a <see cref="Page"/> from the <see cref="MainStack"/>
         /// that corresponds to a given ViewModel
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        void RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel;
+        Task RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel;
         #endregion
 
         #region Additional Shared Methods
@@ -186,13 +186,13 @@ namespace XamarinFormsMvvmAdaptor
         /// Removes all pages in the <see cref="MainStack"/> except for
         /// the <see cref="TopPage"/>, which becomes the <see cref="RootPage"/> of the stack.
         /// </summary>
-        Task CollapseMainStack();
+        Task<IAdaptorViewModel> CollapseMainStack();
 
         /// <summary>
         /// Removes the <see cref="HiddenPage"/> from the <see cref="MainStack"/> but not the <see cref="ModalStack"/>
         /// </summary>
         /// <returns></returns>
-        void RemovePreviousPageFromMainStack();
+        Task RemovePreviousPageFromMainStack();
         #endregion
 
         #region CombinedStyle experimental
