@@ -8,7 +8,7 @@ namespace XamarinFormsMvvmAdaptor
     ///<inheritdoc/>
     public partial class Mvvm : IMvvm
     {
-        public Page Initialize<TViewModel>() where TViewModel : IAdaptorViewModel
+        public Page Initialize<TViewModel>() where TViewModel : class, IAdaptorViewModel
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
             var page = CreatePageFor<TViewModel>();
@@ -23,7 +23,7 @@ namespace XamarinFormsMvvmAdaptor
             return NavigationRoot;
         }
 
-        private IAdaptorViewModel ResolveOrCreateViewModel<TViewModel>() where TViewModel : IAdaptorViewModel
+        private TViewModel ResolveOrCreateViewModel<TViewModel>() where TViewModel : class, IAdaptorViewModel
         {
             if (Ioc.IsRegistered<TViewModel>())
                 return Ioc.Resolve<TViewModel>();
@@ -46,12 +46,27 @@ namespace XamarinFormsMvvmAdaptor
         private bool HasParamaterlessConstructor<T>()
             => typeof(T).GetConstructor(Type.EmptyTypes) != null;
 
+        public Task<TViewModel> NewPushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true)
+            where TViewModel : class, IAdaptorViewModel
+        {
+            return InternalPushAsync(viewModel, navigationData, animated);
+        }
+
+        public Task<TViewModel> NewPushModalAsync<TViewModel>(TViewModel viewModel,
+            object navigationData = null, bool animated = true)
+            where TViewModel : class, IAdaptorViewModel
+        {
+            return InternalPushAsync(viewModel, navigationData, animated, isModal: true);
+        }
+
         ///<inheritdoc/>
         public Task<TViewModel> NewPushAsync<TViewModel>(
             object navigationData = null, bool animated = true)
             where TViewModel : class, IAdaptorViewModel
         {
-            return InternalPushAsync<TViewModel>(navigationData, animated);
+            var viewModel = ResolveOrCreateViewModel<TViewModel>();
+
+            return InternalPushAsync(viewModel,navigationData, animated);
         }
 
         ///<inheritdoc/>
@@ -59,15 +74,16 @@ namespace XamarinFormsMvvmAdaptor
             object navigationData = null, bool animated = true)
             where TViewModel : class, IAdaptorViewModel
         {
-            return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
+            var viewModel = ResolveOrCreateViewModel<TViewModel>();
+
+            return InternalPushAsync(viewModel,navigationData, animated, isModal: true);
         }
 
-        async Task<TViewModel> InternalPushAsync<TViewModel>(
+        async Task<TViewModel> InternalPushAsync<TViewModel>(TViewModel viewModel,
             object navigationData = null, bool animated = true, bool isModal = false)
             where TViewModel : class, IAdaptorViewModel
         {
             //todo clean up unused InstantiatePage and Other such things once finished with NewStyle stuff
-            var viewModel = ResolveOrCreateViewModel<TViewModel>();
             var page = CreatePageFor<TViewModel>();
             BindViewModelToPage(page, viewModel);
             WirePageEventsToViewModel(viewModel, page);

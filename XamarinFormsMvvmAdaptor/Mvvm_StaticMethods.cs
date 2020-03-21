@@ -12,7 +12,7 @@ namespace XamarinFormsMvvmAdaptor
         public static void SetMainPage()
         {
 
-            if(Ioc.IsRegistered<IMvvm>())
+            if (Ioc.IsRegistered<IMvvm>())
                 Application.Current.MainPage = Ioc.Resolve<IMvvm>().NavigationRoot;
 
             else
@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 var multi = Ioc.Resolve<IMultiNavigation>();
                 if (multi.NavigationControllers.Count > 0)
-                    Application.Current.MainPage = multi.NavigationControllers[key].NavigationRoot;                
+                    Application.Current.MainPage = multi.NavigationControllers[key].NavigationRoot;
             }
             else
                 throw new Exception("Could not resolve a NavController!");
@@ -68,7 +68,11 @@ namespace XamarinFormsMvvmAdaptor
         {
             var nameSpace = viewModelType.Namespace
                             .Replace(_viewModelSubNamespace, _viewSubNamespace);
-            var name = ReplaceLastOccurrence(
+            var name =
+                viewModelType.IsInterface && viewModelType.Name.StartsWith("I")
+                ? ReplaceLastOccurrence(
+                            viewModelType.Name.Substring(1), _viewModelSuffix, _viewSuffix)
+                : ReplaceLastOccurrence(
                             viewModelType.Name, _viewModelSuffix, _viewSuffix);
 
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
