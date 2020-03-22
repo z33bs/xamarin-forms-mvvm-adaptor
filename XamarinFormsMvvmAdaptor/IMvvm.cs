@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Returns the <see cref="NavigationPage"/> which is the root of the <see cref="IMvvm"/>.
         /// Set your <see cref="Application.MainPage"/> to this.
         /// </summary>
-        NavigationPage NavigationRoot { get; }
+        Page NavigationRoot { get; }
 
         /// <summary>
         /// Gets the stack of pages in the navigation
@@ -199,7 +199,7 @@ namespace XamarinFormsMvvmAdaptor
         IIoc IocLocal { get; }
         Task<TViewModel> NewPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IAdaptorViewModel;
         Task<TViewModel> NewPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IAdaptorViewModel;
-        Page Initialize<TViewModel>() where TViewModel : class, IAdaptorViewModel;
+        Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IAdaptorViewModel;
 
         Task<TViewModel> NewPushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true) where TViewModel : class, IAdaptorViewModel;
         Task<TViewModel> NewPushModalAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true) where TViewModel : class, IAdaptorViewModel;

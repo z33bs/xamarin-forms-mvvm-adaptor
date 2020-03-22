@@ -24,8 +24,8 @@ namespace XamarinFormsMvvmAdaptor
 
         public IIoc IocLocal { get; } = new Ioc();
 
-        NavigationPage root;
-        public NavigationPage NavigationRoot
+        Page root;
+        public Page NavigationRoot
         {
             get
             {

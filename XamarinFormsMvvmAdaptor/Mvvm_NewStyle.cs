@@ -29,7 +29,7 @@ namespace XamarinFormsMvvmAdaptor
             IsInitialized = true;
         }
 
-        public Page Initialize<TViewModel>() where TViewModel : class, IAdaptorViewModel
+        public Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IAdaptorViewModel
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
             var page = CreatePageFor<TViewModel>();
@@ -37,7 +37,9 @@ namespace XamarinFormsMvvmAdaptor
             BindViewModelToPage(page, viewModel);
             WirePageEventsToViewModel(viewModel, page);
 
-            NavigationRoot = new NavigationPage(page);
+            NavigationRoot = mustWrapInNavigationPage
+                ? new NavigationPage(page)
+                : page;
 
             IsInitialized = true;
 
