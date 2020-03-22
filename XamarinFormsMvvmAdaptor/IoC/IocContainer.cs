@@ -12,18 +12,26 @@ namespace XamarinFormsMvvmAdaptor
     {
         public IList<RegisteredObject> RegisteredObjects { get; } = new List<RegisteredObject>();
 
-        public bool IsRegistered<TService>() where TService : notnull
+        public bool IsRegistered(Type service)
         {
             return RegisteredObjects.FirstOrDefault(
-                o => o.TypeToResolve == typeof(TService))
+                o => o.TypeToResolve == service)
                 != null;
+        }
+        public bool IsRegistered<TService>() where TService : notnull
+        {
+            return IsRegistered(typeof(TService));
+        }
+
+        public object Resolve(Type service)
+        {
+            return ResolveObject(service);
         }
 
         public TService Resolve<TService>() where TService : notnull
         {
             return (TService)ResolveObject(typeof(TService));
         }
-
         #region Internal methods
 
         private object ResolveObject(Type typeToResolve)

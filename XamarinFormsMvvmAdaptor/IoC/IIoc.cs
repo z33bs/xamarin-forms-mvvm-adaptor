@@ -10,7 +10,9 @@ namespace XamarinFormsMvvmAdaptor
         IInstanceRegisterOptions Register(object concreteInstance);
         IInstanceRegisterOptions Register(Func<object> @delegate);//Expression<Func<object>> expression);
         T Resolve<T>() where T : notnull;
+        object Resolve(Type typeToResolve);
         bool IsRegistered<T>() where T : notnull;
+        bool IsRegistered(Type typeToResolve);
         void Use3rdPartyContainer(IIocContainer iocContainer);
     }
 }

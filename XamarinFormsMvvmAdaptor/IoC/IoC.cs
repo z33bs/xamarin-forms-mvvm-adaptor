@@ -68,6 +68,16 @@ namespace XamarinFormsMvvmAdaptor
         {
             return container.IsRegistered<T>();
         }
+
+        public object Resolve(Type typeToResolve)
+        {
+            return container.Resolve(typeToResolve);
+        }
+
+        public bool IsRegistered(Type typeToResolve)
+        {
+            return container.IsRegistered(typeToResolve);
+        }
         #endregion
 
         private class RegisterOptions : IRegisterOptions

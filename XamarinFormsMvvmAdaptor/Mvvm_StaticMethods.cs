@@ -84,6 +84,22 @@ namespace XamarinFormsMvvmAdaptor
             return Type.GetType(viewAssemblyName);
         }
 
+        private static Type GetViewModelTypeForPage(Type pageType)
+        {
+            var nameSpace = pageType.Namespace
+                            .Replace(_viewSubNamespace, _viewModelSubNamespace);
+            var name = ReplaceLastOccurrence(
+                            pageType.Name, _viewSuffix, _viewModelSuffix);
+
+            var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
+                , "{0}.{1}, {2}"
+                , nameSpace
+                , name
+                , pageType.GetTypeInfo().Assembly.FullName);
+
+            return Type.GetType(viewAssemblyName);
+        }
+
         private static string ReplaceLastOccurrence(string source, string find, string replace)
         {
             int place = source.LastIndexOf(find);
