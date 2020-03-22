@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace XamarinFormsMvvmAdaptor
 {
+    [AttributeUsage(AttributeTargets.Constructor)]
     public class MultipleNavigationAttribute : Attribute
     {
         public IList<string> MvvmControllerKeys { get; } = new List<string>();
