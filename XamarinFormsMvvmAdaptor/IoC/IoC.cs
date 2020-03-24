@@ -6,6 +6,9 @@ using System.Reflection;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
 //todo Add constructor decorator attribute
+//Functionality: Remove, ListAll, Dispose
+//See if SetMainPage methods commented out
+//  in static partial class are adaptable/relevant to instance?
 namespace XamarinFormsMvvmAdaptor
 {
     public class Test
@@ -38,7 +41,7 @@ namespace XamarinFormsMvvmAdaptor
         //            $"Use the Adaptor pattern if needed");
         //}
 
-        public void ConfigureResolveMode(bool isStrictMode = true)
+        public void ConfigureResolveMode(bool isStrictMode)
             => mustBeRegisteredToResolve = isStrictMode;
 
         #region Registration
@@ -143,15 +146,15 @@ namespace XamarinFormsMvvmAdaptor
 
         private object ResolveObject(Type typeToResolve)
         {
-            var registeredObject = GetRegisteredObjectAndScope(typeToResolve).Item1;
+            var registeredObject = GetRegisteredObjectAndScope(typeToResolve)?.Item1;
 
             if (registeredObject != null)
                 return GetInstance(registeredObject);
 
             if (mustBeRegisteredToResolve)
-                throw new TypeNotRegisteredException(string.Format(
+                throw new TypeNotRegisteredException(
                     $"The type {typeToResolve.Name} has not been registered. Either " +
-                    $"register the class, or set {nameof(mustBeRegisteredToResolve)} to false."));
+                    $"register the class, or configure {nameof(ConfigureResolveMode)}.");
 
             if (HasParamaterlessConstructor(typeToResolve))
                 return Activator.CreateInstance(typeToResolve);

@@ -5,7 +5,7 @@ namespace XamarinFormsMvvmAdaptor
 {
     public interface IIoc
     {
-        void ConfigureResolveMode(bool isStrictMode = true);
+        void ConfigureResolveMode(bool isStrictMode);
         bool IsRegistered<T>() where T : notnull;
         bool IsRegistered(Type typeToResolve);
         Scope IsRegisteredScope<T>() where T : notnull;

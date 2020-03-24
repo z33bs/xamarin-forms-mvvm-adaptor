@@ -5,6 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
+//todo
+//Add config for mustTryInterfaceVariation
+
 namespace XamarinFormsMvvmAdaptor
 {
     ///<inheritdoc/>
@@ -47,17 +50,17 @@ namespace XamarinFormsMvvmAdaptor
             if (page is TabbedPage tabbedPage)
             {
                 //Look for multi attribute
-                var constructorInfos = viewModel.GetType()
+                var constructorsDecorated = viewModel.GetType()
                     .GetConstructors()
                     .Where(c => c.GetCustomAttribute<MultipleNavigationAttribute>() != null);
 
-                if (constructorInfos.Any())
+                if (constructorsDecorated.Any())
                 {
-                    var multiNavigationAttribute = constructorInfos
+                    var multiNavigationAttribute = constructorsDecorated
                         .First()
                         .GetCustomAttribute<MultipleNavigationAttribute>();
 
-                    var multiNav = this.ResolveOrCreateObject(typeof(IMultiNavigation)) as IMultiNavigation;
+                    var multiNav = IocLocal.Resolve(typeof(IMultiNavigation)) as IMultiNavigation;
 
                     int i = 0;
                     foreach (var item in multiNavigationAttribute.MvvmControllerKeys)
@@ -115,18 +118,6 @@ namespace XamarinFormsMvvmAdaptor
             if (typeof(IAdaptorViewModel).IsAssignableFrom(viewModelType.GetType()))
                 throw new InvalidOperationException("viewModelType is expected to implement IAdaptorViewModel");
 
-            //if (Ioc.IsRegistered(viewModelType))
-            //    return Ioc.Resolve(viewModelType) as IAdaptorViewModel;
-
-            //if (IocLocal.IsRegistered(viewModelType))
-            //    return IocLocal.Resolve(viewModelType) as IAdaptorViewModel;
-
-            //if (HasParamaterlessConstructor(viewModelType))
-            //    return Activator.CreateInstance(viewModelType) as IAdaptorViewModel;
-
-            var viewModel = ResolveOrCreateObject(viewModelType);
-            if (viewModel != null)
-                return viewModel as IAdaptorViewModel;
 
             if (mustTryInterfaceVariation)
             {
@@ -136,10 +127,14 @@ namespace XamarinFormsMvvmAdaptor
                     , $"I{viewModelType.Name}"
                     , viewModelType.GetTypeInfo().Assembly.FullName);
 
-                viewModel = ResolveOrCreateObject(Type.GetType(viewModelInterfaceTypeName));
-                if (viewModel != null)
-                    return viewModel as IAdaptorViewModel;
+                var iviewModelType = Type.GetType(viewModelInterfaceTypeName);
+
+                if (IocLocal.IsRegistered(iviewModelType))
+                    return IocLocal.Resolve(iviewModelType) as IAdaptorViewModel;
             }
+
+            //if ResolveMode not strict then will attempt Activator.Create
+            return IocLocal.Resolve(viewModelType) as IAdaptorViewModel;
 
             throw new InvalidOperationException(
                 $"Could not Resolve or Create {viewModelType.Name}" +
@@ -150,19 +145,19 @@ namespace XamarinFormsMvvmAdaptor
                 $" constructor.");
         }
 
-        private object ResolveOrCreateObject(Type type)
-        {
-            if (Ioc.IsRegistered(type))
-                return Ioc.Resolve(type);
+        //private object ResolveOrCreateObject(Type type)
+        //{
+        //    //if (Ioc.IsRegistered(type))
+        //    //    return Ioc.Resolve(type);
 
-            if (IocLocal.IsRegistered(type))
-                return IocLocal.Resolve(type);
+        //    //if (IocLocal.IsRegistered(type))
+        //    //    return IocLocal.Resolve(type);
 
-            if (HasParamaterlessConstructor(type))
-                return Activator.CreateInstance(type);
-
-            return null;
-        }
+        //    //if (HasParamaterlessConstructor(type))
+        //    //    return Activator.CreateInstance(type);
+        //    //return IocLocal.Resolve(type);
+        //    return null;
+        //}
 
         private bool HasParamaterlessConstructor<T>()
             => typeof(T).GetConstructor(Type.EmptyTypes) != null;

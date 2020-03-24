@@ -7,29 +7,28 @@ namespace XamarinFormsMvvmAdaptor
 {
     public partial class Mvvm
     {
-        public static IIoc Ioc { get; private set; } = new Ioc();
 
-        public static void SetMainPage()
-        {
+        //public static void SetMainPage()
+        //{
 
-            if (Ioc.IsRegistered<IMvvm>())
-                Application.Current.MainPage = Ioc.Resolve<IMvvm>().NavigationRoot;
+        //    if (Ioc.IsRegistered<IMvvm>())
+        //        Application.Current.MainPage = Ioc.Resolve<IMvvm>().NavigationRoot;
 
-            else
-                throw new Exception("Could not resolve a NavController!");
-        }
+        //    else
+        //        throw new Exception("Could not resolve a NavController!");
+        //}
 
-        public static void SetMainPage(string key)
-        {
-            if (Ioc.IsRegistered<IMultiNavigation>())
-            {
-                var multi = Ioc.Resolve<IMultiNavigation>();
-                if (multi.NavigationControllers.Count > 0)
-                    Application.Current.MainPage = multi.NavigationControllers[key].NavigationRoot;
-            }
-            else
-                throw new Exception("Could not resolve a NavController!");
-        }
+        //public static void SetMainPage(string key)
+        //{
+        //    if (Ioc.IsRegistered<IMultiNavigation>())
+        //    {
+        //        var multi = Ioc.Resolve<IMultiNavigation>();
+        //        if (multi.NavigationControllers.Count > 0)
+        //            Application.Current.MainPage = multi.NavigationControllers[key].NavigationRoot;
+        //    }
+        //    else
+        //        throw new Exception("Could not resolve a NavController!");
+        //}
 
         //public static void Use3rdPartyIoc(IIocContainer iocContainer)
         //{
