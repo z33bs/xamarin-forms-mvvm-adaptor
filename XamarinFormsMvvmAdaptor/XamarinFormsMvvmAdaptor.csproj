@@ -36,8 +36,12 @@
         <!--AUTO-->
         <PackageReference Include="Xamarin.Forms" Version="3.5.0.274416" />
         <PackageReference Include="Refractored.MvvmHelpers" Version="1.3.0" />
+        <None Include="IoC\IocContainer.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="IoC\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="IoC\IocContainer.cs" />
     </ItemGroup>
 </Project>
