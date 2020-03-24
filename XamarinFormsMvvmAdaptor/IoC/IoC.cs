@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
-//todo Resolve does hierarchy
 //todo Add constructor decorator attribute
 namespace XamarinFormsMvvmAdaptor
 {
@@ -21,6 +20,8 @@ namespace XamarinFormsMvvmAdaptor
     internal sealed class Ioc : IIoc
     //Interfaces controll fluent-Api grammer
     {
+        private static bool mustBeRegisteredToResolve = false;
+
         private IList<RegisteredObject> RegisteredObjects { get; } = new List<RegisteredObject>();
         private static IList<RegisteredObject> GlobalRegisteredObjects { get; } = new List<RegisteredObject>();
         //const string CANT_REGISTER_EXCEPTION =
@@ -37,18 +38,25 @@ namespace XamarinFormsMvvmAdaptor
         //            $"Use the Adaptor pattern if needed");
         //}
 
+        public void ConfigureResolveMode(bool isStrictMode = true)
+            => mustBeRegisteredToResolve = isStrictMode;
 
         #region Registration
         public IRegisterOptions Register<T>(Scope scope = Scope.Local) where T : notnull
         {
-            IList<RegisteredObject> container = scope == Scope.Global
-                ? GlobalRegisteredObjects
-                : RegisteredObjects;
+            var container = GetContainerForScope(scope);
 
             container
                 .Add(DefaultRegisteredObject<T>());
             return new RegisterOptions(container);
         }
+
+        private IList<RegisteredObject> GetContainerForScope(Scope scope)
+            => scope == Scope.Global
+                ? GlobalRegisteredObjects
+                : RegisteredObjects;
+
+
 
         //todo move to RO as constructor
         private static RegisteredObject DefaultRegisteredObject<T>()
@@ -58,20 +66,22 @@ namespace XamarinFormsMvvmAdaptor
                 LifeCycle.Transient
                 );
 
-        public IInstanceRegisterOptions Register(object concreteInstance)
+        public IInstanceRegisterOptions Register(object concreteInstance, Scope scope = Scope.Local)
         {
-            RegisteredObjects.Add(
+            var container = GetContainerForScope(scope);
+
+            container.Add(
                 new RegisteredObject(concreteInstance));
-            return new InstanceRegisterOptions(RegisteredObjects);
+            return new InstanceRegisterOptions(container);
         }
 
-        //todo if lambda could concievably have singleton / multi, but need to store delegate in RegisteredObject
-        public IInstanceRegisterOptions Register(Func<object> @delegate)//Expression<Func<object>> expression)
-        {
-            //todo find out how to pass this context in like in autofac
-            Register(@delegate.Invoke());
-            return new InstanceRegisterOptions(RegisteredObjects);
-        }
+        ////todo if lambda could concievably have singleton / multi, but need to store delegate in RegisteredObject
+        //public IInstanceRegisterOptions Register(Func<object> @delegate)//Expression<Func<object>> expression)
+        //{
+        //    //todo find out how to pass this context in like in autofac
+        //    Register(@delegate.Invoke());
+        //    return new InstanceRegisterOptions(RegisteredObjects);
+        //}
 
         #endregion
         #region Resolution
@@ -85,6 +95,11 @@ namespace XamarinFormsMvvmAdaptor
             return IsRegistered(typeof(T));
         }
 
+        public Scope IsRegisteredScope<T>() where T : notnull
+        {
+            return IsRegisteredScope(typeof(T));
+        }
+
         public object Resolve(Type typeToResolve)
         {
             return ResolveObject(typeToResolve);
@@ -92,9 +107,35 @@ namespace XamarinFormsMvvmAdaptor
 
         public bool IsRegistered(Type typeToResolve)
         {
-            return RegisteredObjects.FirstOrDefault(
-                o => o.TypeToResolve == typeToResolve)
-                != null;
+            return GetRegisteredObjectAndScope(typeToResolve) != null;
+        }
+
+        public Scope IsRegisteredScope(Type typeToResolve)
+        {
+            var registeredObjectTuple = GetRegisteredObjectAndScope(typeToResolve);
+
+            if (registeredObjectTuple == null)
+                throw new TypeNotRegisteredException(
+                    $"The type {typeToResolve.Name} has not been registered. " +
+                    $"Register the class or run {nameof(IsRegistered)} " +
+                    $"before calling {nameof(IsRegisteredScope)}.");
+
+            return registeredObjectTuple.Item2;
+        }
+
+        private Tuple<RegisteredObject, Scope> GetRegisteredObjectAndScope(Type typeToResolve)
+        {
+            var registeredObject = RegisteredObjects
+                .FirstOrDefault(o => o.TypeToResolve == typeToResolve);
+            if (registeredObject != null)
+                return new Tuple<RegisteredObject, Scope>(registeredObject, Scope.Local);
+
+            registeredObject = GlobalRegisteredObjects
+                .FirstOrDefault(o => o.TypeToResolve == typeToResolve);
+            if (registeredObject != null)
+                return new Tuple<RegisteredObject, Scope>(registeredObject, Scope.Global);
+
+            return null;
         }
         #endregion
 
@@ -102,14 +143,34 @@ namespace XamarinFormsMvvmAdaptor
 
         private object ResolveObject(Type typeToResolve)
         {
-            var registeredObject = RegisteredObjects.FirstOrDefault(o => o.TypeToResolve == typeToResolve);
-            if (registeredObject == null)
-            {
+            var registeredObject = GetRegisteredObjectAndScope(typeToResolve).Item1;
+
+            if (registeredObject != null)
+                return GetInstance(registeredObject);
+
+            if (mustBeRegisteredToResolve)
                 throw new TypeNotRegisteredException(string.Format(
-                    "The type {0} has not been registered", typeToResolve.Name));
-            }
-            return GetInstance(registeredObject);
+                    $"The type {typeToResolve.Name} has not been registered. Either " +
+                    $"register the class, or set {nameof(mustBeRegisteredToResolve)} to false."));
+
+            if (HasParamaterlessConstructor(typeToResolve))
+                return Activator.CreateInstance(typeToResolve);
+
+            //todo can try resolve constructor parameters and attemp Activator with params
+            //to be even more resilient
+
+            throw new TypeNotRegisteredException(
+                $"Could not Resolve or Create {typeToResolve.Name}" +
+                $". It is not registered in {nameof(Ioc)}." +
+                $"Furthermore, {typeToResolve.Name} " +
+                $"does not have a paramaterless constructor. Either " +
+                $"register the class, or give it a paramaterless " +
+                $"constructor.");
         }
+
+        private bool HasParamaterlessConstructor(Type type)
+            => type.GetConstructor(Type.EmptyTypes) != null;
+
         private object GetInstance(RegisteredObject registeredObject)
         {
             if (registeredObject.Instance == null ||
