@@ -105,11 +105,17 @@ namespace XamarinFormsMvvmAdaptor
 
         public object Resolve(Type typeToResolve)
         {
+            if (typeToResolve == null)
+                throw new ArgumentNullException($"{nameof(typeToResolve)} cannot be null");
+
             return ResolveObject(typeToResolve);
         }
 
         public bool IsRegistered(Type typeToResolve)
         {
+            if (typeToResolve == null)
+                throw new ArgumentNullException($"{nameof(typeToResolve)} cannot be null");
+
             return GetRegisteredObjectAndScope(typeToResolve) != null;
         }
 

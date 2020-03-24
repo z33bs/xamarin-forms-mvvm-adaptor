@@ -129,8 +129,9 @@ namespace XamarinFormsMvvmAdaptor
 
                 var iviewModelType = Type.GetType(viewModelInterfaceTypeName);
 
-                if (IocLocal.IsRegistered(iviewModelType))
-                    return IocLocal.Resolve(iviewModelType) as IAdaptorViewModel;
+                if (iviewModelType != null
+                    && IocLocal.IsRegistered(iviewModelType))
+                        return IocLocal.Resolve(iviewModelType) as IAdaptorViewModel;
             }
 
             //if ResolveMode not strict then will attempt Activator.Create
