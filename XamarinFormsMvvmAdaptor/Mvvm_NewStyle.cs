@@ -32,6 +32,7 @@ namespace XamarinFormsMvvmAdaptor
             IsInitialized = true;
         }
 
+
         public Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IAdaptorViewModel
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
@@ -49,6 +50,8 @@ namespace XamarinFormsMvvmAdaptor
 
             if (page is TabbedPage tabbedPage)
             {
+                if (viewModel is IMvvmTabbedViewModelBase)
+                    WireTabbedPageEventsToViewModel(viewModel as IMvvmTabbedViewModelBase, page as TabbedPage);
                 //Look for multi attribute
                 var constructorsDecorated = viewModel.GetType()
                     .GetConstructors()
@@ -131,7 +134,7 @@ namespace XamarinFormsMvvmAdaptor
 
                 if (iviewModelType != null
                     && IocLocal.IsRegistered(iviewModelType))
-                        return IocLocal.Resolve(iviewModelType) as IAdaptorViewModel;
+                    return IocLocal.Resolve(iviewModelType) as IAdaptorViewModel;
             }
 
             //if ResolveMode not strict then will attempt Activator.Create
@@ -256,5 +259,13 @@ namespace XamarinFormsMvvmAdaptor
             page.Disappearing += new WeakEventHandler<EventArgs>(
                 viewModel.OnViewDisappearing).Handler;
         }
+
+        private static void WireTabbedPageEventsToViewModel(IMvvmTabbedViewModelBase viewModel, TabbedPage page)
+        {
+
+            page.CurrentPageChanged += new WeakEventHandler<EventArgs>(
+                viewModel.OnTabbedViewCurrentPageChanged).Handler;
+        }
+
     }
 }
