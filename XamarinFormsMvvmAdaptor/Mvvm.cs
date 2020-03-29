@@ -22,6 +22,9 @@ namespace XamarinFormsMvvmAdaptor
         static string _viewModelSuffix = DEFAULT_VM_SUFFIX;
         static string _viewSuffix = DEFAULT_V_SUFFIX;
 
+        static string _viewAssemblyName;
+        static string _viewNameSpace;
+
         /// <summary>
         /// Customise the controller's expected naming convention
         /// </summary>
@@ -37,6 +40,30 @@ namespace XamarinFormsMvvmAdaptor
         {
             _viewModelSubNamespace = viewModelSubNamespace;
             _viewSubNamespace = viewSubNamespace;
+            _viewModelSuffix = viewModelSuffix;
+            _viewSuffix = viewSuffix;
+        }
+
+        public static void SetNamingConventionsForSeparateProject(
+            string viewAssemblyName
+            , string viewNamespace
+            , string viewModelSuffix = DEFAULT_VM_SUFFIX
+            , string viewSuffix = DEFAULT_V_SUFFIX
+            )
+        {
+            _viewAssemblyName = viewAssemblyName;
+            _viewNameSpace = viewNamespace;
+            _viewModelSuffix = viewModelSuffix;
+            _viewSuffix = viewSuffix;
+        }
+
+        public static void SetNamingConventionsForSeparateProject<AnyViewType>(
+            string viewModelSuffix = DEFAULT_VM_SUFFIX
+            , string viewSuffix = DEFAULT_V_SUFFIX
+            )
+        {
+            _viewAssemblyName = typeof(AnyViewType).Assembly.FullName;
+            _viewNameSpace = typeof(AnyViewType).Namespace;
             _viewModelSuffix = viewModelSuffix;
             _viewSuffix = viewSuffix;
         }
@@ -400,9 +427,9 @@ namespace XamarinFormsMvvmAdaptor
 
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
                 , "{0}.{1}, {2}"
-                , nameSpace
+                , _viewNameSpace ?? nameSpace
                 , name
-                , viewModelType.GetTypeInfo().Assembly.FullName);
+                , _viewAssemblyName ?? viewModelType.GetTypeInfo().Assembly.FullName);
 
             return Type.GetType(viewAssemblyName);
         }
