@@ -566,6 +566,9 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<IMvvmViewModelBase> PopModalAsync(bool animated = true)
         {
+            if (!ModalStack.Any())
+                throw new InvalidOperationException("Modal Stack is Empty");
+
             var poppedViewModel = ModalStack.GetCurrentViewModel();
 
             var isPoppedTcs = new TaskCompletionSource<bool>();
