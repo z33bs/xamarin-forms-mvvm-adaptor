@@ -7,7 +7,7 @@ namespace XamarinFormsMvvmAdaptor
     /// All ViewModels must implement this interface for the <see cref="Mvvm"/>
     /// to work with them.
     /// </summary>
-    public interface IAdaptorViewModel
+    public interface IMvvmViewModelBase
     {
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>

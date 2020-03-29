@@ -52,25 +52,25 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Returns the <see cref="IAdaptorViewModel"/> associated with the top-most page of the stack.
+        /// Returns the <see cref="IMvvmViewModelBase"/> associated with the top-most page of the stack.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public static IAdaptorViewModel GetCurrentViewModel(this IReadOnlyList<Page> stack)
+        public static IMvvmViewModelBase GetCurrentViewModel(this IReadOnlyList<Page> stack)
         {
-            return InternalGetCurrentPage(stack).BindingContext as IAdaptorViewModel;
+            return InternalGetCurrentPage(stack).BindingContext as IMvvmViewModelBase;
         }
 
         /// <summary>
-        /// Returns the <see cref="IAdaptorViewModel"/> associated with the page beneath the top-most page of the stack
+        /// Returns the <see cref="IMvvmViewModelBase"/> associated with the page beneath the top-most page of the stack
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public static IAdaptorViewModel GetPreviousViewModel(this IReadOnlyList<Page> stack)
+        public static IMvvmViewModelBase GetPreviousViewModel(this IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)
             {
-                return InternalGetPreviousPage(stack).BindingContext as IAdaptorViewModel;
+                return InternalGetPreviousPage(stack).BindingContext as IMvvmViewModelBase;
             }
 
             return null;

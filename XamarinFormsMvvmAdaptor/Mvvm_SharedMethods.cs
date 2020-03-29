@@ -79,16 +79,16 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public IAdaptorViewModel RootViewModel
+        public IMvvmViewModelBase RootViewModel
         {
             get
             {
                 try
                 {
                     if (NavigationRoot is NavigationPage)
-                        return ((NavigationPage)NavigationRoot).RootPage.BindingContext as IAdaptorViewModel;
+                        return ((NavigationPage)NavigationRoot).RootPage.BindingContext as IMvvmViewModelBase;
 
-                    return NavigationRoot.BindingContext as IAdaptorViewModel;
+                    return NavigationRoot.BindingContext as IMvvmViewModelBase;
                 }
                 catch (NullReferenceException ex)
                 {
@@ -97,7 +97,7 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
         ///<inheritdoc/>
-        public IAdaptorViewModel TopViewModel
+        public IMvvmViewModelBase TopViewModel
         {
             get
             {
@@ -107,7 +107,7 @@ namespace XamarinFormsMvvmAdaptor
                         (TopPage is NavigationPage
                         ? (TopPage as NavigationPage).CurrentPage.BindingContext
                         : TopPage.BindingContext
-                        ) as IAdaptorViewModel;
+                        ) as IMvvmViewModelBase;
                     //return TopPage.BindingContext as IAdaptorViewModel;
                 }
                 catch (NullReferenceException ex)
@@ -117,14 +117,14 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
         ///<inheritdoc/>
-        public IAdaptorViewModel HiddenViewModel
+        public IMvvmViewModelBase HiddenViewModel
         {
             get
             {
                 if (HiddenPage is null)
                     return null;
 
-                try { return HiddenPage.BindingContext as IAdaptorViewModel; }
+                try { return HiddenPage.BindingContext as IMvvmViewModelBase; }
                 catch (NullReferenceException ex)
                 {
                     throw new NullReferenceException($"{nameof(HiddenPage)}'s BindingContext has not been set", ex);
@@ -143,7 +143,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             try
             {
-                await (page.BindingContext as IAdaptorViewModel).OnViewPushedAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
+                await (page.BindingContext as IMvvmViewModelBase).OnViewPushedAsync(initialisationParameter).ConfigureAwait(continueOnCapturedContext);
             }
             catch (NullReferenceException ex)
             {
@@ -151,7 +151,7 @@ namespace XamarinFormsMvvmAdaptor
             }
             catch (InvalidCastException ex)
             {
-                throw new InvalidCastException($"Check if your ViewModel implements {nameof(IAdaptorViewModel)}", ex);
+                throw new InvalidCastException($"Check if your ViewModel implements {nameof(IMvvmViewModelBase)}", ex);
             }
         }
 
@@ -168,7 +168,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IAdaptorViewModel> CollapseMainStack()
+        public async Task<IMvvmViewModelBase> CollapseMainStack()
         {
             if (MainStack.Count > 1)
             {
@@ -186,7 +186,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task RemovePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
+        public async Task RemovePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
@@ -195,14 +195,14 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageType)
                 {
                     NavigationRoot.Navigation.RemovePage(item);
-                    await (item.BindingContext as IAdaptorViewModel).OnViewRemovedAsync();
+                    await (item.BindingContext as IMvvmViewModelBase).OnViewRemovedAsync();
                     break;
                 }
             }
         }
 
         ///<inheritdoc/>
-        public async Task<IAdaptorViewModel> PopAsync(bool animated = true)
+        public async Task<IMvvmViewModelBase> PopAsync(bool animated = true)
         {
             var poppedViewModel = MainStack.GetCurrentViewModel();
 
@@ -232,7 +232,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IAdaptorViewModel> PopToRootAsync(bool animated = true)
+        public async Task<IMvvmViewModelBase> PopToRootAsync(bool animated = true)
         {
             var poppedViewModel = MainStack.GetCurrentViewModel();
 
@@ -262,7 +262,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IAdaptorViewModel> PopModalAsync(bool animated = true)
+        public async Task<IMvvmViewModelBase> PopModalAsync(bool animated = true)
         {
             var poppedViewModel = ModalStack.GetCurrentViewModel();
 

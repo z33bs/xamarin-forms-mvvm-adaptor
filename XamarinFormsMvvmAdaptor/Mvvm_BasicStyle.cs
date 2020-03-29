@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IAdaptorViewModel
+        public async Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IMvvmViewModelBase
         {
             var newPage = InstantiatePage(typeof(TViewModelNew));
 
@@ -43,7 +43,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
+        public async Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IMvvmViewModelBase
         {
             var page = InstantiatePage(typeof(TViewModel));
 
@@ -69,7 +69,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IAdaptorViewModel
+        public async Task PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IMvvmViewModelBase
         {
             var page = InstantiatePage(typeof(TViewModel));
 

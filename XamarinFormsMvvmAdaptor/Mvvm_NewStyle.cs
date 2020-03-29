@@ -33,7 +33,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
 
-        public Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IAdaptorViewModel
+        public Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IMvvmViewModelBase
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
             var page = CreatePageFor<TViewModel>();
@@ -95,7 +95,7 @@ namespace XamarinFormsMvvmAdaptor
             return NavigationRoot;
         }
 
-        private TViewModel ResolveOrCreateViewModel<TViewModel>() where TViewModel : class, IAdaptorViewModel
+        private TViewModel ResolveOrCreateViewModel<TViewModel>() where TViewModel : class, IMvvmViewModelBase
         {
             return ResolveOrCreateViewModel(typeof(TViewModel)) as TViewModel;
             //if (Ioc.IsRegistered<TViewModel>())
@@ -116,9 +116,9 @@ namespace XamarinFormsMvvmAdaptor
             //    $" constructor.");
         }
 
-        private IAdaptorViewModel ResolveOrCreateViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
+        private IMvvmViewModelBase ResolveOrCreateViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
         {
-            if (typeof(IAdaptorViewModel).IsAssignableFrom(viewModelType.GetType()))
+            if (typeof(IMvvmViewModelBase).IsAssignableFrom(viewModelType.GetType()))
                 throw new InvalidOperationException("viewModelType is expected to implement IAdaptorViewModel");
 
 
@@ -134,11 +134,11 @@ namespace XamarinFormsMvvmAdaptor
 
                 if (iviewModelType != null
                     && IocLocal.IsRegistered(iviewModelType))
-                    return IocLocal.Resolve(iviewModelType) as IAdaptorViewModel;
+                    return IocLocal.Resolve(iviewModelType) as IMvvmViewModelBase;
             }
 
             //if ResolveMode not strict then will attempt Activator.Create
-            return IocLocal.Resolve(viewModelType) as IAdaptorViewModel;
+            return IocLocal.Resolve(viewModelType) as IMvvmViewModelBase;
 
             throw new InvalidOperationException(
                 $"Could not Resolve or Create {viewModelType.Name}" +
@@ -170,14 +170,14 @@ namespace XamarinFormsMvvmAdaptor
             => type.GetConstructor(Type.EmptyTypes) != null;
 
         public Task<TViewModel> NewPushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true)
-            where TViewModel : class, IAdaptorViewModel
+            where TViewModel : class, IMvvmViewModelBase
         {
             return InternalPushAsync(viewModel, navigationData, animated);
         }
 
         public Task<TViewModel> NewPushModalAsync<TViewModel>(TViewModel viewModel,
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IAdaptorViewModel
+            where TViewModel : class, IMvvmViewModelBase
         {
             return InternalPushAsync(viewModel, navigationData, animated, isModal: true);
         }
@@ -185,7 +185,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public Task<TViewModel> NewPushAsync<TViewModel>(
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IAdaptorViewModel
+            where TViewModel : class, IMvvmViewModelBase
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
 
@@ -195,7 +195,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public Task<TViewModel> NewPushModalAsync<TViewModel>(
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IAdaptorViewModel
+            where TViewModel : class, IMvvmViewModelBase
         {
             var viewModel = ResolveOrCreateViewModel<TViewModel>();
 
@@ -204,7 +204,7 @@ namespace XamarinFormsMvvmAdaptor
 
         async Task<TViewModel> InternalPushAsync<TViewModel>(TViewModel viewModel,
             object navigationData = null, bool animated = true, bool isModal = false)
-            where TViewModel : class, IAdaptorViewModel
+            where TViewModel : class, IMvvmViewModelBase
         {
             //todo clean up unused InstantiatePage and Other such things once finished with NewStyle stuff
             var page = CreatePageFor<TViewModel>();
@@ -239,19 +239,19 @@ namespace XamarinFormsMvvmAdaptor
             return viewModel as TViewModel;
         }
 
-        private IAdaptorViewModel ViewModelForPage(Page child)
+        private IMvvmViewModelBase ViewModelForPage(Page child)
         {
             var viewModelType = GetViewModelTypeForPage(child.GetType());
             return ResolveOrCreateViewModel(viewModelType, mustTryInterfaceVariation: true);
         }
 
-        private static Page CreatePageFor<TViewModel>() where TViewModel : IAdaptorViewModel
+        private static Page CreatePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
         {
             return Activator.CreateInstance(
                     GetPageTypeForViewModel<TViewModel>()) as Page;
         }
 
-        private static void WirePageEventsToViewModel(IAdaptorViewModel viewModel, Page page)
+        private static void WirePageEventsToViewModel(IMvvmViewModelBase viewModel, Page page)
         {
             //todo consider just taking a page and assuming its wired-up (note assumption required)
             page.Appearing += new WeakEventHandler<EventArgs>(

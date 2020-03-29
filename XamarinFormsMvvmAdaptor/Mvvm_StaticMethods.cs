@@ -109,7 +109,7 @@ namespace XamarinFormsMvvmAdaptor
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
-        private static void BindViewModelToPage(Page page, IAdaptorViewModel viewModel)
+        private static void BindViewModelToPage(Page page, IMvvmViewModelBase viewModel)
         {
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }
@@ -134,12 +134,12 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Instantiates the <see cref="Page"/> associated with a given <see cref="IAdaptorViewModel"/>
+        /// Instantiates the <see cref="Page"/> associated with a given <see cref="IMvvmViewModelBase"/>
         /// and sets the ViewModel as its BindingContext
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static Page DiCreatePageForAsync(IAdaptorViewModel viewModel)
+        public static Page DiCreatePageForAsync(IMvvmViewModelBase viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
             BindViewModelToPage(page, viewModel);

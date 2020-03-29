@@ -5,10 +5,10 @@ using MvvmHelpers;
 namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// An optional BaseViewModel that implements the <see cref="IAdaptorViewModel"/> interface
+    /// An optional BaseViewModel that implements the <see cref="IMvvmViewModelBase"/> interface
     /// and extends <see cref="BaseViewModel"/> from the dependency <see cref="MvvmHelpers"/>
     /// </summary>
-    public abstract class AdaptorViewModel : BaseViewModel, IAdaptorViewModel
+    public abstract class MvvmViewModelBase : BaseViewModel, IMvvmViewModelBase
     {
         /// <summary>
         /// Runs automatically once the associated page is pushed onto the <see cref="Mvvm.MainStack"/>

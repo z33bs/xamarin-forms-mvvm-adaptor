@@ -7,7 +7,7 @@ namespace XamarinFormsMvvmAdaptor
     ///<inheritdoc/>
     public partial class Mvvm : IMvvm
     {
-        private Page CreatePageAndWireToVm(IAdaptorViewModel viewModel)
+        private Page CreatePageAndWireToVm(IMvvmViewModelBase viewModel)
         {
             var page = InstantiatePage(viewModel.GetType());
             BindViewModelToPage(page, viewModel);
@@ -15,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task DiInitAsync(IAdaptorViewModel rootViewModel, object initialisationData = null)
+        public async Task DiInitAsync(IMvvmViewModelBase rootViewModel, object initialisationData = null)
         {
             var page = InstantiatePage(rootViewModel.GetType());
             BindViewModelToPage(page, rootViewModel);
@@ -36,7 +36,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task DiInsertPageBefore<TViewModelExisting>(IAdaptorViewModel viewModel, object navigationData = null)
+        public async Task DiInsertPageBefore<TViewModelExisting>(IMvvmViewModelBase viewModel, object navigationData = null)
         {
             var newPage = CreatePageAndWireToVm(viewModel);
             BindViewModelToPage(newPage, viewModel);
@@ -55,7 +55,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task DiPushAsync(IAdaptorViewModel viewModel, object navigationData = null, bool animated = true)
+        public async Task DiPushAsync(IMvvmViewModelBase viewModel, object navigationData = null, bool animated = true)
         {
             var page = CreatePageAndWireToVm(viewModel);
 
@@ -81,7 +81,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task DiPushModalAsync(IAdaptorViewModel viewModel, object navigationData, bool animated)
+        public async Task DiPushModalAsync(IMvvmViewModelBase viewModel, object navigationData, bool animated)
         {
             var page = CreatePageAndWireToVm(viewModel);
 
