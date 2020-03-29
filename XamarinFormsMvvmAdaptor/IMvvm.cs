@@ -83,7 +83,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Set the <see cref="RootPage"/>, and initialize its ViewModel,
         /// running the <see cref="IMvvmViewModelBase.OnViewPushedAsync(object)"/>
-        /// and <see cref="IMvvmViewModelBase.OnAppearingAsync"/> methods.
+        /// and <see cref="IMvvmViewModelBase.RefreshStateAsync"/> methods.
         /// </summary>
         /// <returns></returns>
         Task InitAsync(Page rootPage, object initialisationData = null);

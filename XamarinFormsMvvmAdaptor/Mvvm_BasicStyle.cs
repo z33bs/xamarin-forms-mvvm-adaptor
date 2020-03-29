@@ -15,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 IsInitialized = true;
                 await RootViewModel.OnViewPushedAsync(initialisationData).ConfigureAwait(false);
-                await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+                await RootViewModel.RefreshStateAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace XamarinFormsMvvmAdaptor
             if (await isPushedTcs.Task)
             {
                 await InitializeVmAsync(page, navigationData).ConfigureAwait(false);
-                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
+                await TopViewModel.RefreshStateAsync().ConfigureAwait(false);
             }
         }
 
@@ -90,7 +90,7 @@ namespace XamarinFormsMvvmAdaptor
             if (await isPushedTcs.Task)
             {
                 await InitializeVmAsync(page, navigationData).ConfigureAwait(false);
-                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
+                await TopViewModel.RefreshStateAsync().ConfigureAwait(false);
             }
         }
 

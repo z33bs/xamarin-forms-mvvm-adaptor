@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor
         /// or <see cref="Mvvm.ModalStack"/>
         /// </summary>
         /// <returns></returns>
-        Task OnAppearingAsync();
+        Task RefreshStateAsync(object data = null);
 
         void OnViewAppearing(object sender, EventArgs e);
         void OnViewDisappearing(object sender, EventArgs e);

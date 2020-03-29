@@ -180,7 +180,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
 
                 if (ModalStack.Count == 0)
-                    await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+                    await MainStack.GetCurrentViewModel().RefreshStateAsync().ConfigureAwait(false);
             }
             return MainStack.GetCurrentViewModel();
         }
@@ -225,7 +225,7 @@ namespace XamarinFormsMvvmAdaptor
                 await poppedViewModel.OnViewRemovedAsync();
 
                 if (ModalStack.Count == 0)
-                    await MainStack.GetCurrentViewModel().OnAppearingAsync().ConfigureAwait(false);
+                    await MainStack.GetCurrentViewModel().RefreshStateAsync().ConfigureAwait(false);
             }
 
             return MainStack.GetCurrentViewModel();
@@ -255,7 +255,7 @@ namespace XamarinFormsMvvmAdaptor
                 await poppedViewModel.OnViewRemovedAsync();
 
                 if (ModalStack.Count == 0)
-                    await RootViewModel.OnAppearingAsync().ConfigureAwait(false);
+                    await RootViewModel.RefreshStateAsync().ConfigureAwait(false);
             }
 
             return RootViewModel;
@@ -283,7 +283,7 @@ namespace XamarinFormsMvvmAdaptor
             if (await isPoppedTcs.Task)
             {
                 await poppedViewModel.OnViewRemovedAsync();
-                await TopViewModel.OnAppearingAsync().ConfigureAwait(false);
+                await TopViewModel.RefreshStateAsync().ConfigureAwait(false);
             }
 
             return TopViewModel;
