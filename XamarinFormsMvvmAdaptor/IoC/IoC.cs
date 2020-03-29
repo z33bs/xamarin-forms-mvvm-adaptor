@@ -6,6 +6,7 @@ using System.Reflection;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
 //todo Add constructor decorator attribute
+//Resolve unregistered class if can find di stuff
 //Functionality: Remove, ListAll, Dispose
 //See if SetMainPage methods commented out
 //  in static partial class are adaptable/relevant to instance?

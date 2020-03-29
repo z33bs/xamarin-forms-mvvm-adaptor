@@ -8,8 +8,12 @@ using System.Reflection;
 
 namespace XamarinFormsMvvmAdaptor
 {
+    //todo outside static internal settings class
+    // normal fluent like in IoC sets these settings
+    // settings accessed from Mvvm
+
     ///<inheritdoc/>
-    public partial class Mvvm : IMvvm
+    public class Mvvm : IMvvm
     {
         #region SETTINGS
         const string DEFAULT_VM_NAMESPACE = "ViewModels";
