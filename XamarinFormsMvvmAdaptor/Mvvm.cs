@@ -1,14 +1,11 @@
 using System;
 using System.Threading.Tasks;
-
-using Page = Xamarin.Forms.Page;
 using Xamarin.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 using System.Reflection;
-//todo
-//Add config for mustTryInterfaceVariation
+
 namespace XamarinFormsMvvmAdaptor
 {
     ///<inheritdoc/>
@@ -348,12 +345,19 @@ namespace XamarinFormsMvvmAdaptor
             return ResolveViewModel(typeof(TViewModel)) as TViewModel;
         }
 
+        /// <summary>
+        /// Resolves the ViewModel
+        /// </summary>
+        /// <param name="viewModelType"></param>
+        /// <param name="mustTryInterfaceVariation">Only relevant when trying to resolve a ViewModel from a Page name
+        /// . No way of knowing if it was registered as an interface or as a concreteType.</param>
+        /// <returns></returns>
         private IMvvmViewModelBase ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
         {
             if (typeof(IMvvmViewModelBase).IsAssignableFrom(viewModelType.GetType()))
                 throw new InvalidOperationException("viewModelType is expected to implement IAdaptorViewModel");
 
-
+            //Only if don't know how the ViewModel was registered
             if (mustTryInterfaceVariation)
             {
                 var viewModelInterfaceTypeName = string.Format(CultureInfo.InvariantCulture
