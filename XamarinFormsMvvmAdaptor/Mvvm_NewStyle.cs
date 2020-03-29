@@ -63,7 +63,7 @@ namespace XamarinFormsMvvmAdaptor
                         .First()
                         .GetCustomAttribute<MultipleNavigationAttribute>();
 
-                    var multiNav = IocLocal.Resolve(typeof(IMultiNavigation)) as IMultiNavigation;
+                    var multiNav = Ioc.Resolve(typeof(IMultiNavigation)) as IMultiNavigation;
 
                     int i = 0;
                     foreach (var item in multiNavigationAttribute.MvvmControllerKeys)
@@ -133,17 +133,17 @@ namespace XamarinFormsMvvmAdaptor
                 var iviewModelType = Type.GetType(viewModelInterfaceTypeName);
 
                 if (iviewModelType != null
-                    && IocLocal.IsRegistered(iviewModelType))
-                    return IocLocal.Resolve(iviewModelType) as IMvvmViewModelBase;
+                    && Ioc.IsRegistered(iviewModelType))
+                    return Ioc.Resolve(iviewModelType) as IMvvmViewModelBase;
             }
 
             //if ResolveMode not strict then will attempt Activator.Create
-            return IocLocal.Resolve(viewModelType) as IMvvmViewModelBase;
+            return Ioc.Resolve(viewModelType) as IMvvmViewModelBase;
 
             throw new InvalidOperationException(
                 $"Could not Resolve or Create {viewModelType.Name}" +
-                $". It is not registered in {nameof(Ioc)} or" +
-                $" in {nameof(IocLocal)}. Furthermore, {viewModelType.Name}" +
+                $". It is not registered in {nameof(XamarinFormsMvvmAdaptor.Ioc)} or" +
+                $" in {nameof(Ioc)}. Furthermore, {viewModelType.Name}" +
                 $" does not have a paramaterless constructor. Either" +
                 $" register the class, or give it a paramaterless" +
                 $" constructor.");
