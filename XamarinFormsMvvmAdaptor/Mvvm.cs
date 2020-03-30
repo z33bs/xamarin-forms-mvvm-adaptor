@@ -5,73 +5,90 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 using System.Reflection;
+using XamarinFormsMvvmAdaptor.FluentApi;
+
+namespace XamarinFormsMvvmAdaptor.FluentApi
+{
+    public sealed class ConfigOptions
+    {
+        public ConfigOptions SetViewSuffix(string suffix)
+        {
+            Settings.ViewSuffix = suffix;
+            return this;
+        }
+
+        public ConfigOptions SetViewModelSuffix(string suffix)
+        {
+            Settings.ViewModelSuffix = suffix;
+            return this;
+        }
+
+        public ConfigOptions SetViewAssemblyQualifiedNamespace<TAnyView>()
+        {
+            SetViewAssemblyQualifiedNamespace(
+                typeof(TAnyView).Namespace,
+                typeof(TAnyView).Assembly.FullName);
+            return this;
+        }
+
+        public ConfigOptions SetViewAssemblyQualifiedNamespace(string namespaceName, string assemblyName)
+        {
+            Settings.ViewAssemblyName = assemblyName;
+            Settings.ViewNamespace = namespaceName;
+            return this;
+        }
+
+        public ConfigOptions SetViewModelAssemblyQualifiedNamespace<TAnyViewModel>()
+        {
+            SetViewModelAssemblyQualifiedNamespace(
+                typeof(TAnyViewModel).Namespace,
+                typeof(TAnyViewModel).Assembly.FullName);
+            return this;
+        }
+
+        public ConfigOptions SetViewModelAssemblyQualifiedNamespace(string namespaceName, string assemblyName)
+        {
+            Settings.ViewModelAssemblyName = assemblyName;
+            Settings.ViewModelNamespace = namespaceName;
+            return this;
+        }
+    }
+}
 
 namespace XamarinFormsMvvmAdaptor
 {
-    //todo outside static internal settings class
-    // normal fluent like in IoC sets these settings
-    // settings accessed from Mvvm
-
-    ///<inheritdoc/>
-    public class Mvvm : IMvvm
+    internal static class Settings
     {
-        #region SETTINGS
         const string DEFAULT_VM_NAMESPACE = "ViewModels";
         const string DEFAULT_V_NAMESPACE = "Views";
         const string DEFAULT_VM_SUFFIX = "ViewModel";
         const string DEFAULT_V_SUFFIX = "Page";
 
-        static string _viewModelSubNamespace = DEFAULT_VM_NAMESPACE;
-        static string _viewSubNamespace = DEFAULT_V_NAMESPACE;
-        static string _viewModelSuffix = DEFAULT_VM_SUFFIX;
-        static string _viewSuffix = DEFAULT_V_SUFFIX;
+        //Used internally when using default settings. When overridden
+        //will used full namespace instead
+        internal static string ViewModelSubNamespace { get; set; } = DEFAULT_VM_NAMESPACE;
+        internal static string ViewSubNamespace { get; set; } = DEFAULT_V_NAMESPACE;
 
-        static string _viewAssemblyName;
-        static string _viewNameSpace;
+        //null means no override
+        internal static string ViewSuffix { get; set; } = DEFAULT_V_SUFFIX;
+        internal static string ViewAssemblyName { get; set; } = null;
+        internal static string ViewNamespace { get; set; } = null;
 
-        /// <summary>
-        /// Customise the controller's expected naming convention
-        /// </summary>
-        /// <param name="viewModelSubNamespace"></param>
-        /// <param name="viewSubNamespace"></param>
-        /// <param name="viewModelSuffix"></param>
-        /// <param name="viewSuffix"></param>
-        public static void SetNamingConventions(
-            string viewModelSubNamespace = DEFAULT_VM_NAMESPACE
-            , string viewSubNamespace = DEFAULT_V_NAMESPACE
-            , string viewModelSuffix = DEFAULT_VM_SUFFIX
-            , string viewSuffix = DEFAULT_V_SUFFIX)
+        internal static string ViewModelSuffix { get; set; } = DEFAULT_VM_SUFFIX;
+        internal static string ViewModelAssemblyName { get; set; } = null;
+        internal static string ViewModelNamespace { get; set; } = null;
+    }
+
+    ///<inheritdoc/>
+    public class Mvvm : IMvvm
+    {
+        #region SETTINGS
+        public static ConfigOptions Configure()
         {
-            _viewModelSubNamespace = viewModelSubNamespace;
-            _viewSubNamespace = viewSubNamespace;
-            _viewModelSuffix = viewModelSuffix;
-            _viewSuffix = viewSuffix;
-        }
-
-        public static void SetNamingConventionsForSeparateProject(
-            string viewAssemblyName
-            , string viewNamespace
-            , string viewModelSuffix = DEFAULT_VM_SUFFIX
-            , string viewSuffix = DEFAULT_V_SUFFIX
-            )
-        {
-            _viewAssemblyName = viewAssemblyName;
-            _viewNameSpace = viewNamespace;
-            _viewModelSuffix = viewModelSuffix;
-            _viewSuffix = viewSuffix;
-        }
-
-        public static void SetNamingConventionsForSeparateProject<AnyViewType>(
-            string viewModelSuffix = DEFAULT_VM_SUFFIX
-            , string viewSuffix = DEFAULT_V_SUFFIX
-            )
-        {
-            _viewAssemblyName = typeof(AnyViewType).Assembly.FullName;
-            _viewNameSpace = typeof(AnyViewType).Namespace;
-            _viewModelSuffix = viewModelSuffix;
-            _viewSuffix = viewSuffix;
+            return new ConfigOptions();
         }
         #endregion
+
         #region PROPERTIES
         public IIoc Ioc { get; } = new Ioc();
 
@@ -420,36 +437,36 @@ namespace XamarinFormsMvvmAdaptor
 
         private Type GetPageTypeForViewModel(Type viewModelType)
         {
-            var nameSpace = viewModelType.Namespace
-                            .Replace(_viewModelSubNamespace, _viewSubNamespace);
             var name =
                 viewModelType.IsInterface && viewModelType.Name.StartsWith("I")
                 ? ReplaceLastOccurrence(
-                            viewModelType.Name.Substring(1), _viewModelSuffix, _viewSuffix)
+                            viewModelType.Name.Substring(1), Settings.ViewModelSuffix, Settings.ViewSuffix)
                 : ReplaceLastOccurrence(
-                            viewModelType.Name, _viewModelSuffix, _viewSuffix);
+                            viewModelType.Name, Settings.ViewModelSuffix, Settings.ViewSuffix);
 
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
                 , "{0}.{1}, {2}"
-                , _viewNameSpace ?? nameSpace
+                , Settings.ViewNamespace ??
+                    viewModelType.Namespace
+                    .Replace(Settings.ViewModelSubNamespace, Settings.ViewSubNamespace)
                 , name
-                , _viewAssemblyName ?? viewModelType.GetTypeInfo().Assembly.FullName);
+                , Settings.ViewAssemblyName ?? viewModelType.GetTypeInfo().Assembly.FullName);
 
             return Type.GetType(viewAssemblyName);
         }
 
         private Type GetViewModelTypeForPage(Type pageType)
         {
-            var nameSpace = pageType.Namespace
-                            .Replace(_viewSubNamespace, _viewModelSubNamespace);
             var name = ReplaceLastOccurrence(
-                            pageType.Name, _viewSuffix, _viewModelSuffix);
+                            pageType.Name, Settings.ViewSuffix, Settings.ViewModelSuffix);
 
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
                 , "{0}.{1}, {2}"
-                , nameSpace
+                , Settings.ViewModelNamespace ??
+                    pageType.Namespace
+                    .Replace(Settings.ViewSubNamespace, Settings.ViewModelSubNamespace)
                 , name
-                , pageType.GetTypeInfo().Assembly.FullName);
+                , Settings.ViewModelAssemblyName ?? pageType.GetTypeInfo().Assembly.FullName);
 
             return Type.GetType(viewAssemblyName);
         }
