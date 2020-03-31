@@ -155,6 +155,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             var registeredObject = GetRegisteredObjectAndScope(typeToResolve)?.Item1;
 
+            //is registered
             if (registeredObject != null)
                 return GetInstance(registeredObject);
 
@@ -163,19 +164,19 @@ namespace XamarinFormsMvvmAdaptor
                     $"The type {typeToResolve.Name} has not been registered. Either " +
                     $"register the class, or configure {nameof(ConfigureResolveMode)}.");
 
-            if (HasParamaterlessConstructor(typeToResolve))
-                return Activator.CreateInstance(typeToResolve);
-
-            //todo can try resolve constructor parameters and attemp Activator with params
-            //to be even more resilient
-
-            throw new TypeNotRegisteredException(
-                $"Could not Resolve or Create {typeToResolve.Name}" +
-                $". It is not registered in {nameof(Ioc)}." +
-                $"Furthermore, {typeToResolve.Name} " +
-                $"does not have a paramaterless constructor. Either " +
-                $"register the class, or give it a paramaterless " +
-                $"constructor.");
+            //not registered - but try anyway
+            var parameters = ResolveGreediestConstructorParameters(typeToResolve);
+            try
+            {
+                return Activator.CreateInstance(typeToResolve, parameters.ToArray());
+            }
+            catch(Exception ex)
+            {
+                throw new TypeNotRegisteredException(
+                    $"Could not Resolve or Create {typeToResolve.Name}" +
+                    $". It is not registered in {nameof(Ioc)}. Furthermore, " +
+                    $"smart resolve couldn't create an instance.",ex);
+            }
         }
 
         private bool HasParamaterlessConstructor(Type type)
@@ -194,7 +195,15 @@ namespace XamarinFormsMvvmAdaptor
 
         private IEnumerable<object> ResolveGreediestConstructorParameters(RegisteredObject registeredObject)
         {
-            var constructors = registeredObject.ConcreteType.
+            foreach (var dependency in ResolveGreediestConstructorParameters(registeredObject.ConcreteType))
+            {
+                yield return dependency;
+            }
+        }
+
+        private IEnumerable<object> ResolveGreediestConstructorParameters(Type typeToResolve)
+        {
+            var constructors = typeToResolve.
                     GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                     .Where(x => !x.IsPrivate) // Includes internal constructors but not private constructors
                     .ToList();

@@ -8,5 +8,10 @@ namespace XamarinFormsMvvmAdaptor
             : base(message)
         {
         }
+        public TypeNotRegisteredException(string message, Exception innerException)
+            : base(message,innerException)
+        {
+        }
+
     }
 }
