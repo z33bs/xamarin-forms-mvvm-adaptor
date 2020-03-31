@@ -12,7 +12,12 @@ namespace XamarinFormsMvvmAdaptor
         Scope IsRegisteredScope(Type typeToResolve);
         IRegisterOptions Register<T>(Scope scope = Scope.Local) where T : notnull;
         IInstanceRegisterOptions Register(object concreteInstance, Scope scope = Scope.Local);
+        void Remove<T>() where T : notnull;
+        void Remove<T>(Scope scope) where T : notnull;
+        void Remove(string key);
+        void Remove(string key, Scope scope);
         T Resolve<T>() where T : notnull;
         object Resolve(Type typeToResolve);
+        void Teardown();
     }
 }

@@ -12,6 +12,8 @@ using XamarinFormsMvvmAdaptor.FluentApi;
 namespace XamarinFormsMvvmAdaptor
 {
     internal sealed class Ioc : IIoc
+
+
     //Interfaces controll fluent-Api grammer
     {
         private static bool mustBeRegisteredToResolve = false;
@@ -254,8 +256,89 @@ namespace XamarinFormsMvvmAdaptor
                     yield return ResolveObject(parameter.ParameterType);
             }
         }
+        #endregion
+        #region DESTRUCTIVE
+        public void Teardown()
+        {
+            foreach (var registeredObject in RegisteredObjects.ToList())
+            {
+                RegisteredObjects.Remove(registeredObject);
+                registeredObject.Dispose();
+            }
+
+            foreach (var registeredObject in GlobalRegisteredObjects.ToList())
+            {
+                GlobalRegisteredObjects.Remove(registeredObject);
+                registeredObject.Dispose();
+            }
+        }
+
+
+        public void Remove<T>() where T : notnull
+        {
+            RemoveAndDispose(RegisteredObjects, typeof(T));
+            RemoveAndDispose(GlobalRegisteredObjects, typeof(T));
+        }
+
+        public void Remove<T>(Scope scope) where T : notnull
+        {
+            switch (scope)
+            {
+                case Scope.Local:
+                    RemoveAndDispose(RegisteredObjects, typeof(T));
+                    break;
+                case Scope.Global:
+                    RemoveAndDispose(GlobalRegisteredObjects, typeof(T));
+                    break;
+            }
+        }
+
+        public void Remove(string key)
+        {
+            RemoveAndDispose(RegisteredObjects, key);
+            RemoveAndDispose(GlobalRegisteredObjects, key);
+        }
+
+        public void Remove(string key, Scope scope)
+        {
+            switch (scope)
+            {
+                case Scope.Local:
+                    RemoveAndDispose(RegisteredObjects, key);
+                    break;
+                case Scope.Global:
+                    RemoveAndDispose(GlobalRegisteredObjects, key);
+                    break;
+            }
+        }
+
+
+        private void RemoveAndDispose(IList<RegisteredObject> container, Type typeToResolve)
+        {
+            var matchingObjects = container
+                    .Where(o => o.TypeToResolve == typeToResolve);
+            ExecuteRemoveAndDispose(container, matchingObjects);
+        }
+
+
+        private void RemoveAndDispose(IList<RegisteredObject> container, string key)
+        {
+            var matchingObjects = container
+                    .Where(o => o.Key == key);
+            ExecuteRemoveAndDispose(container, matchingObjects);
+        }
+
+        private void ExecuteRemoveAndDispose(IList<RegisteredObject> container, IEnumerable<RegisteredObject> objectsToDispose)
+        {
+            foreach (var registeredObject in objectsToDispose.ToList())
+            {
+                container.Remove(registeredObject);
+                registeredObject.Dispose();
+            }
+        }
 
         #endregion
+
 
         private class RegisterOptions : IRegisterOptions
         {

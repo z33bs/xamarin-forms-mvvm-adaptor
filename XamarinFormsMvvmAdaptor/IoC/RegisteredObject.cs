@@ -2,7 +2,7 @@ using System;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public class RegisteredObject
+    public class RegisteredObject : IDisposable
     {
         public RegisteredObject(Type typeToResolve, Type concreteType, LifeCycle lifeCycle)
         {
@@ -53,6 +53,12 @@ namespace XamarinFormsMvvmAdaptor
         public void CreateInstance(params object[] args)
         {
             this.Instance = Activator.CreateInstance(this.ConcreteType, args);
+        }
+
+        public void Dispose()
+        {
+            if (Instance != null && Instance is IDisposable)
+                (Instance as IDisposable).Dispose();
         }
     }
 }
