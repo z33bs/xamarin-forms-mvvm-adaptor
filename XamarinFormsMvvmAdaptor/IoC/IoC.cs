@@ -5,22 +5,12 @@ using System.Linq.Expressions;
 using System.Reflection;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
-//todo Add constructor decorator attribute
-//Resolve unregistered class if can find di stuff
+//todo
 //Functionality: Remove, ListAll, Dispose
 //See if SetMainPage methods commented out
 //  in static partial class are adaptable/relevant to instance?
 namespace XamarinFormsMvvmAdaptor
 {
-    public class Test
-    {
-        static void Main()
-        {
-            var ioc = new Ioc();
-            ioc.Register<string>(Scope.Global);
-        }
-    }
-
     internal sealed class Ioc : IIoc
     //Interfaces controll fluent-Api grammer
     {
@@ -147,6 +137,21 @@ namespace XamarinFormsMvvmAdaptor
 
             return null;
         }
+
+        private Tuple<RegisteredObject, Scope> GetRegisteredObjectAndScope(string key)
+        {
+            var registeredObject = RegisteredObjects
+                .FirstOrDefault(o => o.Key == key);
+            if (registeredObject != null)
+                return new Tuple<RegisteredObject, Scope>(registeredObject, Scope.Local);
+
+            registeredObject = GlobalRegisteredObjects
+                .FirstOrDefault(o => o.Key == key);
+            if (registeredObject != null)
+                return new Tuple<RegisteredObject, Scope>(registeredObject, Scope.Global);
+
+            return null;
+        }
         #endregion
 
         #region Internal methods
@@ -161,21 +166,39 @@ namespace XamarinFormsMvvmAdaptor
 
             if (mustBeRegisteredToResolve)
                 throw new TypeNotRegisteredException(
-                    $"The type {typeToResolve.Name} has not been registered. Either " +
+                    $"The type {registeredObject.TypeToResolve.Name} has not been registered. Either " +
                     $"register the class, or configure {nameof(ConfigureResolveMode)}.");
 
+            return CreateUnregisteredObject(typeToResolve);
+        }
+
+        private object ResolveObject(string key)
+        {
+            var registeredObject = GetRegisteredObjectAndScope(key)?.Item1;
+            if (registeredObject is null)
+                throw new TypeNotRegisteredException(
+                    $"The type with provided Key of '{key}' has not been registered.");
+
+            return GetInstance(registeredObject);
+        }
+
+        private object CreateUnregisteredObject(Type typeToResolve)
+        {
             //not registered - but try anyway
             var parameters = ResolveConstructorParameters(typeToResolve);
             try
             {
                 return Activator.CreateInstance(typeToResolve, parameters.ToArray());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                if (ex is TypeNotRegisteredException)
+                    throw ex;
+
                 throw new TypeNotRegisteredException(
                     $"Could not Resolve or Create {typeToResolve.Name}" +
                     $". It is not registered in {nameof(Ioc)}. Furthermore, " +
-                    $"smart resolve couldn't create an instance.",ex);
+                    $"smart resolve couldn't create an instance.", ex);
             }
         }
 
@@ -212,6 +235,8 @@ namespace XamarinFormsMvvmAdaptor
             {
                 //if flagged, shorten to only flagged constructors
                 var flaggedConstructors = constructors.Where(c => c.GetCustomAttribute<ResolveUsingAttribute>() != null);
+
+                //todo if strict mode throw if more than one
                 if (flaggedConstructors.Any())
                     constructors = flaggedConstructors.ToList();
 
@@ -222,7 +247,11 @@ namespace XamarinFormsMvvmAdaptor
 
             foreach (var parameter in constructors.Last().GetParameters())
             {
-                yield return ResolveObject(parameter.ParameterType);
+                var namedDependencyAttribute = parameter.GetCustomAttribute<ResolveNamedAttribute>();
+                if (namedDependencyAttribute != null)
+                    yield return ResolveObject(namedDependencyAttribute.Key);
+                else
+                    yield return ResolveObject(parameter.ParameterType);
             }
         }
 
@@ -244,7 +273,7 @@ namespace XamarinFormsMvvmAdaptor
                 return this;
             }
 
-            public ILifeCycleOptions As<TypeToResolve>() where TypeToResolve : notnull
+            public IWithKey As<TypeToResolve>() where TypeToResolve : notnull
             {
 
                 //todo throw error if doesn't implement interface
@@ -254,6 +283,13 @@ namespace XamarinFormsMvvmAdaptor
                 return this;
             }
 
+            public IAs WithKey(string key)
+            {
+                container
+                    .Last()
+                    .Key = key;
+                return this;
+            }
 
             public void SingleInstance()
             {
@@ -294,15 +330,24 @@ namespace XamarinFormsMvvmAdaptor
 }
 namespace XamarinFormsMvvmAdaptor.FluentApi
 {
-    public interface IRegisterOptions : ILifeCycleOptions
+    public interface IRegisterOptions : IWithKey, IAs
     {
-        ILifeCycleOptions As<TypeToResolve>() where TypeToResolve : notnull;
     }
 
     public interface ILifeCycleOptions
     {
         void SingleInstance();
         void MultiInstance();
+    }
+
+    public interface IWithKey : ILifeCycleOptions
+    {
+        IAs WithKey(string key);
+    }
+
+    public interface IAs : ILifeCycleOptions
+    {
+        IWithKey As<TypeToResolve>() where TypeToResolve : notnull;
     }
 
     public interface IInstanceRegisterOptions

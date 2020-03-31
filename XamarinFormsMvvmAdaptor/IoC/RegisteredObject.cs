@@ -40,6 +40,8 @@ namespace XamarinFormsMvvmAdaptor
             Instance = instanceToResolve;
         }
 
+        public string Key { get; set; }
+
         public Type TypeToResolve { get; set; }
 
         public Type ConcreteType { get; private set; }
