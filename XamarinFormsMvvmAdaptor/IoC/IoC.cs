@@ -165,7 +165,7 @@ namespace XamarinFormsMvvmAdaptor
                     $"register the class, or configure {nameof(ConfigureResolveMode)}.");
 
             //not registered - but try anyway
-            var parameters = ResolveGreediestConstructorParameters(typeToResolve);
+            var parameters = ResolveConstructorParameters(typeToResolve);
             try
             {
                 return Activator.CreateInstance(typeToResolve, parameters.ToArray());
@@ -187,21 +187,21 @@ namespace XamarinFormsMvvmAdaptor
             if (registeredObject.Instance == null ||
                 registeredObject.LifeCycle == LifeCycle.Transient)
             {
-                var parameters = ResolveGreediestConstructorParameters(registeredObject);
+                var parameters = ResolveConstructorParameters(registeredObject);
                 registeredObject.CreateInstance(parameters.ToArray());
             }
             return registeredObject.Instance;
         }
 
-        private IEnumerable<object> ResolveGreediestConstructorParameters(RegisteredObject registeredObject)
+        private IEnumerable<object> ResolveConstructorParameters(RegisteredObject registeredObject)
         {
-            foreach (var dependency in ResolveGreediestConstructorParameters(registeredObject.ConcreteType))
+            foreach (var dependency in ResolveConstructorParameters(registeredObject.ConcreteType))
             {
                 yield return dependency;
             }
         }
 
-        private IEnumerable<object> ResolveGreediestConstructorParameters(Type typeToResolve)
+        private IEnumerable<object> ResolveConstructorParameters(Type typeToResolve)
         {
             var constructors = typeToResolve.
                     GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
@@ -209,8 +209,16 @@ namespace XamarinFormsMvvmAdaptor
                     .ToList();
 
             if (constructors.Count > 1)
-                constructors.OrderBy(
-                    ctor => ctor.GetParameters().Count());
+            {
+                //if flagged, shorten to only flagged constructors
+                var flaggedConstructors = constructors.Where(c => c.GetCustomAttribute<ResolveUsingAttribute>() != null);
+                if (flaggedConstructors.Any())
+                    constructors = flaggedConstructors.ToList();
+
+                //order by number of parameters
+                constructors = constructors.OrderBy(
+                    ctor => ctor.GetParameters().Count()).ToList();
+            }
 
             foreach (var parameter in constructors.Last().GetParameters())
             {
