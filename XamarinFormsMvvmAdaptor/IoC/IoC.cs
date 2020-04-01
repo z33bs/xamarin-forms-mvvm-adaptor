@@ -91,9 +91,9 @@ namespace XamarinFormsMvvmAdaptor
             return IsRegistered(typeof(T));
         }
 
-        public Scope IsRegisteredScope<T>() where T : notnull
+        public Scope GetScope<T>() where T : notnull
         {
-            return IsRegisteredScope(typeof(T));
+            return GetScope(typeof(T));
         }
 
         public object Resolve(Type typeToResolve)
@@ -112,7 +112,7 @@ namespace XamarinFormsMvvmAdaptor
             return GetRegisteredObjectAndScope(typeToResolve) != null;
         }
 
-        public Scope IsRegisteredScope(Type typeToResolve)
+        public Scope GetScope(Type typeToResolve)
         {
             var registeredObjectTuple = GetRegisteredObjectAndScope(typeToResolve);
 
@@ -120,7 +120,7 @@ namespace XamarinFormsMvvmAdaptor
                 throw new TypeNotRegisteredException(
                     $"The type {typeToResolve.Name} has not been registered. " +
                     $"Register the class or run {nameof(IsRegistered)} " +
-                    $"before calling {nameof(IsRegisteredScope)}.");
+                    $"before calling {nameof(GetScope)}.");
 
             return registeredObjectTuple.Item2;
         }
@@ -141,7 +141,7 @@ namespace XamarinFormsMvvmAdaptor
             return GetRegisteredObjectAndScope(key) != null;
         }
 
-        public Scope IsRegisteredScope(string key)
+        public Scope GetScope(string key)
         {
             var registeredObjectTuple = GetRegisteredObjectAndScope(key);
 
@@ -149,7 +149,7 @@ namespace XamarinFormsMvvmAdaptor
                 throw new TypeNotRegisteredException(
                     $"The type with key of '{key}' has not been registered. " +
                     $"Register the class or run {nameof(IsRegistered)} " +
-                    $"before calling {nameof(IsRegisteredScope)}.");
+                    $"before calling {nameof(GetScope)}.");
 
             return registeredObjectTuple.Item2;
         }

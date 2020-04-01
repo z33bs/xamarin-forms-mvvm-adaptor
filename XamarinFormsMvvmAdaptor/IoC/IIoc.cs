@@ -9,9 +9,9 @@ namespace XamarinFormsMvvmAdaptor
         bool IsRegistered<T>() where T : notnull;
         bool IsRegistered(Type typeToResolve);
         bool IsRegistered(string key);
-        Scope IsRegisteredScope<T>() where T : notnull;
-        Scope IsRegisteredScope(Type typeToResolve);
-        Scope IsRegisteredScope(string key);
+        Scope GetScope<T>() where T : notnull;
+        Scope GetScope(Type typeToResolve);
+        Scope GetScope(string key);
         IRegisterOptions Register<T>(Scope scope = Scope.Local) where T : notnull;
         IInstanceRegisterOptions Register(object concreteInstance, Scope scope = Scope.Local);
         void Remove<T>() where T : notnull;
