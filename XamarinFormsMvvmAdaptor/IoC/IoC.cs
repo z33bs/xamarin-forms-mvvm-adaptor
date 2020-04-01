@@ -6,12 +6,12 @@ using System.Reflection;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
 //todo
-//Functionality: Remove, ListAll, Dispose
-//See if SetMainPage methods commented out
-//  in static partial class are adaptable/relevant to instance?
+//Functionality: Resolve named
+//Separate project? Same Assembly?
 namespace XamarinFormsMvvmAdaptor
 {
     internal sealed class Ioc : IIoc
+
 
 
     //Interfaces controll fluent-Api grammer
@@ -125,6 +125,38 @@ namespace XamarinFormsMvvmAdaptor
             return registeredObjectTuple.Item2;
         }
 
+        public object Resolve(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException($"{nameof(key)} cannot be null");
+
+            return ResolveObject(key);
+        }
+
+        public bool IsRegistered(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException($"{nameof(key)} cannot be null");
+
+            return GetRegisteredObjectAndScope(key) != null;
+        }
+
+        public Scope IsRegisteredScope(string key)
+        {
+            var registeredObjectTuple = GetRegisteredObjectAndScope(key);
+
+            if (registeredObjectTuple == null)
+                throw new TypeNotRegisteredException(
+                    $"The type with key of '{key}' has not been registered. " +
+                    $"Register the class or run {nameof(IsRegistered)} " +
+                    $"before calling {nameof(IsRegisteredScope)}.");
+
+            return registeredObjectTuple.Item2;
+        }
+        #endregion
+
+        #region Internal methods
+
         private Tuple<RegisteredObject, Scope> GetRegisteredObjectAndScope(Type typeToResolve)
         {
             var registeredObject = RegisteredObjects
@@ -154,9 +186,6 @@ namespace XamarinFormsMvvmAdaptor
 
             return null;
         }
-        #endregion
-
-        #region Internal methods
 
         private object ResolveObject(Type typeToResolve)
         {
