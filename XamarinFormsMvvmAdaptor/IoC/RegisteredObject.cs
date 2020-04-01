@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace XamarinFormsMvvmAdaptor
 {
@@ -53,6 +54,55 @@ namespace XamarinFormsMvvmAdaptor
         public void CreateInstance(params object[] args)
         {
             this.Instance = Activator.CreateInstance(this.ConcreteType, args);
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            builder.Append(string.IsNullOrEmpty(Key) ? "" : $"{nameof(Key)}:{Key} ");
+            builder.Append($"{nameof(TypeToResolve)}:{EvaluateType(TypeToResolve)}");
+            builder.Append($" {nameof(ConcreteType)}:{EvaluateType(ConcreteType)}");
+            builder.Append($" {nameof(LifeCycle)}:{LifeCycle}");
+
+            return builder.ToString();
+        }
+
+        private string EvaluateType(Type type, bool useFullName = false)
+        {
+            StringBuilder retType = new StringBuilder();
+
+            if (type.IsGenericType)
+            {
+                string[] parentType = (useFullName?type.FullName:type.Name).Split('`');
+                // We will build the type here.
+                Type[] arguments = type.GetGenericArguments();
+
+                StringBuilder argList = new StringBuilder();
+                foreach (Type t in arguments)
+                {
+                    // Let's make sure we get the argument list.
+                    string arg = EvaluateType(t,useFullName);
+                    if (argList.Length > 0)
+                    {
+                        argList.AppendFormat(", {0}", arg);
+                    }
+                    else
+                    {
+                        argList.Append(arg);
+                    }
+                }
+
+                if (argList.Length > 0)
+                {
+                    retType.AppendFormat("{0}<{1}>", parentType[0], argList.ToString());
+                }
+            }
+            else
+            {
+                return useFullName ? type.ToString() : type.Name;
+            }
+
+            return retType.ToString();
         }
 
         public void Dispose()

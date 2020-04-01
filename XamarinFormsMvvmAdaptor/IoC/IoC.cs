@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
 //todo
-//Functionality: Resolve named
 //Separate project? Same Assembly?
 namespace XamarinFormsMvvmAdaptor
 {
@@ -152,6 +152,26 @@ namespace XamarinFormsMvvmAdaptor
                     $"before calling {nameof(GetScope)}.");
 
             return registeredObjectTuple.Item2;
+        }
+
+        public override string ToString()
+        {
+            return $"Local entries:{RegisteredObjects.Count} Global entries:{GlobalRegisteredObjects.Count}";
+        }
+
+        public string ListRegistrations(Scope scope)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var registration in
+                scope == Scope.Local
+                ? RegisteredObjects
+                : GlobalRegisteredObjects)
+            {
+                builder.AppendLine(registration.ToString());
+            }
+
+            return builder.ToString();
         }
         #endregion
 
