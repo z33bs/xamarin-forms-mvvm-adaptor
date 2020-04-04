@@ -68,6 +68,18 @@ namespace XamarinFormsMvvmAdaptor
             InternalAddTabPageChild(title, icon, mustWrapInNavigationPage, page);
         }
 
+        public void InsertTab<TViewModel>(int index, string title = null, FileImageSource icon = null, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        {
+            var viewModel = ResolveViewModel(typeof(TViewModel));
+            var page = CreatePageFor<TViewModel>();
+            BindViewModelToPage(page, viewModel);
+            WirePageEventsToViewModel(viewModel, page);
+
+            this.tabViewModels.Insert(index,viewModel);
+
+            InternalInsertTabPageChild(index, title, icon, mustWrapInNavigationPage, page);
+        }
+
         private void InternalAddTabPageChild(string title, FileImageSource icon, bool mustWrapInNavigationPage, Page page)
         {
             //if (!IsInitialized)
@@ -89,6 +101,28 @@ namespace XamarinFormsMvvmAdaptor
             tabbedPage.Children.Last().Icon = icon;
         }
 
+        private void InternalInsertTabPageChild(int index, string title, FileImageSource icon, bool mustWrapInNavigationPage, Page page)
+        {
+            //if (!IsInitialized)
+            //{
+            //    NavigationRoot = new TabbedPage();
+            //    IsInitialized = true;
+            //}
+
+            //var tabbedPage = (NavigationRoot is NavigationPage
+            //    ? (NavigationRoot as NavigationPage).RootPage
+            //    : NavigationRoot)
+            //    as TabbedPage;
+
+            tabbedPage.Children.Insert(
+                index,
+                mustWrapInNavigationPage
+                    ? new NavigationPage(page)
+                    : page);
+            tabbedPage.Children[index].Title = title;
+            tabbedPage.Children[index].Icon = icon;
+        }
+
         //
         public void AddTab(IMvvm mvvm, string title = null, FileImageSource icon = null)
         {
@@ -97,6 +131,15 @@ namespace XamarinFormsMvvmAdaptor
 
             tabViewModels.Add(mvvm.RootViewModel);
             InternalAddTabPageChild(title, icon, false, mvvm.NavigationRoot);
+        }
+
+        public void InsertTab(int index, IMvvm mvvm, string title = null, FileImageSource icon = null)
+        {
+            if (!mvvm.IsInitialized)
+                throw new NotInitializedException($"Initialise {nameof(mvvm)} before adding as a tab");
+
+            tabViewModels.Insert(index, mvvm.RootViewModel);
+            InternalInsertTabPageChild(index, title, icon, false, mvvm.NavigationRoot);
         }
 
         //todo Insert Remove Tabs (and rearrange viewModels the same)

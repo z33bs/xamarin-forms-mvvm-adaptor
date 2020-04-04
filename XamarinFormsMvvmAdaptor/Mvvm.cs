@@ -337,6 +337,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
+                    //todo I think bad idea to automatically wrap in navigationPage
                     if (isModal)
                         await NavigationRoot.Navigation.PushModalAsync(
                             ModalStack.Any()
