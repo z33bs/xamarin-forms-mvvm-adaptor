@@ -100,11 +100,11 @@ namespace XamarinFormsMvvmAdaptor
                 ThrowIfNotInitialized();
                 return root;
             }
-            private set => root = value;
+            protected set => root = value;
         }
 
         ///<inheritdoc/>
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized { get; protected set; }
 
         ///<inheritdoc/>
         public IReadOnlyList<Page> MainStack => NavigationRoot.Navigation.NavigationStack;
@@ -112,7 +112,7 @@ namespace XamarinFormsMvvmAdaptor
         public IReadOnlyList<Page> ModalStack => NavigationRoot.Navigation.ModalStack;
 
         ///<inheritdoc/>
-        public Page RootPage => MainStack[0];
+        public Page RootPage => (NavigationRoot is NavigationPage) ? MainStack[0] : NavigationRoot;
         ///<inheritdoc/>
         public Page TopPage
         {
@@ -218,48 +218,48 @@ namespace XamarinFormsMvvmAdaptor
             IsInitialized = true;
 
 
-            if (page is TabbedPage tabbedPage)
-            {
-                if (viewModel is IMvvmTabbedViewModelBase)
-                    WireTabbedPageEventsToViewModel(viewModel as IMvvmTabbedViewModelBase, page as TabbedPage);
-                //Look for multi attribute
-                var constructorsDecorated = viewModel.GetType()
-                    .GetConstructors()
-                    .Where(c => c.GetCustomAttribute<MultipleNavigationAttribute>() != null);
+            //if (page is TabbedPage tabbedPage)
+            //{
+            //    if (viewModel is IMvvmTabbedViewModelBase)
+            //        WireTabbedPageEventsToViewModel(viewModel as IMvvmTabbedViewModelBase, page as TabbedPage);
+            //    //Look for multi attribute
+            //    var constructorsDecorated = viewModel.GetType()
+            //        .GetConstructors()
+            //        .Where(c => c.GetCustomAttribute<MultipleNavigationAttribute>() != null);
 
-                if (constructorsDecorated.Any())
-                {
-                    var multiNavigationAttribute = constructorsDecorated
-                        .First()
-                        .GetCustomAttribute<MultipleNavigationAttribute>();
+            //    if (constructorsDecorated.Any())
+            //    {
+            //        var multiNavigationAttribute = constructorsDecorated
+            //            .First()
+            //            .GetCustomAttribute<MultipleNavigationAttribute>();
 
-                    var multiNav = Ioc.Resolve(typeof(IMultiNavigation)) as IMultiNavigation;
+            //        var multiNav = Ioc.Resolve(typeof(IMultiNavigation)) as IMultiNavigation;
 
-                    int i = 0;
-                    foreach (var item in multiNavigationAttribute.MvvmControllerKeys)
-                    {
-                        (multiNav.NavigationControllers[item] as Mvvm).InitializeTabMvvmController(tabbedPage.Children[i++]);
-                    }
-                    //foreach (var item in multi)
-                    //{
-                    //    if (item.Value.RootPage.GetType() == childPage.GetType())
-                    //        Console.WriteLine(childPage.GetType().Name);
-                    //}
+            //        int i = 0;
+            //        foreach (var item in multiNavigationAttribute.MvvmControllerKeys)
+            //        {
+            //            (multiNav.NavigationControllers[item] as Mvvm).InitializeTabMvvmController(tabbedPage.Children[i++]);
+            //        }
+            //        //foreach (var item in multi)
+            //        //{
+            //        //    if (item.Value.RootPage.GetType() == childPage.GetType())
+            //        //        Console.WriteLine(childPage.GetType().Name);
+            //        //}
 
-                }
-                else
-                {
-                    foreach (var childPage in tabbedPage.Children)
-                    {
-                        var childViewModel =
-                            childPage is NavigationPage
-                            ? CreateViewModelFor((childPage as NavigationPage).RootPage)
-                            : CreateViewModelFor(childPage);
-                        childPage.BindingContext = childViewModel;
-                        WirePageEventsToViewModel(childViewModel, childPage);
-                    }
-                }
-            }
+            //    }
+            //    else
+            //    {
+            //        foreach (var childPage in tabbedPage.Children)
+            //        {
+            //            var childViewModel =
+            //                childPage is NavigationPage
+            //                ? CreateViewModelFor((childPage as NavigationPage).RootPage)
+            //                : CreateViewModelFor(childPage);
+            //            childPage.BindingContext = childViewModel;
+            //            WirePageEventsToViewModel(childViewModel, childPage);
+            //        }
+            //    }
+            //}
 
 
             return NavigationRoot;
@@ -366,13 +366,13 @@ namespace XamarinFormsMvvmAdaptor
             return ResolveViewModel(viewModelType, mustTryInterfaceVariation: true);
         }
 
-        private Page CreatePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
+        protected Page CreatePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
         {
             return Activator.CreateInstance(
                     GetPageTypeForViewModel<TViewModel>()) as Page;
         }
 
-        private void WirePageEventsToViewModel(IMvvmViewModelBase viewModel, Page page)
+        protected void WirePageEventsToViewModel(IMvvmViewModelBase viewModel, Page page)
         {
             //todo consider just taking a page and assuming its wired-up (note assumption required)
             page.Appearing += new WeakEventHandler<EventArgs>(
@@ -388,7 +388,7 @@ namespace XamarinFormsMvvmAdaptor
                 viewModel.OnTabbedViewCurrentPageChanged).Handler;
         }
 
-        private TViewModel ResolveViewModel<TViewModel>() where TViewModel : class, IMvvmViewModelBase
+        protected TViewModel ResolveViewModel<TViewModel>() where TViewModel : class, IMvvmViewModelBase
         {
             return ResolveViewModel(typeof(TViewModel)) as TViewModel;
         }
@@ -400,7 +400,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="mustTryInterfaceVariation">Only relevant when trying to resolve a ViewModel from a Page name
         /// . No way of knowing if it was registered as an interface or as a concreteType.</param>
         /// <returns></returns>
-        private IMvvmViewModelBase ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
+        protected IMvvmViewModelBase ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
         {
             if (typeof(IMvvmViewModelBase).IsAssignableFrom(viewModelType.GetType()))
                 throw new InvalidOperationException("viewModelType is expected to implement IAdaptorViewModel");
@@ -471,7 +471,7 @@ namespace XamarinFormsMvvmAdaptor
             return Type.GetType(viewAssemblyName);
         }
 
-        private void BindViewModelToPage(Page page, IMvvmViewModelBase viewModel)
+        protected void BindViewModelToPage(Page page, IMvvmViewModelBase viewModel)
         {
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }

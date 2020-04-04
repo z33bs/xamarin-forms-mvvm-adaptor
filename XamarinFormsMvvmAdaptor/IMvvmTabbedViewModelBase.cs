@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public interface IMvvmTabbedViewModelBase
+    public interface IMvvmTabbedViewModelBase : IMvvmViewModelBase
     {
         void OnTabbedViewCurrentPageChanged(object sender, EventArgs e);
     }
