@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public class MvvmTabbed : Mvvm
+    public class MvvmTabbed : MvvmBase, IMvvmTabbed
     {
         private TabbedPage tabbedPage;
         new public TabbedPage RootPage => tabbedPage;

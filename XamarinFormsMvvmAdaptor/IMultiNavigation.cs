@@ -5,6 +5,6 @@ namespace XamarinFormsMvvmAdaptor
 {
     public interface IMultiNavigation
     {
-        Dictionary<string, IMvvm> NavigationControllers { get; }
+        Dictionary<string, IMvvmBase> NavigationControllers { get; }
     }
 }
