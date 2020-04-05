@@ -17,6 +17,7 @@ namespace XamarinFormsMvvmAdaptor
         //    => base.NavigationRoot as TabbedPage;
 
         //todo initialize with bunch of tabs
+        // hide irrelevant initialisation
         public Page Initialize(bool mustWrapInNavigationPage = true)
         {
             tabbedPage = new TabbedPage();
@@ -47,14 +48,12 @@ namespace XamarinFormsMvvmAdaptor
             {
                 for (int i = 0; i < TabViewModels.Count; i++)
                 {
-                    if(value.Equals(TabViewModels[i]))
+                    if (value.Equals(TabViewModels[i]))
                         tabbedPage.CurrentPage = tabbedPage.Children[i];
                 }
             }
         }
 
-        //todo add
-        //public IList<Page> TabPages
 
         public void AddTab<TViewModel>(string title = null, FileImageSource icon = null, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
         {
@@ -75,9 +74,32 @@ namespace XamarinFormsMvvmAdaptor
             BindViewModelToPage(page, viewModel);
             WirePageEventsToViewModel(viewModel, page);
 
-            this.tabViewModels.Insert(index,viewModel);
+            this.tabViewModels.Insert(index, viewModel);
 
             InternalInsertTabPageChild(index, title, icon, mustWrapInNavigationPage, page);
+        }
+
+        public void RemoveTab<TViewModel>() where TViewModel : IMvvmViewModelBase
+        {
+            for (int i = 0; i < tabViewModels.Count; i++)
+            {
+                if (tabViewModels[i].GetType() == typeof(TViewModel))
+                {
+                    tabViewModels.RemoveAt(i);
+                    tabbedPage.Children.RemoveAt(i);
+                    return;
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(
+                $"{typeof(TViewModel).Name} could not be found " +
+                $"in {nameof(TabViewModels)}");
+        }
+
+        public void RemoveTabAt(int index)
+        {
+            tabViewModels.RemoveAt(index);
+            tabbedPage.Children.RemoveAt(index);
         }
 
         private void InternalAddTabPageChild(string title, FileImageSource icon, bool mustWrapInNavigationPage, Page page)
@@ -123,7 +145,6 @@ namespace XamarinFormsMvvmAdaptor
             tabbedPage.Children[index].Icon = icon;
         }
 
-        //
         public void AddTab(IMvvm mvvm, string title = null, FileImageSource icon = null)
         {
             if (!mvvm.IsInitialized)
@@ -142,7 +163,27 @@ namespace XamarinFormsMvvmAdaptor
             InternalInsertTabPageChild(index, title, icon, false, mvvm.NavigationRoot);
         }
 
-        //todo Insert Remove Tabs (and rearrange viewModels the same)
+        public void RemoveTab(IMvvm mvvm)
+        {
+            var index = tabViewModels.IndexOf(mvvm.RootViewModel);
+            if(index == -1)
+                throw new ArgumentOutOfRangeException(
+                $"{nameof(mvvm)} could not be found " +
+                $"in {nameof(TabViewModels)}");
+
+            RemoveTabAt(index);
+        }
+
+        public void RemoveTab(IMvvmViewModelBase viewModel)
+        {
+            var index = tabViewModels.IndexOf(viewModel);
+            if (index == -1)
+                throw new ArgumentOutOfRangeException(
+                $"{nameof(viewModel)} could not be found " +
+                $"in {nameof(TabViewModels)}");
+
+            RemoveTabAt(index);
+        }
 
 
     }
