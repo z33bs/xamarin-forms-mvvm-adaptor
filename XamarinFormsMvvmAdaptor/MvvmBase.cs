@@ -7,6 +7,9 @@ using System.Globalization;
 using System.Reflection;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
+//todo
+// don't need multinavigation used named instead
+
 namespace XamarinFormsMvvmAdaptor.FluentApi
 {
     public sealed class ConfigOptions
