@@ -9,6 +9,7 @@ namespace XamarinFormsMvvmAdaptor
     /// </summary>
     public interface IMvvmViewModelBase
     {
+
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>
         /// is pushed onto the <see cref="Mvvm.MainStack"/>.

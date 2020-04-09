@@ -34,6 +34,6 @@
         <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
         <None Include="Art\icon.png" Pack="true" PackagePath="" />
         <!--AUTO-->
-        <PackageReference Include="Xamarin.Forms" Version="3.5.0.274416" />
+        <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
     </ItemGroup>
 </Project>

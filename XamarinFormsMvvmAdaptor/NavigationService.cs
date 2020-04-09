@@ -6,16 +6,21 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public class NavigationService
+    public class NavigationService : INavigationService
     {
-        readonly Page rootPage;
-
-        public NavigationService(Page page)
-        {
-            this.rootPage = page;
-        }
 
         #region CONSTRUCTIVE
+
+        public Task GoToAsync(ShellNavigationState state, bool animate)
+        {
+            return Shell.Current.GoToAsync(state, animate);
+        }
+
+        public Task GoToAsync(ShellNavigationState state)
+        {
+            return Shell.Current.GoToAsync(state);
+        }
+
         //public Task<TViewModel> PushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true)
         //    where TViewModel : class, IMvvmViewModelBase
         //{
@@ -60,10 +65,10 @@ namespace XamarinFormsMvvmAdaptor
                 try
                 {
                     if (isModal)
-                        await rootPage.Navigation.PushModalAsync(
+                        await Shell.Current.Navigation.PushModalAsync(
                             page, animated);
                     else
-                        await rootPage.Navigation.PushAsync(page, animated);
+                        await Shell.Current.Navigation.PushAsync(page, animated);
 
                     isPushedTcs.SetResult(true);
                 }
@@ -76,7 +81,7 @@ namespace XamarinFormsMvvmAdaptor
 
             if (page.BindingContext is IMvvmViewModelBase viewModel
                 && await isPushedTcs.Task)
-                    await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
+                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
 
             //can be null if no viewModel resolved
             return page.BindingContext as TViewModel;
