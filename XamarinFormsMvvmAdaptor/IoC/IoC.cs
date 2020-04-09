@@ -38,7 +38,12 @@ namespace XamarinFormsMvvmAdaptor
             => mustBeRegisteredToResolve = isStrictMode;
 
         #region Registration
-        public IRegisterOptions Register<T>(Scope scope = Scope.Local) where T : notnull
+        public IRegisterOptions Register<T>() where T : notnull
+        {
+            return Register<T>(Scope.Local);
+        }
+
+        public IRegisterOptions Register<T>(Scope scope) where T : notnull
         {
             var container = GetContainerForScope(scope);
 
@@ -62,7 +67,12 @@ namespace XamarinFormsMvvmAdaptor
                 LifeCycle.Transient
                 );
 
-        public IInstanceRegisterOptions Register(object concreteInstance, Scope scope = Scope.Local)
+        public IInstanceRegisterOptions Register(object concreteInstance)
+        {
+            return Register(concreteInstance, Scope.Local);
+        }
+
+        public IInstanceRegisterOptions Register(object concreteInstance, Scope scope)
         {
             var container = GetContainerForScope(scope);
 
@@ -159,14 +169,18 @@ namespace XamarinFormsMvvmAdaptor
             return $"Local entries:{RegisteredObjects.Count} Global entries:{GlobalRegisteredObjects.Count}";
         }
 
-        public string ListRegistrations(Scope scope)
+        public string ListRegistrations()
         {
             var builder = new StringBuilder();
 
-            foreach (var registration in
-                scope == Scope.Local
-                ? RegisteredObjects
-                : GlobalRegisteredObjects)
+            builder.AppendLine("Local:");
+            foreach (var registration in RegisteredObjects)
+            {
+                builder.AppendLine(registration.ToString());
+            }
+
+            builder.AppendLine("Global:");
+            foreach (var registration in GlobalRegisteredObjects)
             {
                 builder.AppendLine(registration.ToString());
             }
