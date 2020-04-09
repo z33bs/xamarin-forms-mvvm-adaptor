@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
+using XamarinFormsMvvmAdaptor.FluentApi;
 //todo
 //IIoc friendly for AutoFac
 //Option to wire from CodeBehind - simpler way
@@ -11,6 +12,11 @@ namespace XamarinFormsMvvmAdaptor
     public static class ViewModelLocator
     {
         public static IIoc Ioc { get; } = new Ioc();
+
+        public static ConfigOptions Configure()
+        {
+            return new ConfigOptions();
+        }
 
         public static readonly BindableProperty AutoWireViewModelProperty =
             BindableProperty.CreateAttached("AutoWireViewModel", typeof(bool), typeof(ViewModelLocator), default(bool)
