@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor
@@ -8,6 +9,19 @@ namespace XamarinFormsMvvmAdaptor
     /// </summary>
     public static class NavControllerExtensions
 	{
+        public static async Task Collapse(this IReadOnlyList<Page> stack)
+        {
+            if (stack.Count > 1)
+            {
+                while (stack.Count > 1)
+                {
+                    var removedViewModel = stack.GetPreviousViewModel();
+                    Shell.Current.Navigation.RemovePage(stack.GetPreviousPage());
+                    await removedViewModel.OnViewRemovedAsync();
+                }
+            }
+        }
+
         /// <summary>
         /// Returns the top-most page of the stack.
         /// </summary>

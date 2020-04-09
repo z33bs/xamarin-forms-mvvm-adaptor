@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -8,6 +10,9 @@ namespace XamarinFormsMvvmAdaptor
 {
     public class NavigationService : INavigationService
     {
+        public IReadOnlyList<Page> NavigationStack => Shell.Current.Navigation.NavigationStack;
+        public IReadOnlyList<Page> ModalStack => Shell.Current.Navigation.ModalStack;
+
 
         #region CONSTRUCTIVE
 
@@ -129,5 +134,111 @@ namespace XamarinFormsMvvmAdaptor
 
 
         #endregion
+
+        #region DESTRUCTIVE
+        ///<inheritdoc/>
+        public async Task RemovePreviousPageFromMainStack()
+        {
+            var removedViewModel = NavigationStack.GetPreviousViewModel();
+
+            if (NavigationStack.Count > 1)
+                Shell.Current.Navigation.RemovePage(
+                    NavigationStack.GetPreviousPage());
+
+            await removedViewModel.OnViewRemovedAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task RemovePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
+        {
+            var pageType = GetPageTypeForViewModel(typeof(TViewModel));
+
+            foreach (var item in NavigationStack)
+            {
+                if (item.GetType() == pageType)
+                {
+                    Shell.Current.Navigation.RemovePage(item);
+                    await (item.BindingContext as IMvvmViewModelBase).OnViewRemovedAsync();
+                    break;
+                }
+            }
+        }
+
+        ///<inheritdoc/>
+        public async Task<IMvvmViewModelBase> PopAsync(bool animated = true)
+        {
+            var poppedViewModel = NavigationStack.GetCurrentViewModel();
+
+            var isPoppedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await Shell.Current.Navigation.PopAsync(animated);
+                    isPoppedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPoppedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPoppedTcs.Task)
+                await poppedViewModel.OnViewRemovedAsync();
+
+            return NavigationStack.GetCurrentViewModel();
+        }
+
+        ///<inheritdoc/>
+        public async Task PopToRootAsync(bool animated = true)
+        {
+            var poppedViewModel = NavigationStack.GetCurrentViewModel();
+
+            var isPoppedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await Shell.Current.Navigation.PopToRootAsync(animated);
+                    isPoppedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPoppedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPoppedTcs.Task)
+                await poppedViewModel.OnViewRemovedAsync();
+        }
+
+        ///<inheritdoc/>
+        public async Task PopModalAsync(bool animated = true)
+        {
+            if (!ModalStack.Any())
+                throw new InvalidOperationException("Modal Stack is Empty");
+
+            var poppedViewModel = ModalStack.GetCurrentViewModel();
+
+            var isPoppedTcs = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await Shell.Current.Navigation.PopModalAsync(animated);
+                    isPoppedTcs.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPoppedTcs.SetException(ex);
+                }
+            });
+
+            if (await isPoppedTcs.Task)
+                await poppedViewModel.OnViewRemovedAsync();
+
+        }
+        #endregion
+
     }
 }
