@@ -13,7 +13,8 @@ namespace XamarinFormsMvvmAdaptor
         {
             if (stack.Count > 1)
             {
-                while (stack.Count > 1)
+                while (stack.Count > 1
+                    && stack[stack.Count - 2] != null) //In shell, stack[0] is null
                 {
                     var removedViewModel = stack.GetPreviousViewModel();
                     Shell.Current.Navigation.RemovePage(stack.GetPreviousPage());
@@ -53,7 +54,8 @@ namespace XamarinFormsMvvmAdaptor
 
         private static Page InternalGetPreviousPage(IReadOnlyList<Page> stack)
         {
-            if (stack.Count > 1)
+            if (stack.Count > 1
+                && stack[stack.Count-2] != null) //In shell, stack[0] is null
             {
                 var page = stack[stack.Count - 2];
                 if (page is NavigationPage)
@@ -84,7 +86,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             if (stack.Count > 1)
             {
-                return InternalGetPreviousPage(stack).BindingContext as IMvvmViewModelBase;
+                return InternalGetPreviousPage(stack)?.BindingContext as IMvvmViewModelBase;
             }
 
             return null;

@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
+//todo ensure no references to pages in stack as works differently RootPage etc doesn't work
+
 namespace XamarinFormsMvvmAdaptor
 {
     public class NavigationService : INavigationService

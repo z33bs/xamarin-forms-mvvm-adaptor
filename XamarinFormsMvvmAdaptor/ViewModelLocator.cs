@@ -7,6 +7,8 @@ using XamarinFormsMvvmAdaptor.FluentApi;
 //todo
 //IIoc friendly for AutoFac
 //Option to wire from CodeBehind - simpler way
+//No need to search for interface version of ViewModel?
+//Perhaps check if vm : BaseVm before wiring events - more flexible (vm as INavigationViewModel)?.OnAppearing();
 namespace XamarinFormsMvvmAdaptor
 {
     public static class ViewModelLocator
