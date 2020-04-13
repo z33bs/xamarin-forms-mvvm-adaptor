@@ -55,29 +55,16 @@ namespace XamarinFormsMvvmAdaptor
             if (viewModelType is null)
                 throw new ViewModelBindingException(viewType);
 
-            var viewModel = ResolveViewModel(viewModelType);
+            var viewModel = Ioc.Resolve(viewModelType);
 
-            if (viewModel is null)
+            if (viewModel is null) //unlikely to be true
                 throw new ViewModelBindingException(viewType);
 
-            if (view is Page)
-                WirePageEventsToViewModel(viewModel, view as Page);
+            if (view is Page
+                && viewModel is IBaseViewModel baseViewModel)
+                    WirePageEventsToViewModel(baseViewModel, view as Page);
 
             view.BindingContext = viewModel;
-        }
-
-        private static IBaseViewModel ResolveViewModel(Type viewModelType)
-        {
-            if (!typeof(IBaseViewModel).IsAssignableFrom(viewModelType))
-                throw new NoBaseViewModelException(viewModelType);
-
-            //if ResolveMode not strict then Ioc will attempt Activator.Create
-            return Ioc.Resolve(viewModelType) as IBaseViewModel;
-
-            throw new InvalidOperationException(
-                $"Could not Resolve {viewModelType.Name}" +
-                $". It is not registered " +
-                $"in {nameof(MvvmBase)}.{nameof(Ioc)}.");
         }
 
         private static Type GetViewModelTypeForPage(Type pageType)

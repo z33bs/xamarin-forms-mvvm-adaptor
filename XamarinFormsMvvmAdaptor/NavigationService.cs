@@ -35,56 +35,73 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public Task<TViewModel> PushAsync<TViewModel>(
-            object navigationData = null, bool animated = true)
+        public async Task<TViewModel> PushAsync<TViewModel>(
+            object navigationData, bool animated = true)
             where TViewModel : class, IBaseViewModel
         {
-            return InternalPushAsync<TViewModel>(navigationData, animated);
+            var page = await InternalPushAsync<TViewModel>(navigationData, animated);
+            return page.BindingContext as TViewModel; //can be null if no viewModel resolved
         }
 
         ///<inheritdoc/>
-        public Task<TViewModel> PushModalAsync<TViewModel>(
-            object navigationData = null, bool animated = true)
-            where TViewModel : class, IBaseViewModel
+        public async Task<TViewModel> PushAsync<TViewModel>(
+            bool animated = true)
+            where TViewModel : class
         {
-            return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
+            var page = await InternalPushAsync<TViewModel>(animated);
+            return page.BindingContext as TViewModel; //can be null if no viewModel resolved
         }
 
-        async Task<TViewModel> InternalPushAsync<TViewModel>(
-            object navigationData = null, bool animated = true, bool isModal = false)
+
+        ///<inheritdoc/>
+        public async Task<TViewModel> PushModalAsync<TViewModel>(
+            object navigationData, bool animated = true)
             where TViewModel : class, IBaseViewModel
         {
-            var page = CreatePageFor<TViewModel>();
-
-            var isPushedTcs = new TaskCompletionSource<bool>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    if (isModal)
-                        await Shell.Current.Navigation.PushModalAsync(
-                            page, animated);
-                    else
-                        await Shell.Current.Navigation.PushAsync(page, animated);
-
-                    isPushedTcs.SetResult(true);
-                }
-                catch (Exception ex)
-                {
-                    isPushedTcs.SetException(ex);
-                }
-            });
-
-
-            if (page.BindingContext is IBaseViewModel viewModel
-                && await isPushedTcs.Task)
-                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
-
-            //can be null if no viewModel resolved
+            var page = await InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
             return page.BindingContext as TViewModel;
         }
 
-        protected Page CreatePageFor<TViewModel>() where TViewModel : IBaseViewModel
+        ///<inheritdoc/>
+        public async Task<TViewModel> PushModalAsync<TViewModel>(
+            bool animated = true)
+            where TViewModel : class
+        {
+            var page = await InternalPushAsync<TViewModel>(animated, isModal: true);
+            return page.BindingContext as TViewModel;
+        }
+
+        private async Task<Page> InternalPushAsync<TViewModel>(
+            bool animated = true, bool isModal = false)
+            where TViewModel : class
+        {
+            var page = CreatePageFor<TViewModel>();
+
+            if (isModal)
+                await Shell.Current.Navigation.PushModalAsync(
+                    page, animated);
+            else
+                await Shell.Current.Navigation.PushAsync(page, animated);
+
+            return page;
+        }
+
+        async Task<Page> InternalPushAsync<TViewModel>(
+            object navigationData = null, bool animated = true, bool isModal = false)
+            where TViewModel : class, IBaseViewModel
+        {
+            //if (!typeof(IBaseViewModel).IsAssignableFrom(typeof(TViewModel)))
+            //    throw new NoBaseViewModelException(typeof(TViewModel));
+
+            var page = await InternalPushAsync<TViewModel>(animated, isModal);
+
+            if (page.BindingContext is IBaseViewModel viewModel)
+                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
+
+            return page;
+        }
+
+        protected Page CreatePageFor<TViewModel>()
         {
             return Activator.CreateInstance(
                     GetPageTypeForViewModel<TViewModel>()) as Page;
