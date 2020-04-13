@@ -421,8 +421,12 @@ namespace XamarinFormsMvvmAdaptor
 
             public IWithKey As<TypeToResolve>() where TypeToResolve : notnull
             {
+                if (!typeof(TypeToResolve)
+                    .IsAssignableFrom(container.Last().ConcreteType))
+                    throw new ArgumentOutOfRangeException(
+                        $"{container.Last().ConcreteType.Name}" +
+                        $" must implement {typeof(TypeToResolve).Name}");
 
-                //todo throw error if doesn't implement interface
                 container.Last()
                     .TypeToResolve = typeof(TypeToResolve);
                 container.Last()
