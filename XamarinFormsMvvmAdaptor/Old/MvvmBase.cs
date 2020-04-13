@@ -82,16 +82,16 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public IMvvmViewModelBase RootViewModel
+        public IBaseViewModel RootViewModel
         {
             get
             {
                 try
                 {
                     if (NavigationRoot is NavigationPage)
-                        return ((NavigationPage)NavigationRoot).RootPage.BindingContext as IMvvmViewModelBase;
+                        return ((NavigationPage)NavigationRoot).RootPage.BindingContext as IBaseViewModel;
 
-                    return NavigationRoot.BindingContext as IMvvmViewModelBase;
+                    return NavigationRoot.BindingContext as IBaseViewModel;
                 }
                 catch (NullReferenceException ex)
                 {
@@ -100,7 +100,7 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
         ///<inheritdoc/>
-        public IMvvmViewModelBase TopViewModel
+        public IBaseViewModel TopViewModel
         {
             get
             {
@@ -110,7 +110,7 @@ namespace XamarinFormsMvvmAdaptor
                         (TopPage is NavigationPage
                         ? (TopPage as NavigationPage).CurrentPage.BindingContext
                         : TopPage.BindingContext
-                        ) as IMvvmViewModelBase;
+                        ) as IBaseViewModel;
                     //return TopPage.BindingContext as IAdaptorViewModel;
                 }
                 catch (NullReferenceException ex)
@@ -120,14 +120,14 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
         ///<inheritdoc/>
-        public IMvvmViewModelBase HiddenViewModel
+        public IBaseViewModel HiddenViewModel
         {
             get
             {
                 if (HiddenPage is null)
                     return null;
 
-                try { return HiddenPage.BindingContext as IMvvmViewModelBase; }
+                try { return HiddenPage.BindingContext as IBaseViewModel; }
                 catch (NullReferenceException ex)
                 {
                     throw new NullReferenceException($"{nameof(HiddenPage)}'s BindingContext has not been set", ex);
@@ -165,14 +165,14 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
         #region CONSTRUCTIVE
         public Task<TViewModel> PushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             return InternalPushAsync(viewModel, navigationData, animated);
         }
 
         public Task<TViewModel> PushModalAsync<TViewModel>(TViewModel viewModel,
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             return InternalPushAsync(viewModel, navigationData, animated, isModal: true);
         }
@@ -180,7 +180,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public Task<TViewModel> PushAsync<TViewModel>(
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             var viewModel = ResolveViewModel<TViewModel>();
 
@@ -190,7 +190,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public Task<TViewModel> PushModalAsync<TViewModel>(
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             var viewModel = ResolveViewModel<TViewModel>();
 
@@ -199,7 +199,7 @@ namespace XamarinFormsMvvmAdaptor
 
         async Task<TViewModel> InternalPushAsync<TViewModel>(TViewModel viewModel,
             object navigationData = null, bool animated = true, bool isModal = false)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             //todo clean up unused InstantiatePage and Other such things once finished with NewStyle stuff
             var page = CreatePageFor<TViewModel>();
@@ -235,19 +235,19 @@ namespace XamarinFormsMvvmAdaptor
             return viewModel as TViewModel;
         }
 
-        private IMvvmViewModelBase CreateViewModelFor(Page child)
+        private IBaseViewModel CreateViewModelFor(Page child)
         {
             var viewModelType = GetViewModelTypeForPage(child.GetType());
             return ResolveViewModel(viewModelType, mustTryInterfaceVariation: true);
         }
 
-        protected Page CreatePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
+        protected Page CreatePageFor<TViewModel>() where TViewModel : IBaseViewModel
         {
             return Activator.CreateInstance(
                     GetPageTypeForViewModel<TViewModel>()) as Page;
         }
 
-        protected void WirePageEventsToViewModel(IMvvmViewModelBase viewModel, Page page)
+        protected void WirePageEventsToViewModel(IBaseViewModel viewModel, Page page)
         {
             //todo consider just taking a page and assuming its wired-up (note assumption required)
             page.Appearing += new WeakEventHandler<EventArgs>(
@@ -263,7 +263,7 @@ namespace XamarinFormsMvvmAdaptor
                 viewModel.OnTabbedViewCurrentPageChanged).Handler;
         }
 
-        protected TViewModel ResolveViewModel<TViewModel>() where TViewModel : class, IMvvmViewModelBase
+        protected TViewModel ResolveViewModel<TViewModel>() where TViewModel : class, IBaseViewModel
         {
             return ResolveViewModel(typeof(TViewModel)) as TViewModel;
         }
@@ -275,9 +275,9 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="mustTryInterfaceVariation">Only relevant when trying to resolve a ViewModel from a Page name
         /// . No way of knowing if it was registered as an interface or as a concreteType.</param>
         /// <returns></returns>
-        protected IMvvmViewModelBase ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
+        protected IBaseViewModel ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
         {
-            if (typeof(IMvvmViewModelBase).IsAssignableFrom(viewModelType.GetType()))
+            if (typeof(IBaseViewModel).IsAssignableFrom(viewModelType.GetType()))
                 throw new InvalidOperationException("viewModelType is expected to implement IAdaptorViewModel");
 
             //Only if don't know how the ViewModel was registered
@@ -293,11 +293,11 @@ namespace XamarinFormsMvvmAdaptor
 
                 if (iviewModelType != null
                     && Ioc.IsRegistered(iviewModelType))
-                    return Ioc.Resolve(iviewModelType) as IMvvmViewModelBase;
+                    return Ioc.Resolve(iviewModelType) as IBaseViewModel;
             }
 
             //if ResolveMode not strict then will attempt Activator.Create
-            return Ioc.Resolve(viewModelType) as IMvvmViewModelBase;
+            return Ioc.Resolve(viewModelType) as IBaseViewModel;
 
             throw new InvalidOperationException(
                 $"Could not Resolve {viewModelType.Name}" +
@@ -346,7 +346,7 @@ namespace XamarinFormsMvvmAdaptor
             return Type.GetType(viewAssemblyName);
         }
 
-        protected void BindViewModelToPage(Page page, IMvvmViewModelBase viewModel)
+        protected void BindViewModelToPage(Page page, IBaseViewModel viewModel)
         {
             page.GetType().GetProperty("BindingContext").SetValue(page, viewModel);
         }
@@ -397,7 +397,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IMvvmViewModelBase> CollapseMainStack()
+        public async Task<IBaseViewModel> CollapseMainStack()
         {
             if (MainStack.Count > 1)
             {
@@ -412,7 +412,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task RemovePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
+        public async Task RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
@@ -421,14 +421,14 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageType)
                 {
                     NavigationRoot.Navigation.RemovePage(item);
-                    await (item.BindingContext as IMvvmViewModelBase).OnViewRemovedAsync();
+                    await (item.BindingContext as IBaseViewModel).OnViewRemovedAsync();
                     break;
                 }
             }
         }
 
         ///<inheritdoc/>
-        public async Task<IMvvmViewModelBase> PopAsync(bool animated = true)
+        public async Task<IBaseViewModel> PopAsync(bool animated = true)
         {
             var poppedViewModel = MainStack.GetCurrentViewModel();
 
@@ -453,7 +453,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IMvvmViewModelBase> PopMainStackToRootAsync(bool animated = true)
+        public async Task<IBaseViewModel> PopMainStackToRootAsync(bool animated = true)
         {
             var poppedViewModel = MainStack.GetCurrentViewModel();
 
@@ -478,7 +478,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IMvvmViewModelBase> PopModalAsync(bool animated = true)
+        public async Task<IBaseViewModel> PopModalAsync(bool animated = true)
         {
             if (!ModalStack.Any())
                 throw new InvalidOperationException("Modal Stack is Empty");

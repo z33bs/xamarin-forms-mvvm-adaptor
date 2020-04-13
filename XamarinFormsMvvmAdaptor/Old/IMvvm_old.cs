@@ -61,14 +61,14 @@ namespace XamarinFormsMvvmAdaptor
         /// <exception><see cref="System.NullReferenceException"/> is thrown when the <see cref="RootPage"/>s
         /// BindingContext has not been set.</exception>
         /// </summary>
-        IMvvmViewModelBase RootViewModel { get; }
+        IBaseViewModel RootViewModel { get; }
 
         /// <summary>
         /// Viewmodel corresponding to the <see cref="TopPage"/>
         /// <exception><see cref="System.NullReferenceException"/> is thrown when the <see cref="TopPage"/>s
         /// BindingContext has not been set.</exception>
         /// </summary>
-        IMvvmViewModelBase TopViewModel { get; }
+        IBaseViewModel TopViewModel { get; }
 
         /// <summary>
         /// Viewmodel corresponding to the <see cref="HiddenPage"/>
@@ -76,14 +76,14 @@ namespace XamarinFormsMvvmAdaptor
         /// <exception><see cref="System.NullReferenceException"/> is thrown when the <see cref="HiddenPage"/>s
         /// BindingContext has not been set.</exception>
         /// </summary>
-        IMvvmViewModelBase HiddenViewModel { get; }
+        IBaseViewModel HiddenViewModel { get; }
         #endregion
 
         #region Vanilla Implementation
         /// <summary>
         /// Set the <see cref="RootPage"/>, and initialize its ViewModel,
-        /// running the <see cref="IMvvmViewModelBase.OnViewPushedAsync(object)"/>
-        /// and <see cref="IMvvmViewModelBase.RefreshStateAsync"/> methods.
+        /// running the <see cref="IBaseViewModel.OnViewPushedAsync(object)"/>
+        /// and <see cref="IBaseViewModel.RefreshStateAsync"/> methods.
         /// </summary>
         /// <returns></returns>
         Task InitAsync(Page rootPage, object initialisationData = null);
@@ -92,19 +92,19 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a new page onto the stack given a <typeparamref name="TViewModel"/>.
         /// </summary>
         /// <typeparam name="TViewModel">ViewModel to Push</typeparam>
-        /// <param name="navigationData">Optional navigation data to be passed to the <see cref="MvvmViewModelBase.OnViewPushedAsync(object)"/>  method of the <typeparamref name="TViewModel"/></param>
+        /// <param name="navigationData">Optional navigation data to be passed to the <see cref="BaseViewModel.OnViewPushedAsync(object)"/>  method of the <typeparamref name="TViewModel"/></param>
         /// <param name="animated">Option whether to animate the push or not</param>
         /// <returns></returns>
-        Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IMvvmViewModelBase;
+        Task PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IBaseViewModel;
 
         /// <summary>
         /// Pushes a new Modal page onto the navigation stack
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        /// <param name="navigationData">Object to be passed to the <see cref="MvvmViewModelBase.OnViewPushedAsync(object)"/>  method</param>
+        /// <param name="navigationData">Object to be passed to the <see cref="BaseViewModel.OnViewPushedAsync(object)"/>  method</param>
         /// <param name="animated">Animate the Push</param>
         /// <returns></returns>
-        Task PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IMvvmViewModelBase;
+        Task PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : IBaseViewModel;
 
         /// <summary>
         /// Inserts a page in the navigation stack before
@@ -113,34 +113,34 @@ namespace XamarinFormsMvvmAdaptor
         /// <typeparam name="TViewModelExisting"></typeparam>
         /// <typeparam name="TViewModelNew"></typeparam>
         /// <param name="navigationData">Optional navigation data that will be passed to
-        /// <see cref="MvvmViewModelBase.OnViewPushedAsync(object)"/></param>
+        /// <see cref="BaseViewModel.OnViewPushedAsync(object)"/></param>
         /// <returns></returns>
-        Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IMvvmViewModelBase;
+        Task InsertPageBefore<TViewModelExisting, TViewModelNew>(object navigationData = null) where TViewModelNew : IBaseViewModel;
         #endregion
 
         #region Di Implementation
         /// <inheritdoc cref="InitAsync(Page, object)"/>
-        Task DiInitAsync(IMvvmViewModelBase rootViewModel, object initialisationData = null);
+        Task DiInitAsync(IBaseViewModel rootViewModel, object initialisationData = null);
 
         /// <summary>
         /// Pushes a new page onto the stack
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="MvvmViewModelBase.OnViewPushedAsync(object)"/> method</param>
+        /// <see cref="BaseViewModel.OnViewPushedAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        Task DiPushAsync(IMvvmViewModelBase viewModel, object navigationData = null, bool animated = true);
+        Task DiPushAsync(IBaseViewModel viewModel, object navigationData = null, bool animated = true);
 
         /// <summary>
         /// Pushes a new modal page onto the modal stack
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Navigation data that will be passed to the
-        /// <see cref="MvvmViewModelBase.OnViewPushedAsync(object)"/> method</param>
+        /// <see cref="BaseViewModel.OnViewPushedAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        Task DiPushModalAsync(IMvvmViewModelBase viewModel, object navigationData = null, bool animated = true);
+        Task DiPushModalAsync(IBaseViewModel viewModel, object navigationData = null, bool animated = true);
 
         /// <summary>
         /// Inserts a page in the navigation stack before
@@ -149,35 +149,35 @@ namespace XamarinFormsMvvmAdaptor
         /// <typeparam name="TViewModelExisting"></typeparam>
         /// <param name="viewModel"></param>
         /// <param name="navigationData">Optional navigation data that will be passed to the
-        /// <see cref="MvvmViewModelBase.OnViewPushedAsync(object)"/> method</param>
+        /// <see cref="BaseViewModel.OnViewPushedAsync(object)"/> method</param>
         /// <returns></returns>
-        Task DiInsertPageBefore<TViewModelExisting>(IMvvmViewModelBase viewModel, object navigationData = null);
+        Task DiInsertPageBefore<TViewModelExisting>(IBaseViewModel viewModel, object navigationData = null);
 
         /// <summary>
         /// Asynchronously removes the <see cref="TopPage" /> from the navigation stack, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        Task<IMvvmViewModelBase> PopAsync(bool animated = true);
+        Task<IBaseViewModel> PopAsync(bool animated = true);
 
         /// <summary>
         /// Asynchronously dismisses the most recent modally presented <see cref="Page" />, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
-        Task<IMvvmViewModelBase> PopModalAsync(bool animated = true);
+        Task<IBaseViewModel> PopModalAsync(bool animated = true);
 
         /// <summary>
         /// Pops the entire <see cref="MainStack"/>, leaving only the <see cref="RootPage"/>, with optional animation.
         /// </summary>
         /// <param name="animated">Whether to animate the pop.</param>
         /// <returns></returns>
-        Task<IMvvmViewModelBase> PopToRootAsync(bool animated = true);
+        Task<IBaseViewModel> PopToRootAsync(bool animated = true);
 
         /// <summary>
         /// Removes a <see cref="Page"/> from the <see cref="MainStack"/>
         /// that corresponds to a given ViewModel
         /// </summary>
         /// <typeparam name="TViewModel"></typeparam>
-        Task RemovePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase;
+        Task RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel;
         #endregion
 
         #region Additional Shared Methods
@@ -186,7 +186,7 @@ namespace XamarinFormsMvvmAdaptor
         /// Removes all pages in the <see cref="MainStack"/> except for
         /// the <see cref="TopPage"/>, which becomes the <see cref="RootPage"/> of the stack.
         /// </summary>
-        Task<IMvvmViewModelBase> CollapseMainStack();
+        Task<IBaseViewModel> CollapseMainStack();
 
         /// <summary>
         /// Removes the <see cref="HiddenPage"/> from the <see cref="MainStack"/> but not the <see cref="ModalStack"/>
@@ -197,12 +197,12 @@ namespace XamarinFormsMvvmAdaptor
 
         #region CombinedStyle experimental
         IIoc Ioc { get; }
-        Task<TViewModel> NewPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IMvvmViewModelBase;
-        Task<TViewModel> NewPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IMvvmViewModelBase;
-        Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IMvvmViewModelBase;
+        Task<TViewModel> NewPushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IBaseViewModel;
+        Task<TViewModel> NewPushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IBaseViewModel;
+        Page Initialize<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : class, IBaseViewModel;
 
-        Task<TViewModel> NewPushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true) where TViewModel : class, IMvvmViewModelBase;
-        Task<TViewModel> NewPushModalAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true) where TViewModel : class, IMvvmViewModelBase;
+        Task<TViewModel> NewPushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true) where TViewModel : class, IBaseViewModel;
+        Task<TViewModel> NewPushModalAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true) where TViewModel : class, IBaseViewModel;
 
         #endregion
     }

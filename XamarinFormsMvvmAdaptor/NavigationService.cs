@@ -6,45 +6,38 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-//todo ensure no references to pages in stack as works differently RootPage etc doesn't work
-
+//todo
+//functionality
+//documentation
+//tests
+//Autofac adaptor
 namespace XamarinFormsMvvmAdaptor
 {
     public class NavigationService : INavigationService
     {
+        ///<inheritdoc/>
         public IReadOnlyList<Page> NavigationStack => Shell.Current.Navigation.NavigationStack;
+        ///<inheritdoc/>
         public IReadOnlyList<Page> ModalStack => Shell.Current.Navigation.ModalStack;
 
 
         #region CONSTRUCTIVE
-
+        ///<inheritdoc/>
         public Task GoToAsync(ShellNavigationState state, bool animate)
         {
             return Shell.Current.GoToAsync(state, animate);
         }
 
+        ///<inheritdoc/>
         public Task GoToAsync(ShellNavigationState state)
         {
             return Shell.Current.GoToAsync(state);
         }
 
-        //public Task<TViewModel> PushAsync<TViewModel>(TViewModel viewModel, object navigationData = null, bool animated = true)
-        //    where TViewModel : class, IMvvmViewModelBase
-        //{
-        //    return InternalPushAsync<TViewModel>(navigationData, animated);
-        //}
-
-        //public Task<TViewModel> PushModalAsync<TViewModel>(TViewModel viewModel,
-        //    object navigationData = null, bool animated = true)
-        //    where TViewModel : class, IMvvmViewModelBase
-        //{
-        //    return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
-        //}
-
         ///<inheritdoc/>
         public Task<TViewModel> PushAsync<TViewModel>(
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             return InternalPushAsync<TViewModel>(navigationData, animated);
         }
@@ -52,19 +45,16 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public Task<TViewModel> PushModalAsync<TViewModel>(
             object navigationData = null, bool animated = true)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
             return InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
         }
 
         async Task<TViewModel> InternalPushAsync<TViewModel>(
             object navigationData = null, bool animated = true, bool isModal = false)
-            where TViewModel : class, IMvvmViewModelBase
+            where TViewModel : class, IBaseViewModel
         {
-            //todo clean up unused InstantiatePage and Other such things once finished with NewStyle stuff
             var page = CreatePageFor<TViewModel>();
-            //BindViewModelToPage(page, viewModel);
-            //WirePageEventsToViewModel(viewModel, page);
 
             var isPushedTcs = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
@@ -86,7 +76,7 @@ namespace XamarinFormsMvvmAdaptor
             });
 
 
-            if (page.BindingContext is IMvvmViewModelBase viewModel
+            if (page.BindingContext is IBaseViewModel viewModel
                 && await isPushedTcs.Task)
                 await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
 
@@ -94,15 +84,14 @@ namespace XamarinFormsMvvmAdaptor
             return page.BindingContext as TViewModel;
         }
 
-        protected Page CreatePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
+        protected Page CreatePageFor<TViewModel>() where TViewModel : IBaseViewModel
         {
             return Activator.CreateInstance(
                     GetPageTypeForViewModel<TViewModel>()) as Page;
         }
 
-        protected void WirePageEventsToViewModel(IMvvmViewModelBase viewModel, Page page)
+        protected void WirePageEventsToViewModel(IBaseViewModel viewModel, Page page)
         {
-            //todo consider just taking a page and assuming its wired-up (note assumption required)
             page.Appearing += new WeakEventHandler<EventArgs>(
                 viewModel.OnViewAppearing).Handler;
             page.Disappearing += new WeakEventHandler<EventArgs>(
@@ -151,7 +140,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task RemovePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase
+        public async Task RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
@@ -160,7 +149,7 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageType)
                 {
                     Shell.Current.Navigation.RemovePage(item);
-                    await (item.BindingContext as IMvvmViewModelBase).OnViewRemovedAsync();
+                    await (item.BindingContext as IBaseViewModel).OnViewRemovedAsync();
                     break;
                 }
             }

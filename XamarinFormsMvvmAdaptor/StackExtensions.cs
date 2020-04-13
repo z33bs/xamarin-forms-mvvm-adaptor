@@ -7,7 +7,7 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// Extension Methods for NavController
     /// </summary>
-    public static class NavControllerExtensions
+    public static class StackExtensions
 	{
         public static async Task Collapse(this IReadOnlyList<Page> stack)
         {
@@ -68,25 +68,25 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Returns the <see cref="IMvvmViewModelBase"/> associated with the top-most page of the stack.
+        /// Returns the <see cref="IBaseViewModel"/> associated with the top-most page of the stack.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public static IMvvmViewModelBase GetCurrentViewModel(this IReadOnlyList<Page> stack)
+        public static IBaseViewModel GetCurrentViewModel(this IReadOnlyList<Page> stack)
         {
-            return InternalGetCurrentPage(stack).BindingContext as IMvvmViewModelBase;
+            return InternalGetCurrentPage(stack).BindingContext as IBaseViewModel;
         }
 
         /// <summary>
-        /// Returns the <see cref="IMvvmViewModelBase"/> associated with the page beneath the top-most page of the stack
+        /// Returns the <see cref="IBaseViewModel"/> associated with the page beneath the top-most page of the stack
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public static IMvvmViewModelBase GetPreviousViewModel(this IReadOnlyList<Page> stack)
+        public static IBaseViewModel GetPreviousViewModel(this IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)
             {
-                return InternalGetPreviousPage(stack)?.BindingContext as IMvvmViewModelBase;
+                return InternalGetPreviousPage(stack)?.BindingContext as IBaseViewModel;
             }
 
             return null;

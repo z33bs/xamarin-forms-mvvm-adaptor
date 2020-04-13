@@ -36,4 +36,11 @@
         <!--AUTO-->
         <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Helpers\" />
+      <Folder Include="Old\" />
+      <Folder Include="Exceptions\" />
+      <Folder Include="IoC\Attributes\" />
+      <Folder Include="FluentApi\" />
+    </ItemGroup>
 </Project>

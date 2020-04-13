@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// An optional BaseViewModel that implements the <see cref="IMvvmViewModelBase"/> interface
+    /// An optional BaseViewModel that implements the <see cref="IBaseViewModel"/> interface
     /// </summary>
-    public abstract class MvvmViewModelBase : ObservableObject, IMvvmViewModelBase
+    public abstract class BaseViewModel : ObservableObject, IBaseViewModel
     {
         /// <summary>
         /// Runs automatically once the associated page is pushed onto the <see cref="Mvvm.MainStack"/>

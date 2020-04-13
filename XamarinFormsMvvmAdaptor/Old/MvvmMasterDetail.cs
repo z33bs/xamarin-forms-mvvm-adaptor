@@ -11,7 +11,7 @@ namespace XamarinFormsMvvmAdaptor
         private MasterDetailPage masterDetailPage;
         new public MasterDetailPage RootPage => masterDetailPage;
 
-        public Page Initialize<TMaster,TDetail>(MasterBehavior masterBehavior = MasterBehavior.Default,bool mustWrapInNavigationPage = false) where TMaster : IMvvmViewModelBase where TDetail : IMvvmViewModelBase
+        public Page Initialize<TMaster,TDetail>(MasterBehavior masterBehavior = MasterBehavior.Default,bool mustWrapInNavigationPage = false) where TMaster : IBaseViewModel where TDetail : IBaseViewModel
         {
             masterDetailPage = new MasterDetailPage { MasterBehavior = masterBehavior };
             SetMaster<TMaster>();
@@ -27,12 +27,12 @@ namespace XamarinFormsMvvmAdaptor
             return NavigationRoot;
         }
 
-        public IMvvmViewModelBase MasterViewModel
-            => masterDetailPage.Master.BindingContext as IMvvmViewModelBase;
-        public IMvvmViewModelBase DetailViewModel
-            => masterDetailPage.Detail.BindingContext as IMvvmViewModelBase;
+        public IBaseViewModel MasterViewModel
+            => masterDetailPage.Master.BindingContext as IBaseViewModel;
+        public IBaseViewModel DetailViewModel
+            => masterDetailPage.Detail.BindingContext as IBaseViewModel;
            
-        public void SetMaster<TViewModel>(bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void SetMaster<TViewModel>(bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();
@@ -45,7 +45,7 @@ namespace XamarinFormsMvvmAdaptor
                 : page;
         }
 
-        public void SetDetail<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : IMvvmViewModelBase
+        public void SetDetail<TViewModel>(bool mustWrapInNavigationPage = true) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();

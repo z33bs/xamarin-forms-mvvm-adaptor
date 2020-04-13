@@ -4,9 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
 using XamarinFormsMvvmAdaptor.FluentApi;
+
 //todo
-//IIoc friendly for AutoFac
-//Option to wire from CodeBehind - simpler way
 //No need to search for interface version of ViewModel?
 //Perhaps check if vm : BaseVm before wiring events - more flexible (vm as INavigationViewModel)?.OnAppearing();
 namespace XamarinFormsMvvmAdaptor
@@ -62,16 +61,15 @@ namespace XamarinFormsMvvmAdaptor
             if (viewModel is null)
                 throw new ViewModelBindingException(viewType);
 
-            //todo Check if this works, because page is not fully constructed yet
             if (view is Page)
                 WirePageEventsToViewModel(viewModel, view as Page);
 
             view.BindingContext = viewModel;
         }
 
-        private static IMvvmViewModelBase ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
+        private static IBaseViewModel ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
         {
-            if (!typeof(IMvvmViewModelBase).IsAssignableFrom(viewModelType))
+            if (!typeof(IBaseViewModel).IsAssignableFrom(viewModelType))
                 throw new NoBaseViewModelException(viewModelType);
 
             //Only if don't know how the ViewModel was registered
@@ -87,11 +85,11 @@ namespace XamarinFormsMvvmAdaptor
 
                 if (iviewModelType != null
                     && Ioc.IsRegistered(iviewModelType))
-                    return Ioc.Resolve(iviewModelType) as IMvvmViewModelBase;
+                    return Ioc.Resolve(iviewModelType) as IBaseViewModel;
             }
 
             //if ResolveMode not strict then Ioc will attempt Activator.Create
-            return Ioc.Resolve(viewModelType) as IMvvmViewModelBase;
+            return Ioc.Resolve(viewModelType) as IBaseViewModel;
 
             throw new InvalidOperationException(
                 $"Could not Resolve {viewModelType.Name}" +
@@ -116,7 +114,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
 
-        private static void WirePageEventsToViewModel(IMvvmViewModelBase viewModel, Page page)
+        private static void WirePageEventsToViewModel(IBaseViewModel viewModel, Page page)
         {
             if (page == null
                 || viewModel == null)

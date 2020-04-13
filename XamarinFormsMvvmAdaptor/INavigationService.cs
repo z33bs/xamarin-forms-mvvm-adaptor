@@ -14,9 +14,9 @@ namespace XamarinFormsMvvmAdaptor
         Task PopAsync(bool animated = true);
         Task PopModalAsync(bool animated = true);
         Task PopToRootAsync(bool animated = true);
-        Task<TViewModel> PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IMvvmViewModelBase;
-        Task<TViewModel> PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IMvvmViewModelBase;
-        Task RemovePageFor<TViewModel>() where TViewModel : IMvvmViewModelBase;
+        Task<TViewModel> PushAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IBaseViewModel;
+        Task<TViewModel> PushModalAsync<TViewModel>(object navigationData = null, bool animated = true) where TViewModel : class, IBaseViewModel;
+        Task RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel;
         Task RemovePreviousPageFromMainStack();
     }
 }

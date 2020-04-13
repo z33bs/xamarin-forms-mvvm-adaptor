@@ -10,18 +10,18 @@ namespace XamarinFormsMvvmAdaptor
         private TabbedPage tabbedPage;
         new public TabbedPage RootPage => tabbedPage;
 
-        private readonly IList<IMvvmViewModelBase> tabViewModels = new List<IMvvmViewModelBase>();
-        public IReadOnlyList<IMvvmViewModelBase> TabViewModels
-            => tabViewModels as IReadOnlyList<IMvvmViewModelBase>;
+        private readonly IList<IBaseViewModel> tabViewModels = new List<IBaseViewModel>();
+        public IReadOnlyList<IBaseViewModel> TabViewModels
+            => tabViewModels as IReadOnlyList<IBaseViewModel>;
 
-        public IMvvmViewModelBase CurrentTabViewModel
+        public IBaseViewModel CurrentTabViewModel
         {
             get
             {
                 return (tabbedPage.CurrentPage is NavigationPage
                 ? (tabbedPage.CurrentPage as NavigationPage).CurrentPage.BindingContext
                 : tabbedPage.CurrentPage.BindingContext)
-                as IMvvmViewModelBase;
+                as IBaseViewModel;
             }
             set
             {
@@ -63,7 +63,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
 
-        public Page Initialize<T1>(bool mustWrapInNavigationPage = true) where T1 : IMvvmViewModelBase
+        public Page Initialize<T1>(bool mustWrapInNavigationPage = true) where T1 : IBaseViewModel
         {
             var page = Initialize(mustWrapInNavigationPage);
             AddTab<T1>();
@@ -71,7 +71,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         public Page Initialize<T1, T2>(bool mustWrapInNavigationPage = true)
-            where T1 : IMvvmViewModelBase where T2 : IMvvmViewModelBase
+            where T1 : IBaseViewModel where T2 : IBaseViewModel
         {
             var page = Initialize<T1>(mustWrapInNavigationPage);
             AddTab<T2>();
@@ -79,8 +79,8 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         public Page Initialize<T1, T2, T3>(bool mustWrapInNavigationPage = true)
-            where T1 : IMvvmViewModelBase where T2 : IMvvmViewModelBase
-            where T3 : IMvvmViewModelBase
+            where T1 : IBaseViewModel where T2 : IBaseViewModel
+            where T3 : IBaseViewModel
         {
             var page = Initialize<T1, T2>(mustWrapInNavigationPage);
             AddTab<T3>();
@@ -88,8 +88,8 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         public Page Initialize<T1, T2, T3, T4>(bool mustWrapInNavigationPage = true)
-            where T1 : IMvvmViewModelBase where T2 : IMvvmViewModelBase
-            where T3 : IMvvmViewModelBase where T4 : IMvvmViewModelBase
+            where T1 : IBaseViewModel where T2 : IBaseViewModel
+            where T3 : IBaseViewModel where T4 : IBaseViewModel
         {
             var page = Initialize<T1, T2, T3>(mustWrapInNavigationPage);
             AddTab<T4>();
@@ -97,9 +97,9 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         public Page Initialize<T1, T2, T3, T4, T5>(bool mustWrapInNavigationPage = true)
-            where T1 : IMvvmViewModelBase where T2 : IMvvmViewModelBase
-            where T3 : IMvvmViewModelBase where T4 : IMvvmViewModelBase
-            where T5 : IMvvmViewModelBase
+            where T1 : IBaseViewModel where T2 : IBaseViewModel
+            where T3 : IBaseViewModel where T4 : IBaseViewModel
+            where T5 : IBaseViewModel
         {
             var page = Initialize<T1, T2, T3, T4>(mustWrapInNavigationPage);
             AddTab<T5>();
@@ -107,7 +107,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
 
-        public void AddTab<TViewModel>(string title, FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void AddTab<TViewModel>(string title, FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             AddTab<TViewModel>(mustWrapInNavigationPage);
 
@@ -115,21 +115,21 @@ namespace XamarinFormsMvvmAdaptor
             tabbedPage.Children.Last().Icon = icon;
         }
 
-        public void AddTab<TViewModel>(string title, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void AddTab<TViewModel>(string title, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             AddTab<TViewModel>(mustWrapInNavigationPage);
 
             tabbedPage.Children.Last().Title = title;
         }
 
-        public void AddTab<TViewModel>(FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void AddTab<TViewModel>(FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             AddTab<TViewModel>(mustWrapInNavigationPage);
 
             tabbedPage.Children.Last().Icon = icon;
         }
 
-        public void AddTab<TViewModel>(bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void AddTab<TViewModel>(bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();
@@ -141,7 +141,7 @@ namespace XamarinFormsMvvmAdaptor
             InternalAddTabPageChild(page, mustWrapInNavigationPage);
         }
 
-        public void InsertTab<TViewModel>(int index, string title, FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void InsertTab<TViewModel>(int index, string title, FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();
@@ -157,7 +157,7 @@ namespace XamarinFormsMvvmAdaptor
 
         }
 
-        public void InsertTab<TViewModel>(int index, string title, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void InsertTab<TViewModel>(int index, string title, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();
@@ -171,7 +171,7 @@ namespace XamarinFormsMvvmAdaptor
             tabbedPage.Children[index].Title = title;
         }
 
-        public void InsertTab<TViewModel>(int index, FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void InsertTab<TViewModel>(int index, FileImageSource icon, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();
@@ -185,7 +185,7 @@ namespace XamarinFormsMvvmAdaptor
             tabbedPage.Children[index].Icon = icon;
         }
 
-        public void InsertTab<TViewModel>(int index, bool mustWrapInNavigationPage = false) where TViewModel : IMvvmViewModelBase
+        public void InsertTab<TViewModel>(int index, bool mustWrapInNavigationPage = false) where TViewModel : IBaseViewModel
         {
             var viewModel = ResolveViewModel(typeof(TViewModel));
             var page = CreatePageFor<TViewModel>();
@@ -198,7 +198,7 @@ namespace XamarinFormsMvvmAdaptor
             InternalInsertTabPageChild(index, page, mustWrapInNavigationPage);
         }
 
-        public void RemoveTab<TViewModel>() where TViewModel : IMvvmViewModelBase
+        public void RemoveTab<TViewModel>() where TViewModel : IBaseViewModel
         {
             for (int i = 0; i < tabViewModels.Count; i++)
             {
@@ -215,7 +215,7 @@ namespace XamarinFormsMvvmAdaptor
                 $"in {nameof(TabViewModels)}");
         }
 
-        public void RemoveTab(IMvvmViewModelBase viewModel)
+        public void RemoveTab(IBaseViewModel viewModel)
         {
             var index = tabViewModels.IndexOf(viewModel);
             if (index == -1)
