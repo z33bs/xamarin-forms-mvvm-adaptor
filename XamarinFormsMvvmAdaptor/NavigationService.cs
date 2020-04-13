@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 //todo
+//Make OnRemoved optional
+//Finalise BaseViewModel interfaces and version
 //functionality
 //documentation
 //tests
@@ -37,7 +39,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<TViewModel> PushAsync<TViewModel>(
             object navigationData, bool animated = true)
-            where TViewModel : class, IBaseViewModel
+            where TViewModel : class, IPushed
         {
             var page = await InternalPushAsync<TViewModel>(navigationData, animated);
             return page.BindingContext as TViewModel; //can be null if no viewModel resolved
@@ -56,7 +58,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<TViewModel> PushModalAsync<TViewModel>(
             object navigationData, bool animated = true)
-            where TViewModel : class, IBaseViewModel
+            where TViewModel : class, IPushed
         {
             var page = await InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
             return page.BindingContext as TViewModel;
@@ -89,22 +91,14 @@ namespace XamarinFormsMvvmAdaptor
 
         async Task<Page> InternalPushAsync<TViewModel>(
             object navigationData = null, bool animated = true, bool isModal = false)
-            where TViewModel : class, IBaseViewModel
+            where TViewModel : class, IPushed
         {
             var page = await InternalPushAsync<TViewModel>(animated, isModal);
 
-            if (page.BindingContext is IBaseViewModel viewModel)
+            if (page.BindingContext is IPushed viewModel)
                 await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
 
             return page;
-        }
-
-        protected void WirePageEventsToViewModel(IBaseViewModel viewModel, Page page)
-        {
-            page.Appearing += new WeakEventHandler<EventArgs>(
-                viewModel.OnViewAppearing).Handler;
-            page.Disappearing += new WeakEventHandler<EventArgs>(
-                viewModel.OnViewDisappearing).Handler;
         }
 
         private Type GetPageTypeForViewModel<TViewModel>()
