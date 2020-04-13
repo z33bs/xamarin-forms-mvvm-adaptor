@@ -165,7 +165,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public async Task<IMvvmViewModelBase> PopAsync(bool animated = true)
+        public async Task PopAsync(bool animated = true)
         {
             var poppedViewModel = NavigationStack.GetCurrentViewModel();
 
@@ -185,8 +185,6 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPoppedTcs.Task)
                 await poppedViewModel.OnViewRemovedAsync();
-
-            return NavigationStack.GetCurrentViewModel();
         }
 
         ///<inheritdoc/>
