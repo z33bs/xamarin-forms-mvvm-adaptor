@@ -231,7 +231,7 @@ namespace XamarinFormsMvvmAdaptor
 
             if (mustBeRegisteredToResolve)
                 throw new TypeNotRegisteredException(
-                    $"The type {registeredObject.TypeToResolve.Name} has not been registered. Either " +
+                    $"The type {typeToResolve.Name} has not been registered. Either " +
                     $"register the class, or configure {nameof(ConfigureResolveMode)}.");
 
             return CreateUnregisteredObject(typeToResolve);
