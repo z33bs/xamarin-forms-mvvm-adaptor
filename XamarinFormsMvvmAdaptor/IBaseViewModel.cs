@@ -1,34 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace XamarinFormsMvvmAdaptor
+﻿namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// All ViewModels must implement this interface for the <see cref="Mvvm"/>
-    /// to work with them.
+    /// Implements all utility methods that can be called by <see cref="INavigationService"/>
     /// </summary>
-    public interface IBaseViewModel
+    public interface IBaseViewModel : IAppearing, IDisappearing, IPushed, IRemoved
     {
-
-        /// <summary>
-        /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>
-        /// is pushed onto the <see cref="Mvvm.MainStack"/>.
-        /// </summary>
-        /// <param name="navigationData">Any data required for ViewModel initialisation</param>
-        /// <returns></returns>
-        Task OnViewPushedAsync(object navigationData);
-
-        Task OnViewRemovedAsync();
-
-        /// <summary>
-        /// Runs automatically when a <see cref="Xamarin.Forms.Page"/> appears
-        /// at the top of the <see cref="Mvvm.MainStack"/>
-        /// or <see cref="Mvvm.ModalStack"/>
-        /// </summary>
-        /// <returns></returns>
-        Task RefreshStateAsync(object data = null);
-
-        void OnViewAppearing(object sender, EventArgs e);
-        void OnViewDisappearing(object sender, EventArgs e);
     }
 }
