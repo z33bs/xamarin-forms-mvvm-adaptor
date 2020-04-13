@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 //todo
+//100% coverage on Tests (and build script)
 //Make OnRemoved optional
 //Finalise BaseViewModel interfaces and version
 //functionality

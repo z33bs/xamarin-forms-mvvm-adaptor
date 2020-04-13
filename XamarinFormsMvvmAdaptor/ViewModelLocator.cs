@@ -43,7 +43,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             if (!(bindable is Element view && (bool)newValue == true))
                 return;
-            
+
             WireViewModel(view);
         }
 
@@ -60,10 +60,17 @@ namespace XamarinFormsMvvmAdaptor
             if (viewModel is null) //unlikely to be true
                 throw new ViewModelBindingException(viewType);
 
-            if (view is Page
-                && viewModel is IBaseViewModel baseViewModel)
-                    WirePageEventsToViewModel(baseViewModel, view as Page);
+            if (view is Page page)
+            {
+                if (viewModel is IAppearing appearingVm)
+                    page.Appearing += new WeakEventHandler<EventArgs>(
+                        appearingVm.OnViewAppearing).Handler;
 
+                if (viewModel is IDisappearing disappearingVm)
+                    page.Disappearing += new WeakEventHandler<EventArgs>(
+                        disappearingVm.OnViewDisappearing).Handler;
+            }
+            
             view.BindingContext = viewModel;
         }
 
@@ -82,19 +89,5 @@ namespace XamarinFormsMvvmAdaptor
 
             return Type.GetType(viewAssemblyName);
         }
-
-
-        private static void WirePageEventsToViewModel(IBaseViewModel viewModel, Page page)
-        {
-            if (page == null
-                || viewModel == null)
-                return;
-
-            page.Appearing += new WeakEventHandler<EventArgs>(
-                viewModel.OnViewAppearing).Handler;
-            page.Disappearing += new WeakEventHandler<EventArgs>(
-                viewModel.OnViewDisappearing).Handler;
-        }
-
     }
 }
