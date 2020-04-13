@@ -55,8 +55,7 @@ namespace XamarinFormsMvvmAdaptor
             if (viewModelType is null)
                 throw new ViewModelBindingException(viewType);
 
-            //todo Only try interface version if specifically requested
-            var viewModel = ResolveViewModel(viewModelType, mustTryInterfaceVariation: true);
+            var viewModel = ResolveViewModel(viewModelType);
 
             if (viewModel is null)
                 throw new ViewModelBindingException(viewType);
@@ -67,26 +66,10 @@ namespace XamarinFormsMvvmAdaptor
             view.BindingContext = viewModel;
         }
 
-        private static IBaseViewModel ResolveViewModel(Type viewModelType, bool mustTryInterfaceVariation = false)
+        private static IBaseViewModel ResolveViewModel(Type viewModelType)
         {
             if (!typeof(IBaseViewModel).IsAssignableFrom(viewModelType))
                 throw new NoBaseViewModelException(viewModelType);
-
-            //Only if don't know how the ViewModel was registered
-            if (mustTryInterfaceVariation)
-            {
-                var viewModelInterfaceTypeName = string.Format(CultureInfo.InvariantCulture
-                    , "{0}.{1}, {2}"
-                    , viewModelType.Namespace
-                    , $"I{viewModelType.Name}"
-                    , viewModelType.GetTypeInfo().Assembly.FullName);
-
-                var iviewModelType = Type.GetType(viewModelInterfaceTypeName);
-
-                if (iviewModelType != null
-                    && Ioc.IsRegistered(iviewModelType))
-                    return Ioc.Resolve(iviewModelType) as IBaseViewModel;
-            }
 
             //if ResolveMode not strict then Ioc will attempt Activator.Create
             return Ioc.Resolve(viewModelType) as IBaseViewModel;
