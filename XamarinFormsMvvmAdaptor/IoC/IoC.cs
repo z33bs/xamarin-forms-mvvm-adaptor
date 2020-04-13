@@ -423,9 +423,10 @@ namespace XamarinFormsMvvmAdaptor
             {
 
                 //todo throw error if doesn't implement interface
-                container
-                    .Last()
+                container.Last()
                     .TypeToResolve = typeof(TypeToResolve);
+                container.Last()
+                    .LifeCycle = LifeCycle.Singleton;
                 return this;
             }
 
