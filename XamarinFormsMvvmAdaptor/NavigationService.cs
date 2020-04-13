@@ -75,7 +75,8 @@ namespace XamarinFormsMvvmAdaptor
             bool animated = true, bool isModal = false)
             where TViewModel : class
         {
-            var page = CreatePageFor<TViewModel>();
+            var page = Activator.CreateInstance(
+                    GetPageTypeForViewModel<TViewModel>()) as Page;
 
             if (isModal)
                 await Shell.Current.Navigation.PushModalAsync(
@@ -90,21 +91,12 @@ namespace XamarinFormsMvvmAdaptor
             object navigationData = null, bool animated = true, bool isModal = false)
             where TViewModel : class, IBaseViewModel
         {
-            //if (!typeof(IBaseViewModel).IsAssignableFrom(typeof(TViewModel)))
-            //    throw new NoBaseViewModelException(typeof(TViewModel));
-
             var page = await InternalPushAsync<TViewModel>(animated, isModal);
 
             if (page.BindingContext is IBaseViewModel viewModel)
                 await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
 
             return page;
-        }
-
-        protected Page CreatePageFor<TViewModel>()
-        {
-            return Activator.CreateInstance(
-                    GetPageTypeForViewModel<TViewModel>()) as Page;
         }
 
         protected void WirePageEventsToViewModel(IBaseViewModel viewModel, Page page)
