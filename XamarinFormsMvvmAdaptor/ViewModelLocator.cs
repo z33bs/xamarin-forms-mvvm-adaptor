@@ -72,8 +72,8 @@ namespace XamarinFormsMvvmAdaptor
 
         private static Type GetViewModelTypeForPage(Type pageType)
         {
-            var name = Helpers.ReplaceLastOccurrence(
-                            pageType.Name, Settings.ViewSuffix, Settings.ViewModelSuffix);
+            var name = pageType.Name.ReplaceLastOccurrence(
+                            Settings.ViewSuffix, Settings.ViewModelSuffix);
 
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
                 , "{0}.{1}, {2}"

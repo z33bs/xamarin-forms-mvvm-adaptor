@@ -8,6 +8,7 @@ using Xamarin.Forms;
 
 //todo
 //100% coverage on Tests (and build script)
+//Make StringExtensions mockable
 //functionality
 //documentation
 //tests
@@ -109,10 +110,10 @@ namespace XamarinFormsMvvmAdaptor
         {
             var name =
                 viewModelType.IsInterface && viewModelType.Name.StartsWith("I")
-                ? Helpers.ReplaceLastOccurrence(
-                            viewModelType.Name.Substring(1), Settings.ViewModelSuffix, Settings.ViewSuffix)
-                : Helpers.ReplaceLastOccurrence(
-                            viewModelType.Name, Settings.ViewModelSuffix, Settings.ViewSuffix);
+                ? viewModelType.Name.Substring(1).ReplaceLastOccurrence(
+                            Settings.ViewModelSuffix, Settings.ViewSuffix)
+                : viewModelType.Name.ReplaceLastOccurrence(
+                            Settings.ViewModelSuffix, Settings.ViewSuffix);
 
             var viewAssemblyName = string.Format(CultureInfo.InvariantCulture
                 , "{0}.{1}, {2}"
