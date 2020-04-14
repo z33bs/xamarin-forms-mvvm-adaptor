@@ -35,6 +35,10 @@
         <None Include="Art\icon.png" Pack="true" PackagePath="" />
         <!--AUTO-->
         <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
+        <None Include="Old\MvvmBase.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+        <None Include="Old\Mvvm.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+        <None Include="Old\MvvmMasterDetail.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+        <None Include="Old\MvvmTabbed.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Helpers\" />
@@ -42,5 +46,11 @@
       <Folder Include="Exceptions\" />
       <Folder Include="IoC\Attributes\" />
       <Folder Include="FluentApi\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Old\MvvmBase.cs" />
+      <Compile Remove="Old\Mvvm.cs" />
+      <Compile Remove="Old\MvvmMasterDetail.cs" />
+      <Compile Remove="Old\MvvmTabbed.cs" />
     </ItemGroup>
 </Project>

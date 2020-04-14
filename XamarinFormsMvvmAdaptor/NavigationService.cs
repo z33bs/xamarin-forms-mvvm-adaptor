@@ -8,7 +8,6 @@ using Xamarin.Forms;
 
 //todo
 //100% coverage on Tests (and build script)
-//Make OnRemoved optional
 //Finalise BaseViewModel interfaces and version
 //functionality
 //documentation
@@ -134,17 +133,18 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task RemovePreviousPageFromMainStack()
         {
-            var removedViewModel = NavigationStack.GetPreviousViewModel();
+            var viewModel = NavigationStack.GetPreviousViewModel();
 
             if (NavigationStack.Count > 1)
                 Shell.Current.Navigation.RemovePage(
                     NavigationStack.GetPreviousPage());
 
-            await removedViewModel.OnViewRemovedAsync();
+            if (viewModel is IRemoved removedViewModel)
+                await removedViewModel.OnViewRemovedAsync();
         }
 
         ///<inheritdoc/>
-        public async Task RemovePageFor<TViewModel>() where TViewModel : IBaseViewModel
+        public async Task RemovePageFor<TViewModel>()
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
 
@@ -153,7 +153,10 @@ namespace XamarinFormsMvvmAdaptor
                 if (item.GetType() == pageType)
                 {
                     Shell.Current.Navigation.RemovePage(item);
-                    await (item.BindingContext as IBaseViewModel).OnViewRemovedAsync();
+
+                    if (item.BindingContext is IRemoved viewModel)
+                        await viewModel.OnViewRemovedAsync();
+
                     break;
                 }
             }
@@ -162,47 +165,23 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task PopAsync(bool animated = true)
         {
-            var poppedViewModel = NavigationStack.GetCurrentViewModel();
+            var viewModel = NavigationStack.GetCurrentViewModel();
 
-            var isPoppedTcs = new TaskCompletionSource<bool>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    await Shell.Current.Navigation.PopAsync(animated);
-                    isPoppedTcs.SetResult(true);
-                }
-                catch (Exception ex)
-                {
-                    isPoppedTcs.SetException(ex);
-                }
-            });
+            await Shell.Current.Navigation.PopAsync(animated);
 
-            if (await isPoppedTcs.Task)
-                await poppedViewModel.OnViewRemovedAsync();
+            if (viewModel is IRemoved removedViewModel)
+                await removedViewModel.OnViewRemovedAsync();
         }
 
         ///<inheritdoc/>
         public async Task PopToRootAsync(bool animated = true)
         {
-            var poppedViewModel = NavigationStack.GetCurrentViewModel();
+            var viewModel = NavigationStack.GetCurrentViewModel();
 
-            var isPoppedTcs = new TaskCompletionSource<bool>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    await Shell.Current.Navigation.PopToRootAsync(animated);
-                    isPoppedTcs.SetResult(true);
-                }
-                catch (Exception ex)
-                {
-                    isPoppedTcs.SetException(ex);
-                }
-            });
+            await Shell.Current.Navigation.PopToRootAsync(animated);
 
-            if (await isPoppedTcs.Task)
-                await poppedViewModel.OnViewRemovedAsync();
+            if (viewModel is IRemoved removedViewModel)
+                await removedViewModel.OnViewRemovedAsync();
         }
 
         ///<inheritdoc/>
@@ -211,25 +190,12 @@ namespace XamarinFormsMvvmAdaptor
             if (!ModalStack.Any())
                 throw new InvalidOperationException("Modal Stack is Empty");
 
-            var poppedViewModel = ModalStack.GetCurrentViewModel();
+            var viewModel = ModalStack.GetCurrentViewModel();
 
-            var isPoppedTcs = new TaskCompletionSource<bool>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    await Shell.Current.Navigation.PopModalAsync(animated);
-                    isPoppedTcs.SetResult(true);
-                }
-                catch (Exception ex)
-                {
-                    isPoppedTcs.SetException(ex);
-                }
-            });
+            await Shell.Current.Navigation.PopModalAsync(animated);
 
-            if (await isPoppedTcs.Task)
-                await poppedViewModel.OnViewRemovedAsync();
-
+            if (viewModel is IRemoved removedViewModel)
+                await removedViewModel.OnViewRemovedAsync();
         }
         #endregion
 

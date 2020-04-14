@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
 using XamarinFormsMvvmAdaptor.FluentApi;
 
-//todo
-//No need to search for interface version of ViewModel?
-//Perhaps check if vm : BaseVm before wiring events - more flexible (vm as INavigationViewModel)?.OnAppearing();
 namespace XamarinFormsMvvmAdaptor
 {
     public static class ViewModelLocator
