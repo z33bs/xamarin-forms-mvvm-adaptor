@@ -8,7 +8,6 @@ using Xamarin.Forms;
 
 //todo
 //100% coverage on Tests (and build script)
-//Finalise BaseViewModel interfaces and version
 //functionality
 //documentation
 //tests
