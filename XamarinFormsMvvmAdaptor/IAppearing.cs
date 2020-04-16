@@ -2,10 +2,15 @@
 namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// Handles the Page.Appearing event
+    /// Implements the <see cref="OnViewAppearing(object, EventArgs)"/> method
     /// </summary>
     public interface IAppearing
     {
+        /// <summary>
+        /// Handles the <see cref="Xamarin.Forms.Page.Appearing"/> event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void OnViewAppearing(object sender, EventArgs e);
     }
 }

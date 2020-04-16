@@ -7,6 +7,11 @@ namespace XamarinFormsMvvmAdaptor
     /// </summary>
     public interface IRemoved
     {
+        /// <summary>
+        /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>
+        /// is popped or removed from the <see cref="NavigationService.NavigationStack"/>.
+        /// </summary>
+        /// <returns></returns>
         Task OnViewRemovedAsync();
     }
 }

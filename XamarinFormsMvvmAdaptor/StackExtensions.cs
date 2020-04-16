@@ -5,10 +5,15 @@ using Xamarin.Forms;
 namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// Extension Methods for NavController
+    /// Extension Methods for Navigation Stacks
     /// </summary>
     public static class StackExtensions
 	{
+        /// <summary>
+        /// Removes all Pages behind the Top Page of the <see cref="INavigationService.NavigationStack"/>
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <returns></returns>
         public static async Task Collapse(this IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)
@@ -70,7 +75,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Returns the <see cref="IBaseViewModel"/> associated with the top-most page of the stack.
+        /// Returns the ViewModel bound with the top-most page of the stack.
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
@@ -80,7 +85,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         /// <summary>
-        /// Returns the <see cref="IBaseViewModel"/> associated with the page beneath the top-most page of the stack
+        /// Returns the ViewModel bound with the page beneath the top-most page of the stack
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>

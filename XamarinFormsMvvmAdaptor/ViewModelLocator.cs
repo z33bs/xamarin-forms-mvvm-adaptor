@@ -6,29 +6,56 @@ using XamarinFormsMvvmAdaptor.FluentApi;
 
 namespace XamarinFormsMvvmAdaptor
 {
+    /// <summary>
+    /// Enables a View to find and attach its corresponding ViewModel
+    /// </summary>
     public static class ViewModelLocator
     {
+        /// <summary>
+        /// Dependency injection container
+        /// </summary>
         public static IIoc Ioc { get; } = new Ioc();
 
+        /// <summary>
+        /// Customises configuration
+        /// </summary>
+        /// <returns></returns>
         public static ConfigOptions Configure()
         {
             return new ConfigOptions();
         }
 
+        /// <summary>
+        /// Tells the <see cref="ViewModelLocator"/> to attach the corresponding ViewModel
+        /// </summary>
         public static readonly BindableProperty AutoWireViewModelProperty =
             BindableProperty.CreateAttached("AutoWireViewModel", typeof(bool), typeof(ViewModelLocator), default(bool)
                 , propertyChanged: OnAutoWireViewModelChanged);
 
+        /// <summary>
+        /// Gets the <see cref="AutoWireViewModelProperty"/>
+        /// </summary>
+        /// <param name="bindable"></param>
+        /// <returns></returns>
         public static bool GetAutoWireViewModel(BindableObject bindable)
         {
             return (bool)bindable.GetValue(AutoWireViewModelProperty);
         }
 
+        /// <summary>
+        /// Sets the <see cref="AutoWireViewModelProperty"/>
+        /// </summary>
+        /// <param name="bindable"></param>
+        /// <param name="value"></param>
         public static void SetAutoWireViewModel(BindableObject bindable, bool value)
         {
             bindable.SetValue(AutoWireViewModelProperty, value);
         }
 
+        /// <summary>
+        /// Sets the <see cref="AutoWireViewModelProperty"/> to true
+        /// </summary>
+        /// <param name="view">The view, commonly <see cref="this"/></param>
         public static void AutoWireViewModel(Page view)
         {
             if (view != null)

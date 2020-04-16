@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 //todo
-//100% coverage on Tests (and build script)
 //Make StringExtensions mockable
-//functionality
-//documentation
+//documentation for IoC
+//clean old unused code
 //tests
 //Autofac adaptor
 namespace XamarinFormsMvvmAdaptor
 {
+    ///<inheritdoc/>
     public class NavigationService : INavigationService
     {
         ///<inheritdoc/>
@@ -89,7 +89,7 @@ namespace XamarinFormsMvvmAdaptor
             return page;
         }
 
-        async Task<Page> InternalPushAsync<TViewModel>(
+        private async Task<Page> InternalPushAsync<TViewModel>(
             object navigationData = null, bool animated = true, bool isModal = false)
             where TViewModel : class, IPushed
         {

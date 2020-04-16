@@ -6,10 +6,7 @@ using System.ComponentModel;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    /// <summary> 
-    /// Represents a dynamic data collection that provides notifications when items get added, removed, or when the whole list is refreshed. 
-    /// </summary> 
-    /// <typeparam name="T"></typeparam> 
+    ///<inheritdoc/>
     public class ObservableRangeCollection<T> : ObservableCollection<T>, IObservableRangeCollection<T>
     {
 
@@ -31,9 +28,7 @@ namespace XamarinFormsMvvmAdaptor
         {
         }
 
-        /// <summary> 
-        /// Adds the elements of the specified collection to the end of the ObservableCollection(Of T). 
-        /// </summary> 
+        ///<inheritdoc/>
         public void AddRange(IEnumerable<T> collection, NotifyCollectionChangedAction notificationMode = NotifyCollectionChangedAction.Add)
         {
             if (notificationMode != NotifyCollectionChangedAction.Add && notificationMode != NotifyCollectionChangedAction.Reset)
@@ -65,9 +60,7 @@ namespace XamarinFormsMvvmAdaptor
                 startingIndex: startIndex);
         }
 
-        /// <summary> 
-        /// Removes the first occurence of each item in the specified collection from ObservableCollection(Of T). NOTE: with notificationMode = Remove, removed items starting index is not set because items are not guaranteed to be consecutive.
-        /// </summary> 
+        ///<inheritdoc/>
         public void RemoveRange(IEnumerable<T> collection, NotifyCollectionChangedAction notificationMode = NotifyCollectionChangedAction.Reset)
         {
             if (notificationMode != NotifyCollectionChangedAction.Remove && notificationMode != NotifyCollectionChangedAction.Reset)
@@ -110,14 +103,10 @@ namespace XamarinFormsMvvmAdaptor
                 changedItems: changedItems);
         }
 
-        /// <summary> 
-        /// Clears the current collection and replaces it with the specified item. 
-        /// </summary> 
+        ///<inheritdoc/>
         public void Replace(T item) => ReplaceRange(new T[] { item });
 
-        /// <summary> 
-        /// Clears the current collection and replaces it with the specified collection. 
-        /// </summary> 
+        ///<inheritdoc/>
         public void ReplaceRange(IEnumerable<T> collection)
         {
             if (collection == null)

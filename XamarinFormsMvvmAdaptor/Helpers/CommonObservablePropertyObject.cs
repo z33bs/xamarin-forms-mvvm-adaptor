@@ -1,13 +1,10 @@
 ﻿namespace XamarinFormsMvvmAdaptor
 {
+    ///<inheritdoc/>
     public abstract class CommonObservablePropertyObject : ObservableObject, ICommonObservablePropertyObject
     {
         string? title = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        /// <value>The title.</value>
+        ///<inheritdoc/>
         public string? Title
         {
             get => title;
@@ -15,11 +12,7 @@
         }
 
         string? icon = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the icon.
-        /// </summary>
-        /// <value>The icon.</value>
+        ///<inheritdoc/>
         public string? Icon
         {
             get => icon;
@@ -27,11 +20,7 @@
         }
 
         bool isBusy;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is busy.
-        /// </summary>
-        /// <value><c>true</c> if this instance is busy; otherwise, <c>false</c>.</value>
+        ///<inheritdoc/>
         public bool IsBusy
         {
             get => isBusy;
@@ -43,11 +32,7 @@
         }
 
         bool isNotBusy = true;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is not busy.
-        /// </summary>
-        /// <value><c>true</c> if this instance is not busy; otherwise, <c>false</c>.</value>
+        ///<inheritdoc/>
         public bool IsNotBusy
         {
             get => isNotBusy;
