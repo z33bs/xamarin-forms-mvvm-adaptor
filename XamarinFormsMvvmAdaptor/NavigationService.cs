@@ -17,10 +17,30 @@ namespace XamarinFormsMvvmAdaptor
     ///<inheritdoc/>
     public class NavigationService : INavigationService
     {
+        readonly INavigation navigation;
+
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        [ResolveUsing]
+        public NavigationService()
+        {
+            navigation = Shell.Current.Navigation;
+        }
+
+        /// <summary>
+        /// Constructor for unit testing
+        /// </summary>
+        /// <param name="navigation"></param>
+        public NavigationService(INavigation navigation)
+        {
+            this.navigation = navigation;
+        }
+
         ///<inheritdoc/>
-        public IReadOnlyList<Page> NavigationStack => Shell.Current.Navigation.NavigationStack;
+        public IReadOnlyList<Page> NavigationStack => navigation.NavigationStack;
         ///<inheritdoc/>
-        public IReadOnlyList<Page> ModalStack => Shell.Current.Navigation.ModalStack;
+        public IReadOnlyList<Page> ModalStack => navigation.ModalStack;
 
 
         #region CONSTRUCTIVE
@@ -81,10 +101,10 @@ namespace XamarinFormsMvvmAdaptor
                     GetPageTypeForViewModel<TViewModel>()) as Page;
 
             if (isModal)
-                await Shell.Current.Navigation.PushModalAsync(
+                await navigation.PushModalAsync(
                     page, animated);
             else
-                await Shell.Current.Navigation.PushAsync(page, animated);
+                await navigation.PushAsync(page, animated);
 
             return page;
         }
@@ -136,7 +156,7 @@ namespace XamarinFormsMvvmAdaptor
             var viewModel = NavigationStack.GetPreviousViewModel();
 
             if (NavigationStack.Count > 1)
-                Shell.Current.Navigation.RemovePage(
+                navigation.RemovePage(
                     NavigationStack.GetPreviousPage());
 
             if (viewModel is IRemoved removedViewModel)
@@ -152,7 +172,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (item.GetType() == pageType)
                 {
-                    Shell.Current.Navigation.RemovePage(item);
+                    navigation.RemovePage(item);
 
                     if (item.BindingContext is IRemoved viewModel)
                         await viewModel.OnViewRemovedAsync();
@@ -167,7 +187,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             var viewModel = NavigationStack.GetCurrentViewModel();
 
-            await Shell.Current.Navigation.PopAsync(animated);
+            await navigation.PopAsync(animated);
 
             if (viewModel is IRemoved removedViewModel)
                 await removedViewModel.OnViewRemovedAsync();
@@ -178,7 +198,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             var viewModel = NavigationStack.GetCurrentViewModel();
 
-            await Shell.Current.Navigation.PopToRootAsync(animated);
+            await navigation.PopToRootAsync(animated);
 
             if (viewModel is IRemoved removedViewModel)
                 await removedViewModel.OnViewRemovedAsync();
@@ -192,7 +212,7 @@ namespace XamarinFormsMvvmAdaptor
 
             var viewModel = ModalStack.GetCurrentViewModel();
 
-            await Shell.Current.Navigation.PopModalAsync(animated);
+            await navigation.PopModalAsync(animated);
 
             if (viewModel is IRemoved removedViewModel)
                 await removedViewModel.OnViewRemovedAsync();
