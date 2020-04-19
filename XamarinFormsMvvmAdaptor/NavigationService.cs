@@ -196,12 +196,10 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task PopToRootAsync(bool animated = true)
         {
-            var viewModel = NavigationStack.GetCurrentViewModel();
-
-            await navigation.PopToRootAsync(animated);
-
-            if (viewModel is IRemoved removedViewModel)
-                await removedViewModel.OnViewRemovedAsync();
+            for (int i = navigation.NavigationStack.Count-1; i > 0; i--)
+            {
+                await PopAsync(animated);
+            }
         }
 
         ///<inheritdoc/>
