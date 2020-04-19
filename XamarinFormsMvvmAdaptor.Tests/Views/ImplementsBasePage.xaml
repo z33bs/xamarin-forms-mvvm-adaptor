@@ -2,5 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 x:Class="XamarinFormsMvvmAdaptor.Tests.Views.ImplementsBasePage"
->
+xmlns:mvvm="clr-namespace:XamarinFormsMvvmAdaptor;assembly=XamarinFormsMvvmAdaptor"
+mvvm:ViewModelLocator.AutoWireViewModel="True"
+             >
 </ContentPage>

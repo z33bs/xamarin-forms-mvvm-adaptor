@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 //todo
-//Make ExtensionClasses mockable
-//Helpers in Separate Namespace
+//Make StringExtensions mockable
 //documentation for IoC
-//acknowledgements in Licence
 //clean old unused code
+//tests
 //Autofac adaptor
 namespace XamarinFormsMvvmAdaptor
 {
