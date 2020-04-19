@@ -11,10 +11,16 @@ namespace XamarinFormsMvvmAdaptor
     /// </summary>
     public static class ViewModelLocator
     {
+        static readonly IIoc defaultContainerImplementation = new Ioc();
+        /// <summary>
+        /// Overrides <see cref="Ioc"/> with the chosen <see cref="IIoc"/>
+        /// </summary>
+        public static IIoc ContainerImplementation { private get; set; } = defaultContainerImplementation;
+
         /// <summary>
         /// Dependency injection container
         /// </summary>
-        public static IIoc Ioc { get; } = new Ioc();
+        public static IIoc Ioc => ContainerImplementation;
 
         /// <summary>
         /// Customises configuration
