@@ -170,7 +170,7 @@ namespace XamarinFormsMvvmAdaptor
 
             foreach (var item in NavigationStack)
             {
-                if (item.GetType() == pageType)
+                if (item?.GetType() == pageType)
                 {
                     navigation.RemovePage(item);
 
