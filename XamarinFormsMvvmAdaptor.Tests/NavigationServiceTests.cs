@@ -4,8 +4,8 @@ using Moq;
 using XamarinFormsMvvmAdaptor.Tests.ViewModels;
 using XamarinFormsMvvmAdaptor.Tests.Views;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 using System.Collections.Generic;
+using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
@@ -13,7 +13,6 @@ namespace XamarinFormsMvvmAdaptor.Tests
     {
         public NavigationServiceTests()
         {
-            Xamarin.Forms.Mocks.MockForms.Init();
         }
 
         [Fact]

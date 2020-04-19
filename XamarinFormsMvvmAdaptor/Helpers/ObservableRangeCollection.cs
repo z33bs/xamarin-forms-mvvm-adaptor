@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     ///<inheritdoc/>
     public class ObservableRangeCollection<T> : ObservableCollection<T>, IObservableRangeCollection<T>

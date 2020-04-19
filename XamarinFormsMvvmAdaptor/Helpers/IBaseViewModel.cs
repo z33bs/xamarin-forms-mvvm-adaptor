@@ -1,4 +1,4 @@
-﻿namespace XamarinFormsMvvmAdaptor
+﻿namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
     /// Implements all utility methods that can be called by <see cref="INavigationService"/>

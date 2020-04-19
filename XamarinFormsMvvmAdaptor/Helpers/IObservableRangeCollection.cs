@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary> 
     /// Represents a dynamic data collection that provides notifications

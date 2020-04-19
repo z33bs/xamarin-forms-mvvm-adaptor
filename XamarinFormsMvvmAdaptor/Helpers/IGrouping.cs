@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     public interface IGrouping<TKey, TItem>
     {

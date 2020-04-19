@@ -1,4 +1,4 @@
-﻿namespace XamarinFormsMvvmAdaptor
+﻿namespace XamarinFormsMvvmAdaptor.Helpers
 {
     ///<inheritdoc/>
     public abstract class CommonObservablePropertyObject : ObservableObject, ICommonObservablePropertyObject

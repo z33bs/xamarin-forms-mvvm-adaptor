@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     public interface IWeakEventHandler<TEventArgs> where TEventArgs : EventArgs
     {

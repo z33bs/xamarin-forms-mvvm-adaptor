@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
     /// Grouping of items by key into ObservableRange

@@ -1,4 +1,4 @@
-﻿namespace XamarinFormsMvvmAdaptor
+﻿namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
     /// Commonly used Properties in ViewModel that Raise PropertyChanged event

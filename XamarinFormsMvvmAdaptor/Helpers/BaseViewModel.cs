@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     ///<inheritdoc/>
     public abstract class BaseViewModel : CommonObservablePropertyObject,  IBaseViewModel

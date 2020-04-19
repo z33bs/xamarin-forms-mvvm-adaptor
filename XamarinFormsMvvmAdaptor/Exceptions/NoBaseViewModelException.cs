@@ -1,4 +1,6 @@
 ﻿using System;
+using XamarinFormsMvvmAdaptor.Helpers;
+
 namespace XamarinFormsMvvmAdaptor
 {
     public class NoBaseViewModelException : Exception

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
     /// From: http://paulstovell.com/blog/weakevents

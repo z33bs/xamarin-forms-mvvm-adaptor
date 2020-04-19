@@ -1,4 +1,4 @@
-﻿namespace XamarinFormsMvvmAdaptor
+﻿namespace XamarinFormsMvvmAdaptor.Helpers
 {
 	/// <summary>
     /// Extension methods for the <see cref="string"/> object
