@@ -92,7 +92,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public async Task PopAsync_TargetImplementsIRemoved_ExecutesOnRemovedAsync()
         {
-            var vm = new Mock<IRemoved>();
+            var vm = new Mock<IOnViewRemoved>();
             vm.Setup(o => o.OnViewRemovedAsync()).Verifiable();
 
             var page = new Mock<Page>();
@@ -109,7 +109,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public async Task PopModalAsync_TargetImplementsIRemoved_ExecutesOnRemovedAsync()
         {
-            var vm = new Mock<IRemoved>();
+            var vm = new Mock<IOnViewRemoved>();
             vm.Setup(o => o.OnViewRemovedAsync()).Verifiable();
 
             var page = new Mock<Page>();
@@ -151,7 +151,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public async Task RemovePageFor_TargetImplementsIRemoved_ExecutesOnRemovedAsync()
         {
-            var vm = new Mock<IRemoved>();
+            var vm = new Mock<IOnViewRemoved>();
             vm.Setup(o => o.OnViewRemovedAsync()).Verifiable();
 
             //Can't Mock page because will compare types
@@ -188,7 +188,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public async Task RemovePreviousPageFromMainStack_TargetImplementsIRemoved_ExecutesOnRemovedAsync()
         {
-            var vm = new Mock<IRemoved>();
+            var vm = new Mock<IOnViewRemoved>();
             vm.Setup(o => o.OnViewRemovedAsync()).Verifiable();
 
             var page = new Mock<Page>();
@@ -228,7 +228,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public async Task PopToRootAsync_TargetImplementsIRemoved_ExecutesOnRemovedAsync()
         {
-            var vm = new Mock<IRemoved>();
+            var vm = new Mock<IOnViewRemoved>();
             vm.Setup(o => o.OnViewRemovedAsync()).Verifiable();
             var page = new Mock<Page>();
             page.Object.BindingContext = vm.Object;

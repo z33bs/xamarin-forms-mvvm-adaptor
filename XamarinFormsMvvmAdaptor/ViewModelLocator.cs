@@ -92,15 +92,15 @@ namespace XamarinFormsMvvmAdaptor
 
             if (view is Page page)
             {
-                if (viewModel is IAppearing appearingVm)
+                if (viewModel is IOnViewAppearing appearingVm)
                     page.Appearing += new WeakEventHandler<EventArgs>(
                         appearingVm.OnViewAppearing).Handler;
 
-                if (viewModel is IDisappearing disappearingVm)
+                if (viewModel is IOnViewDisappearing disappearingVm)
                     page.Disappearing += new WeakEventHandler<EventArgs>(
                         disappearingVm.OnViewDisappearing).Handler;
             }
-            
+
             view.BindingContext = viewModel;
         }
 

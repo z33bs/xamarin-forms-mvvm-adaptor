@@ -5,7 +5,7 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// Implements <see cref="OnViewRemovedAsync"/>
     /// </summary>
-    public interface IRemoved
+    public interface IOnViewRemoved
     {
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>

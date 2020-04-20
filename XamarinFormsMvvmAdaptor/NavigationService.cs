@@ -61,7 +61,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<TViewModel> PushAsync<TViewModel>(
             object navigationData, bool animated = true)
-            where TViewModel : class, IPushed
+            where TViewModel : class, IOnViewPushed
         {
             var page = await InternalPushAsync<TViewModel>(navigationData, animated);
             return page.BindingContext as TViewModel; //can be null if no viewModel resolved
@@ -80,7 +80,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<TViewModel> PushModalAsync<TViewModel>(
             object navigationData, bool animated = true)
-            where TViewModel : class, IPushed
+            where TViewModel : class, IOnViewPushed
         {
             var page = await InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
             return page.BindingContext as TViewModel;
@@ -113,11 +113,11 @@ namespace XamarinFormsMvvmAdaptor
 
         private async Task<Page> InternalPushAsync<TViewModel>(
             object navigationData = null, bool animated = true, bool isModal = false)
-            where TViewModel : class, IPushed
+            where TViewModel : class, IOnViewPushed
         {
             var page = await InternalPushAsync<TViewModel>(animated, isModal);
 
-            if (page.BindingContext is IPushed viewModel)
+            if (page.BindingContext is IOnViewPushed viewModel)
                 await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
 
             return page;
@@ -161,7 +161,7 @@ namespace XamarinFormsMvvmAdaptor
                 navigation.RemovePage(
                     NavigationStack.GetPreviousPage());
 
-            if (viewModel is IRemoved removedViewModel)
+            if (viewModel is IOnViewRemoved removedViewModel)
                 await removedViewModel.OnViewRemovedAsync();
         }
 
@@ -176,7 +176,7 @@ namespace XamarinFormsMvvmAdaptor
                 {
                     navigation.RemovePage(item);
 
-                    if (item.BindingContext is IRemoved viewModel)
+                    if (item.BindingContext is IOnViewRemoved viewModel)
                         await viewModel.OnViewRemovedAsync();
 
                     break;
@@ -191,14 +191,14 @@ namespace XamarinFormsMvvmAdaptor
 
             await navigation.PopAsync(animated);
 
-            if (viewModel is IRemoved removedViewModel)
+            if (viewModel is IOnViewRemoved removedViewModel)
                 await removedViewModel.OnViewRemovedAsync();
         }
 
         ///<inheritdoc/>
         public async Task PopToRootAsync(bool animated = true)
         {
-            for (int i = navigation.NavigationStack.Count-1; i > 0; i--)
+            for (int i = navigation.NavigationStack.Count - 1; i > 0; i--)
             {
                 await PopAsync(animated);
             }
@@ -214,7 +214,7 @@ namespace XamarinFormsMvvmAdaptor
 
             await navigation.PopModalAsync(animated);
 
-            if (viewModel is IRemoved removedViewModel)
+            if (viewModel is IOnViewRemoved removedViewModel)
                 await removedViewModel.OnViewRemovedAsync();
         }
         #endregion

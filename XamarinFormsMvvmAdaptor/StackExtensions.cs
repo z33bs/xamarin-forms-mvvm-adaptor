@@ -24,7 +24,7 @@ namespace XamarinFormsMvvmAdaptor
                     var viewModel = stack.GetPreviousViewModel();
                     Shell.Current.Navigation.RemovePage(stack.GetPreviousPage());
 
-                    if(viewModel is IRemoved removedViewModel)
+                    if(viewModel is IOnViewRemoved removedViewModel)
                         await removedViewModel.OnViewRemovedAsync();
                 }
             }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Commonly used Properties in ViewModel that Raise PropertyChanged event
     /// </summary>
-    public interface ICommonObservablePropertyObject : IObservableObject
+    public interface IViewModelBase : IObservableObject
     {
         /// <summary>
         /// Gets or sets the title.

@@ -5,7 +5,7 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// Implements <see cref="OnViewPushedAsync(object)"/>
     /// </summary>
-    public interface IPushed
+    public interface IOnViewPushed
     {
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>

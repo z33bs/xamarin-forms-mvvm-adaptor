@@ -1,9 +1,9 @@
-﻿namespace XamarinFormsMvvmAdaptor.Helpers
+﻿namespace XamarinFormsMvvmAdaptor
 {
 	/// <summary>
     /// Extension methods for the <see cref="string"/> object
     /// </summary>
-    public static class SystemStringExtensions
+    internal static class SystemStringExtensions
     {
 		/// <summary>
         /// Replaces the last occuring substring defined by <paramref name="find"/>
@@ -13,7 +13,7 @@
         /// <param name="find"></param>
         /// <param name="replace"></param>
         /// <returns></returns>
-		public static string ReplaceLastOccurrence(this string source, string find, string replace)
+		internal static string ReplaceLastOccurrence(this string source, string find, string replace)
 		{
 			int place = source.LastIndexOf(find);
 

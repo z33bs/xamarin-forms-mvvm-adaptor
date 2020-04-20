@@ -1,7 +1,7 @@
 ﻿namespace XamarinFormsMvvmAdaptor.Helpers
 {
     ///<inheritdoc/>
-    public abstract class CommonObservablePropertyObject : ObservableObject, ICommonObservablePropertyObject
+    public abstract class ViewModelBase : ObservableObject, IViewModelBase
     {
         string? title = string.Empty;
         ///<inheritdoc/>

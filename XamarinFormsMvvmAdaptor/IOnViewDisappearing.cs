@@ -4,7 +4,7 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// Implements the <see cref="OnViewDisappearing(object, EventArgs)"/> method
     /// </summary>
-    public interface IDisappearing
+    public interface IOnViewDisappearing
     {
         /// <summary>
         /// Handles the <see cref="Xamarin.Forms.Page.Disappearing"/> event
