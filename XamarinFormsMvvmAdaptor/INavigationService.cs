@@ -10,6 +10,10 @@ namespace XamarinFormsMvvmAdaptor
     public interface INavigationService
     {
         /// <summary>
+        /// Returns Xamarin.Forms.Shell.Current
+        /// </summary>
+        public Shell CurrentShell { get; }
+        /// <summary>
         /// Gets the Current Shell's NavigationStack
         /// </summary>
         IReadOnlyList<Page> NavigationStack { get; }

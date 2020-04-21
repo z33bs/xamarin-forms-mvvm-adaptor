@@ -19,6 +19,9 @@ namespace XamarinFormsMvvmAdaptor
     ///<inheritdoc/>
     public class NavigationService : INavigationService
     {
+        ///<inheritdoc/>
+        public Shell CurrentShell => Shell.Current;
+
         readonly INavigation navigation;
 
         /// <summary>
