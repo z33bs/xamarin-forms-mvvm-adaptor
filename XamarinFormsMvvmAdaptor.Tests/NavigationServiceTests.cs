@@ -5,6 +5,7 @@ using XamarinFormsMvvmAdaptor.Tests.ViewModels;
 using XamarinFormsMvvmAdaptor.Tests.Views;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Xamarin.Forms.Mocks; //Needed for Mocking Device.BeginInvokeOnMainThread
 using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor.Tests
@@ -13,6 +14,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
     {
         public NavigationServiceTests()
         {
+            MockForms.Init();
         }
 
         [Fact]
@@ -74,6 +76,22 @@ namespace XamarinFormsMvvmAdaptor.Tests
             await ns.PopAsync();
             navigation.VerifyAll();
         }
+
+        [Fact]
+        public async Task PopAsync_INavigationException_ThrowsException()
+        {
+            var page = new Mock<Page>();
+            page.Object.BindingContext = new Mock<EmptyViewModel>().Object;
+            var navigation = new Mock<INavigation>();
+            //Typical exceptions are InvalidOperationException and ArgumentOutOfRangeException
+            navigation.Setup(o => o.PopAsync(true)).Throws<InvalidOperationException>();
+            navigation.Setup(o => o.NavigationStack).Returns(
+                new List<Page> { null, page.Object });
+            var ns = new NavigationService(navigation.Object);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => ns.PopAsync());
+        }
+
+        //todo Test exceptions for all navigation operations
 
         [Fact]
         public async Task PopModalAsync_Always_ExecutesINavigationPopModalAsync()

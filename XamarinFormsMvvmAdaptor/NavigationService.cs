@@ -50,15 +50,43 @@ namespace XamarinFormsMvvmAdaptor
 
         #region CONSTRUCTIVE
         ///<inheritdoc/>
-        public Task GoToAsync(ShellNavigationState state, bool animate)
+        public async Task GoToAsync(ShellNavigationState state, bool animate)
         {
-            return Shell.Current.GoToAsync(state, animate);
+            var isPushed = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await Shell.Current.GoToAsync(state, animate);
+                    isPushed.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushed.SetException(ex);
+                }
+            });
+
+            await isPushed.Task;
         }
 
         ///<inheritdoc/>
-        public Task GoToAsync(ShellNavigationState state)
+        public async Task GoToAsync(ShellNavigationState state)
         {
-            return Shell.Current.GoToAsync(state);
+            var isPushed = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await Shell.Current.GoToAsync(state);
+                    isPushed.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushed.SetException(ex);
+                }
+            });
+
+            await isPushed.Task;
         }
 
         ///<inheritdoc/>
@@ -105,12 +133,25 @@ namespace XamarinFormsMvvmAdaptor
             var page = Activator.CreateInstance(
                     GetPageTypeForViewModel<TViewModel>()) as Page;
 
-            if (isModal)
-                await navigation.PushModalAsync(
-                    page, animated);
-            else
-                await navigation.PushAsync(page, animated);
+            var isPushed = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    if (isModal)
+                        await navigation.PushModalAsync(
+                            page, animated);
+                    else
+                        await navigation.PushAsync(page, animated);
+                    isPushed.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPushed.SetException(ex);
+                }
+            });
 
+            await isPushed.Task;
             return page;
         }
 
@@ -161,11 +202,25 @@ namespace XamarinFormsMvvmAdaptor
             var viewModel = NavigationStack.GetPreviousViewModel();
 
             if (NavigationStack.Count > 1)
-                navigation.RemovePage(
-                    NavigationStack.GetPreviousPage());
+            {
+                var isRemoved = new TaskCompletionSource<bool>();
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    try
+                    {
+                        navigation.RemovePage(
+                                NavigationStack.GetPreviousPage());
+                        isRemoved.SetResult(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        isRemoved.SetException(ex);
+                    }
+                });
 
-            if (viewModel is IOnViewRemoved removedViewModel)
-                await removedViewModel.OnViewRemovedAsync();
+                if (await isRemoved.Task && viewModel is IOnViewRemoved removedViewModel)
+                    await removedViewModel.OnViewRemovedAsync();
+            }
         }
 
         ///<inheritdoc/>
@@ -177,9 +232,22 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (item?.GetType() == pageType)
                 {
-                    navigation.RemovePage(item);
+                    var isRemoved = new TaskCompletionSource<bool>();
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        try
+                        {
+                            navigation.RemovePage(item);
+                            isRemoved.SetResult(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            isRemoved.SetException(ex);
+                        }
+                    });
 
-                    if (item.BindingContext is IOnViewRemoved viewModel)
+                    if (await isRemoved.Task
+                        && item.BindingContext is IOnViewRemoved viewModel)
                         await viewModel.OnViewRemovedAsync();
 
                     break;
@@ -192,10 +260,23 @@ namespace XamarinFormsMvvmAdaptor
         {
             var viewModel = NavigationStack.GetCurrentViewModel();
 
-            await navigation.PopAsync(animated);
+            var isPopped = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await navigation.PopAsync(animated);
+                    isPopped.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPopped.SetException(ex);
+                }
+            });
 
-            if (viewModel is IOnViewRemoved removedViewModel)
-                await removedViewModel.OnViewRemovedAsync();
+            if (await isPopped.Task
+                && viewModel is IOnViewRemoved removedViewModel)
+                    await removedViewModel.OnViewRemovedAsync();
         }
 
         ///<inheritdoc/>
@@ -215,10 +296,23 @@ namespace XamarinFormsMvvmAdaptor
 
             var viewModel = ModalStack.GetCurrentViewModel();
 
-            await navigation.PopModalAsync(animated);
+            var isPopped = new TaskCompletionSource<bool>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await navigation.PopModalAsync(animated);
+                    isPopped.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    isPopped.SetException(ex);
+                }
+            });
 
-            if (viewModel is IOnViewRemoved removedViewModel)
-                await removedViewModel.OnViewRemovedAsync();
+            if (await isPopped.Task
+                && viewModel is IOnViewRemoved removedViewModel)
+                    await removedViewModel.OnViewRemovedAsync();
         }
         #endregion
 
