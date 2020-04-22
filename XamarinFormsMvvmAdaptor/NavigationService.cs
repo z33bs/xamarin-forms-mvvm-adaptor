@@ -57,7 +57,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Shell.Current.GoToAsync(state, animate);
+                    await Shell.Current.GoToAsync(state, animate).ConfigureAwait(false);
                     isPushed.SetResult(true);
                 }
                 catch (Exception ex)
@@ -66,7 +66,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            await isPushed.Task;
+            await isPushed.Task.ConfigureAwait(false);
         }
 
         ///<inheritdoc/>
@@ -77,7 +77,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await Shell.Current.GoToAsync(state);
+                    await Shell.Current.GoToAsync(state).ConfigureAwait(false);
                     isPushed.SetResult(true);
                 }
                 catch (Exception ex)
@@ -86,7 +86,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            await isPushed.Task;
+            await isPushed.Task.ConfigureAwait(false);
         }
 
         ///<inheritdoc/>
@@ -140,9 +140,9 @@ namespace XamarinFormsMvvmAdaptor
                 {
                     if (isModal)
                         await navigation.PushModalAsync(
-                            page, animated);
+                            page, animated).ConfigureAwait(false);
                     else
-                        await navigation.PushAsync(page, animated);
+                        await navigation.PushAsync(page, animated).ConfigureAwait(false);
                     isPushed.SetResult(true);
                 }
                 catch (Exception ex)
@@ -152,7 +152,7 @@ namespace XamarinFormsMvvmAdaptor
             });
 
             
-            if (await isPushed.Task && page.BindingContext is IOnViewPushed viewModel)
+            if (await isPushed.Task.ConfigureAwait(false) && page.BindingContext is IOnViewPushed viewModel)
                 await viewModel.OnViewPushedAsync(null).ConfigureAwait(false);
 
             return page;
@@ -221,8 +221,8 @@ namespace XamarinFormsMvvmAdaptor
                     }
                 });
 
-                if (await isRemoved.Task && viewModel is IOnViewRemoved removedViewModel)
-                    await removedViewModel.OnViewRemovedAsync();
+                if (await isRemoved.Task.ConfigureAwait(false) && viewModel is IOnViewRemoved removedViewModel)
+                    await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
             }
         }
 
@@ -249,9 +249,9 @@ namespace XamarinFormsMvvmAdaptor
                         }
                     });
 
-                    if (await isRemoved.Task
+                    if (await isRemoved.Task.ConfigureAwait(false)
                         && item.BindingContext is IOnViewRemoved viewModel)
-                        await viewModel.OnViewRemovedAsync();
+                        await viewModel.OnViewRemovedAsync().ConfigureAwait(false);
 
                     break;
                 }
@@ -268,7 +268,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 try
                 {
-                    await navigation.PopAsync(animated);
+                    await navigation.PopAsync(animated).ConfigureAwait(false);
                     isPopped.SetResult(true);
                 }
                 catch (Exception ex)
@@ -277,9 +277,9 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPopped.Task
+            if (await isPopped.Task.ConfigureAwait(false)
                 && viewModel is IOnViewRemoved removedViewModel)
-                    await removedViewModel.OnViewRemovedAsync();
+                    await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
         }
 
         ///<inheritdoc/>
@@ -287,7 +287,7 @@ namespace XamarinFormsMvvmAdaptor
         {
             for (int i = navigation.NavigationStack.Count - 1; i > 0; i--)
             {
-                await PopAsync(animated);
+                await PopAsync(animated).ConfigureAwait(false);
             }
         }
 
@@ -313,9 +313,9 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPopped.Task
+            if (await isPopped.Task.ConfigureAwait(false)
                 && viewModel is IOnViewRemoved removedViewModel)
-                    await removedViewModel.OnViewRemovedAsync();
+                    await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
         }
         #endregion
 
