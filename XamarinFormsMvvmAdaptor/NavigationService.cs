@@ -151,12 +151,15 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            await isPushed.Task;
+            
+            if (await isPushed.Task && page.BindingContext is IOnViewPushed viewModel)
+                await viewModel.OnViewPushedAsync(null).ConfigureAwait(false);
+
             return page;
         }
 
         private async Task<Page> InternalPushAsync<TViewModel>(
-            object navigationData = null, bool animated = true, bool isModal = false)
+            object navigationData, bool animated = true, bool isModal = false)
             where TViewModel : class, IOnViewPushed
         {
             var page = await InternalPushAsync<TViewModel>(animated, isModal);
