@@ -8,6 +8,8 @@ using Xamarin.Forms;
 using XamarinFormsMvvmAdaptor.Helpers;
 
 //todo
+//Ensure BIOMT first checks if on Main
+//SafeBeginInvokeOnMainThread
 //Make ExtensionClasses mockable
 //Helpers in Separate Namespace
 //documentation for IoC
@@ -151,7 +153,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            
+
             if (await isPushed.Task.ConfigureAwait(false) && page.BindingContext is IOnViewPushed viewModel)
                 await viewModel.OnViewPushedAsync(null).ConfigureAwait(false);
 
@@ -279,7 +281,7 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPopped.Task.ConfigureAwait(false)
                 && viewModel is IOnViewRemoved removedViewModel)
-                    await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
+                await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
         }
 
         ///<inheritdoc/>
@@ -315,7 +317,72 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPopped.Task.ConfigureAwait(false)
                 && viewModel is IOnViewRemoved removedViewModel)
-                    await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
+                await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Dialogues/Popups
+        ///<inheritdoc/>
+        public Task DisplayAlert(string title, string message, string cancel)
+        {
+            return DisplayAlert(title, message, null, cancel);
+        }
+
+        ///<inheritdoc/>
+        public Task<bool> DisplayAlert(string title, string message, string accept, string cancel)
+        {
+            var hasDisplayed = new TaskCompletionSource<Task<bool>>();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                try
+                {
+                    hasDisplayed.SetResult(CurrentShell.DisplayAlert(title, message, accept, cancel));
+                }
+                catch (Exception ex)
+                {
+                    hasDisplayed.SetException(ex);
+                }
+            });
+
+            return hasDisplayed.Task.Result;            
+        }
+
+        ///<inheritdoc/>
+        public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
+        {
+            var hasDisplayed = new TaskCompletionSource<Task<string>>();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                try
+                {
+                    hasDisplayed.SetResult(CurrentShell.DisplayActionSheet(title, cancel, destruction, buttons));
+                }
+                catch (Exception ex)
+                {
+                    hasDisplayed.SetException(ex);
+                }
+            });
+
+            return hasDisplayed.Task.Result;            
+        }
+
+        ///<inheritdoc/>
+        public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard), string initialValue = "")
+        {
+            var hasDisplayed = new TaskCompletionSource<Task<string>>();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                try
+                {
+                    hasDisplayed.SetResult(CurrentShell.DisplayPromptAsync(title, message, accept, cancel, placeholder, maxLength, keyboard, initialValue));
+                }
+                catch (Exception ex)
+                {
+                    hasDisplayed.SetException(ex);
+                }
+            });
+
+            return hasDisplayed.Task.Result;            
         }
         #endregion
 
