@@ -28,10 +28,16 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="state">A URI representing either the current page or a destination for navigation in a Shell application.</param>
         /// <param name="animate"></param>
         /// <returns></returns>
-        Task GoToAsync(ShellNavigationState state, bool animate);
+        Task GoToAsync(ShellNavigationState state, bool animate = true);
 
-        ///<inheritdoc cref="GoToAsync(ShellNavigationState, bool)"/>
-        Task GoToAsync(ShellNavigationState state);
+        /// <summary>
+        /// Navigates to a <see cref="Page"/> passing data to the target ViewModel
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="navigationData"></param>
+        /// <param name="animate"></param>
+        /// <returns></returns>
+        Task GoToAsync(ShellNavigationState state, object navigationData, bool animate = true);
 
         /// <summary>
         /// Pops a <see cref="Page"/> off the <see cref="NavigationStack"/>

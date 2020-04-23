@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -52,7 +52,13 @@ namespace XamarinFormsMvvmAdaptor
 
         #region CONSTRUCTIVE
         ///<inheritdoc/>
-        public async Task GoToAsync(ShellNavigationState state, bool animate)
+        public Task GoToAsync(ShellNavigationState state, bool animate = true)
+        {
+            return GoToAsync(state, null, animate);
+        }
+
+        ///<inheritdoc/>
+        public async Task GoToAsync(ShellNavigationState state, object navigationData, bool animate = true)
         {
             var isPushed = new TaskCompletionSource<bool>();
             Device.BeginInvokeOnMainThread(async () =>
@@ -68,27 +74,16 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            await isPushed.Task.ConfigureAwait(false);
+            if (await isPushed.Task.ConfigureAwait(false)
+                && (Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?
+                .PresentedPage.BindingContext is IOnViewPushed viewModel)
+                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
         }
 
         ///<inheritdoc/>
-        public async Task GoToAsync(ShellNavigationState state)
+        public Task GoToAsync(ShellNavigationState state)
         {
-            var isPushed = new TaskCompletionSource<bool>();
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    await Shell.Current.GoToAsync(state).ConfigureAwait(false);
-                    isPushed.SetResult(true);
-                }
-                catch (Exception ex)
-                {
-                    isPushed.SetException(ex);
-                }
-            });
-
-            await isPushed.Task.ConfigureAwait(false);
+            return GoToAsync(state, true);
         }
 
         ///<inheritdoc/>
@@ -344,7 +339,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            return hasDisplayed.Task.Result;            
+            return hasDisplayed.Task.Result;
         }
 
         ///<inheritdoc/>
@@ -363,7 +358,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            return hasDisplayed.Task.Result;            
+            return hasDisplayed.Task.Result;
         }
 
         ///<inheritdoc/>
@@ -382,7 +377,7 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            return hasDisplayed.Task.Result;            
+            return hasDisplayed.Task.Result;
         }
         #endregion
 
