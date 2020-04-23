@@ -64,10 +64,10 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a <see cref="Page"/> onto the <see cref="NavigationStack"/>
         /// </summary>
         /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
-        /// <param name="navigationData">Object that will be recieved by the <see cref="IOnViewPushed.OnViewPushedAsync(object)"/> method</param>
+        /// <param name="navigationData">Object that will be recieved by the <see cref="IOnViewNavigated.OnViewNavigatedAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        Task<TViewModel> PushAsync<TViewModel>(object navigationData, bool animated = true) where TViewModel : class, IOnViewPushed;
+        Task<TViewModel> PushAsync<TViewModel>(object navigationData, bool animated = true) where TViewModel : class, IOnViewNavigated;
 
         ///<inheritdoc cref="PushAsync{TViewModel}(object, bool)"/>
         Task<TViewModel> PushAsync<TViewModel>(bool animated = true) where TViewModel : class;
@@ -76,10 +76,10 @@ namespace XamarinFormsMvvmAdaptor
         /// Pushes a <see cref="Page"/> onto the <see cref="ModalStack"/>
         /// </summary>
         /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
-        /// <param name="navigationData">Object that will be recieved by the <see cref="IOnViewPushed.OnViewPushedAsync(object)"/> method</param>
+        /// <param name="navigationData">Object that will be recieved by the <see cref="IOnViewNavigated.OnViewNavigatedAsync(object)"/> method</param>
         /// <param name="animated"></param>
         /// <returns></returns>
-        Task<TViewModel> PushModalAsync<TViewModel>(object navigationData, bool animated = true) where TViewModel : class, IOnViewPushed;
+        Task<TViewModel> PushModalAsync<TViewModel>(object navigationData, bool animated = true) where TViewModel : class, IOnViewNavigated;
 
         ///<inheritdoc cref="PushModalAsync{TViewModel}(object, bool)"/>
         Task<TViewModel> PushModalAsync<TViewModel>(bool animated = true) where TViewModel : class;

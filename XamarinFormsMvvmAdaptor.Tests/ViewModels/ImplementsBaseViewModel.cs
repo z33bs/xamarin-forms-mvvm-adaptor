@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace XamarinFormsMvvmAdaptor.Tests.ViewModels
 {
-    public class ImplementsBaseViewModel : IOnViewPushed, IOnViewRemoved, IOnViewAppearing, IOnViewDisappearing
+    public class ImplementsBaseViewModel : IOnViewNavigated, IOnViewRemoved, IOnViewAppearing, IOnViewDisappearing
     {
         public ImplementsBaseViewModel()
         {
@@ -17,7 +17,7 @@ namespace XamarinFormsMvvmAdaptor.Tests.ViewModels
         {
         }
 
-        public Task OnViewPushedAsync(object navigationData)
+        public Task OnViewNavigatedAsync(object navigationData)
         {
             return Task.FromResult(true);
         }

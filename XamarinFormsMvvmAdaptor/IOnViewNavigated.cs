@@ -3,9 +3,9 @@
 namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// Implements <see cref="OnViewPushedAsync(object)"/>
+    /// Implements <see cref="OnViewNavigatedAsync(object)"/>
     /// </summary>
-    public interface IOnViewPushed
+    public interface IOnViewNavigated
     {
         /// <summary>
         /// Runs automatically when a <see cref="Xamarin.Forms.Page"/>
@@ -13,6 +13,6 @@ namespace XamarinFormsMvvmAdaptor
         /// </summary>
         /// <param name="navigationData">Any data required for ViewModel initialisation</param>
         /// <returns></returns>
-        Task OnViewPushedAsync(object navigationData);
+        Task OnViewNavigatedAsync(object navigationData);
     }
 }

@@ -76,8 +76,8 @@ namespace XamarinFormsMvvmAdaptor
 
             if (await isPushed.Task.ConfigureAwait(false)
                 && (Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?
-                .PresentedPage.BindingContext is IOnViewPushed viewModel)
-                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
+                .PresentedPage.BindingContext is IOnViewNavigated viewModel)
+                await viewModel.OnViewNavigatedAsync(navigationData).ConfigureAwait(false);
         }
 
         ///<inheritdoc/>
@@ -89,7 +89,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<TViewModel> PushAsync<TViewModel>(
             object navigationData, bool animated = true)
-            where TViewModel : class, IOnViewPushed
+            where TViewModel : class, IOnViewNavigated
         {
             var page = await InternalPushAsync<TViewModel>(navigationData, animated);
             return page.BindingContext as TViewModel; //can be null if no viewModel resolved
@@ -108,7 +108,7 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public async Task<TViewModel> PushModalAsync<TViewModel>(
             object navigationData, bool animated = true)
-            where TViewModel : class, IOnViewPushed
+            where TViewModel : class, IOnViewNavigated
         {
             var page = await InternalPushAsync<TViewModel>(navigationData, animated, isModal: true);
             return page.BindingContext as TViewModel;
@@ -149,20 +149,20 @@ namespace XamarinFormsMvvmAdaptor
             });
 
 
-            if (await isPushed.Task.ConfigureAwait(false) && page.BindingContext is IOnViewPushed viewModel)
-                await viewModel.OnViewPushedAsync(null).ConfigureAwait(false);
+            if (await isPushed.Task.ConfigureAwait(false) && page.BindingContext is IOnViewNavigated viewModel)
+                await viewModel.OnViewNavigatedAsync(null).ConfigureAwait(false);
 
             return page;
         }
 
         private async Task<Page> InternalPushAsync<TViewModel>(
             object navigationData, bool animated = true, bool isModal = false)
-            where TViewModel : class, IOnViewPushed
+            where TViewModel : class, IOnViewNavigated
         {
             var page = await InternalPushAsync<TViewModel>(animated, isModal);
 
-            if (page.BindingContext is IOnViewPushed viewModel)
-                await viewModel.OnViewPushedAsync(navigationData).ConfigureAwait(false);
+            if (page.BindingContext is IOnViewNavigated viewModel)
+                await viewModel.OnViewNavigatedAsync(navigationData).ConfigureAwait(false);
 
             return page;
         }
