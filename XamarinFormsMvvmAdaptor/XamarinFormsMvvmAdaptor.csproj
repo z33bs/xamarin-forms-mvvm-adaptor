@@ -43,4 +43,12 @@
       <Folder Include="IoC\Attributes\" />
       <Folder Include="FluentApi\" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="SafeFireAndForgetExtensions.ValueTask.cs" />
+      <Compile Remove="BackgroundCommand.cs" />
+      <Compile Remove="BackgroundCommand2.cs" />
+      <Compile Remove="SafeFireAndForgetExtensions.cs" />
+      <Compile Remove="WeakEventManager.cs" />
+      <Compile Remove="InvalidCommandParameterException.cs" />
+    </ItemGroup>
 </Project>
