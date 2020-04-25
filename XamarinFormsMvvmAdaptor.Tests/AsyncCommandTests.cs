@@ -152,6 +152,5 @@ namespace XamarinFormsMvvmAdaptor.Tests
             Assert.True(command.CanExecute(null));
         }
         #endregion
-
     }
 }

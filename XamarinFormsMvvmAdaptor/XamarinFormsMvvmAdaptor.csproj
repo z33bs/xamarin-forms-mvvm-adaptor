@@ -36,7 +36,7 @@
         <None Include="Art\icon.png" Pack="true" PackagePath="" />
         <!--AUTO-->
         <PackageReference Include="Xamarin.Forms" Version="4.5.0.356" />
-        <None Include="SafeFireAndForgetExtensions.ValueTask.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+        <None Include="Helpers\SafeFireAndForgetExtensions.ValueTask.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Helpers\" />
@@ -45,6 +45,6 @@
       <Folder Include="FluentApi\" />
     </ItemGroup>
     <ItemGroup>
-      <Compile Remove="SafeFireAndForgetExtensions.ValueTask.cs" />
+      <Compile Remove="Helpers\SafeFireAndForgetExtensions.ValueTask.cs" />
     </ItemGroup>
 </Project>
