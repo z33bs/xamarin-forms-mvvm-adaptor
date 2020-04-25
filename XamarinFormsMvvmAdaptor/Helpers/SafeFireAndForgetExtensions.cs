@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Adapted from Brandon Minnick's AsyncAwaitBestPractices
+// https://github.com/brminnick/AsyncAwaitBestPractices/tree/3a9522e651a8c5842172cb5c6cc5bf47de9d86af
+// Modifications flagged with //GA
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -18,17 +22,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         /// <param name="task">Task.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        /// <param name="continueOnCapturedContext">If set to <c>true</c>, continue on captured context; this will ensure that the Synchronization Context returns to the calling thread. If set to <c>false</c>, continue on a different context; this will allow the Synchronization Context to continue on a different thread</param>
-        public static void SafeFireAndForget(this Task task, in Action<Exception>? onException = null, in bool continueOnCapturedContext = false) => HandleSafeFireAndForget(task, continueOnCapturedContext, onException);
+        public static void SafeFireAndForget(this Task task, in Action<Exception>? onException = null) => HandleSafeFireAndForget(task, onException);
 
         /// <summary>
         /// Safely execute the Task without waiting for it to complete before moving to the next line of code; commonly known as "Fire And Forget". Inspired by John Thiriet's blog post, "Removing Async Void": https://johnthiriet.com/removing-async-void/.
         /// </summary>
         /// <param name="task">Task.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        /// <param name="continueOnCapturedContext">If set to <c>true</c>, continue on captured context; this will ensure that the Synchronization Context returns to the calling thread. If set to <c>false</c>, continue on a different context; this will allow the Synchronization Context to continue on a different thread</param>
         /// <typeparam name="TException">Exception type. If an exception is thrown of a different type, it will not be handled</typeparam>
-        public static void SafeFireAndForget<TException>(this Task task, in Action<TException>? onException = null, in bool continueOnCapturedContext = false) where TException : Exception => HandleSafeFireAndForget(task, continueOnCapturedContext, onException);
+        public static void SafeFireAndForget<TException>(this Task task, in Action<TException>? onException = null) where TException : Exception => HandleSafeFireAndForget(task, onException);
 
         /// <summary>
         /// Initialize SafeFireAndForget
@@ -55,29 +57,18 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             _onException = onException;
         }
 
-        static async void HandleSafeFireAndForget<TException>(Task task, bool continueOnCapturedContext, Action<TException>? onException) where TException : Exception
+        static void HandleSafeFireAndForget<TException>(Task task, Action<TException>? onException) where TException : Exception
         {
-            //if (_onException != null || onException != null)
-            //    task.ContinueWith(
-            //            t =>
-            //            {
-            //                HandleException(t.Exception.InnerException as TException, onException);
-            //                if (_shouldAlwaysRethrowException)
-            //                    Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
-            //            }
-            //            , TaskContinuationOptions.OnlyOnFaulted);
-
-            try
-            {
-                await task.ConfigureAwait(continueOnCapturedContext);
-            }
-            catch (TException ex) when (_onException != null || onException != null)
-            {
-                HandleException(ex, onException);
-
-                if (_shouldAlwaysRethrowException)
-                    throw;
-            }
+            //GA Modified to use ContinueWith instead of async/await
+            if (_onException != null || onException != null)
+                task.ContinueWith(
+                        t =>
+                        {
+                            HandleException(t.Exception.InnerException as TException, onException);
+                            if (_shouldAlwaysRethrowException)
+                                Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
+                        }
+                        , TaskContinuationOptions.OnlyOnFaulted);
         }
 
         static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
@@ -92,17 +83,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         /// <param name="task">Task.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        /// <param name="continueOnCapturedContext">If set to <c>true</c>, continue on captured context; this will ensure that the Synchronization Context returns to the calling thread. If set to <c>false</c>, continue on a different context; this will allow the Synchronization Context to continue on a different thread</param>
-        public static void SafeFireAndForget(this Task task, Action<Exception>? onException, bool continueOnCapturedContext = false) => task.SafeFireAndForget(in onException, in continueOnCapturedContext);
+        public static void SafeFireAndForget(this Task task, Action<Exception>? onException) => task.SafeFireAndForget(in onException);
 
         /// <summary>
         /// Safely execute the Task without waiting for it to complete before moving to the next line of code; commonly known as "Fire And Forget". Inspired by John Thiriet's blog post, "Removing Async Void": https://johnthiriet.com/removing-async-void/.
         /// </summary>
         /// <param name="task">Task.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        /// <param name="continueOnCapturedContext">If set to <c>true</c>, continue on captured context; this will ensure that the Synchronization Context returns to the calling thread. If set to <c>false</c>, continue on a different context; this will allow the Synchronization Context to continue on a different thread</param>
         /// <typeparam name="TException">Exception type. If an exception is thrown of a different type, it will not be handled</typeparam>
-        public static void SafeFireAndForget<TException>(this Task task, Action<TException>? onException, bool continueOnCapturedContext = false) where TException : Exception => task.SafeFireAndForget(in onException, in continueOnCapturedContext);
+        public static void SafeFireAndForget<TException>(this Task task, Action<TException>? onException) where TException : Exception => task.SafeFireAndForget(in onException);
 
         /// <summary>
         /// Initialize SafeFireAndForget

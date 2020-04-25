@@ -17,7 +17,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         readonly Func<T, Task> _execute;
         readonly Func<object?, bool> _canExecute;
         readonly Action<Exception>? _onException;
-        readonly bool _continueOnCapturedContext;
+        //GA _continueOnCapturedContext redundant due to SafeFireAndForget modification
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
 
         /// <summary>
@@ -26,16 +26,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="execute">The Function executed when Execute or ExecuteAsync is called. This does not check canExecute before executing and will execute even if canExecute is false</param>
         /// <param name="canExecute">The Function that verifies whether or not AsyncCommand should execute.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        /// <param name="continueOnCapturedContext">If set to <c>true</c> continue on captured context; this will ensure that the Synchronization Context returns to the calling thread. If set to <c>false</c> continue on a different context; this will allow the Synchronization Context to continue on a different thread</param>
         public AsyncCommand(Func<T, Task> execute,
                             Func<object?, bool>? canExecute = null,
-                            Action<Exception>? onException = null,
-                            bool continueOnCapturedContext = false)
+                            Action<Exception>? onException = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute), $"{nameof(execute)} cannot be null");
             _canExecute = canExecute ?? (_ => true);
             _onException = onException;
-            _continueOnCapturedContext = continueOnCapturedContext;
         }
 
         /// <summary>
@@ -71,12 +68,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             switch (parameter)
             {
                 case T validParameter:
-                    ExecuteAsync(validParameter).SafeFireAndForget(_onException, in _continueOnCapturedContext);
+                    ExecuteAsync(validParameter).SafeFireAndForget(_onException);
                     break;
 
 #pragma warning disable CS8604 // Possible null reference argument.
                 case null when !typeof(T).GetTypeInfo().IsValueType:
-                    ExecuteAsync((T)parameter).SafeFireAndForget(_onException, in _continueOnCapturedContext);
+                    ExecuteAsync((T)parameter).SafeFireAndForget(_onException);
                     break;
 #pragma warning restore CS8604 // Possible null reference argument.
 
@@ -97,7 +94,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         readonly Func<Task> _execute;
         readonly Func<object?, bool> _canExecute;
         readonly Action<Exception>? _onException;
-        readonly bool _continueOnCapturedContext;
+        //GA _continueOnCapturedContext redundant due to SafeFireAndForget modification
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
 
         /// <summary>
@@ -106,16 +103,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="execute">The Function executed when Execute or ExecuteAsync is called. This does not check canExecute before executing and will execute even if canExecute is false</param>
         /// <param name="canExecute">The Function that verifies whether or not AsyncCommand should execute.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        /// <param name="continueOnCapturedContext">If set to <c>true</c> continue on captured context; this will ensure that the Synchronization Context returns to the calling thread. If set to <c>false</c> continue on a different context; this will allow the Synchronization Context to continue on a different thread</param>
         public AsyncCommand(Func<Task> execute,
                             Func<object?, bool>? canExecute = null,
-                            Action<Exception>? onException = null,
-                            bool continueOnCapturedContext = false)
+                            Action<Exception>? onException = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute), $"{nameof(execute)} cannot be null");
             _canExecute = canExecute ?? (_ => true);
             _onException = onException;
-            _continueOnCapturedContext = continueOnCapturedContext;
         }
 
         /// <summary>
@@ -145,6 +139,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <returns>The executed Task</returns>
         public Task ExecuteAsync() => _execute();
 
-        void ICommand.Execute(object parameter) => _execute().SafeFireAndForget(_onException, in _continueOnCapturedContext);
+        void ICommand.Execute(object parameter) => _execute().SafeFireAndForget(_onException);
     }
 }
