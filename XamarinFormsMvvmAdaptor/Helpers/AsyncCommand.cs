@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Adapted from Brandon Minnick's AsyncAwaitBestPractices
+// https://github.com/brminnick/AsyncAwaitBestPractices/tree/3a9522e651a8c5842172cb5c6cc5bf47de9d86af
+// Modifications flagged with //GA
+
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;

@@ -2,6 +2,7 @@
 using Xunit;
 using XamarinFormsMvvmAdaptor.Helpers;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
@@ -151,6 +152,49 @@ namespace XamarinFormsMvvmAdaptor.Tests
             Assert.True(didCanExecuteChangeFire);
             Assert.True(command.CanExecute(null));
         }
+        #endregion
+        #region GA - Thread Tests
+        [Theory]
+        [InlineData("Hello")]
+        [InlineData(default)]
+        public async Task ExecuteAsync_StringParameter_RunsOnCurrentThread(string parameter)
+        {
+            //Arrange
+            int callingThreadId = -1, taskThreadId = -1;
+
+            Task MockTask(string text)
+            {
+                taskThreadId = Thread.CurrentThread.ManagedThreadId;
+                return Task.Delay(Delay);
+            }
+            AsyncCommand<string> command = new AsyncCommand<string>(MockTask);
+            callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            //Act
+            await command.ExecuteAsync(parameter);
+
+            //Assert
+            Assert.Equal(callingThreadId, taskThreadId);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        [InlineData(default)]
+        public async Task ExecuteAsync_StringParameter_DoesntRunOnTaskPool(string parameter)
+        {
+            Task MockTask(string text)
+            {
+                Assert.False(Thread.CurrentThread.IsThreadPoolThread);
+                return Task.Delay(Delay);
+            }
+            AsyncCommand<string> command = new AsyncCommand<string>(MockTask);
+
+
+            Assert.False(Thread.CurrentThread.IsThreadPoolThread);
+            await command.ExecuteAsync(parameter);            
+        }
+
+
         #endregion
     }
 }
