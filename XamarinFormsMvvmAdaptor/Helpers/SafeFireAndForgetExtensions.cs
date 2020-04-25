@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
     /// Extension methods for System.Threading.Tasks.Task and System.Threading.Tasks.ValueTask
     /// </summary> 
-    public static partial class SafeFireAndForgetExtensions
+    public static class SafeFireAndForgetExtensions
     {
         static Action<Exception>? _onException;
         static bool _shouldAlwaysRethrowException;
@@ -55,34 +55,32 @@ namespace XamarinFormsMvvmAdaptor
             _onException = onException;
         }
 
-        static void HandleSafeFireAndForget<TException>(Task task, bool continueOnCapturedContext, Action<TException>? onException) where TException : Exception
+        static async void HandleSafeFireAndForget<TException>(Task task, bool continueOnCapturedContext, Action<TException>? onException) where TException : Exception
         {
-            //var scheduler = Thread.CurrentThread.IsBackground ? TaskScheduler.Current : TaskScheduler.Default;
+            //if (_onException != null || onException != null)
+            //    task.ContinueWith(
+            //            t =>
+            //            {
+            //                HandleException(t.Exception.InnerException as TException, onException);
+            //                if (_shouldAlwaysRethrowException)
+            //                    Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
+            //            }
+            //            , TaskContinuationOptions.OnlyOnFaulted);
 
-            if (_onException != null || onException != null)
-                task.ContinueWith(
-                        t =>
-                        {
-                            HandleException(t.Exception.InnerException as TException, onException);
-                            if (_shouldAlwaysRethrowException)
-                                Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
-                        }
-                        , TaskContinuationOptions.OnlyOnFaulted);
+            try
+            {
+                await task.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException ex) when (_onException != null || onException != null)
+            {
+                HandleException(ex, onException);
 
-            //try
-            //{
-            //    await task.ConfigureAwait(continueOnCapturedContext);
-            //}
-            //catch (TException ex) when (_onException != null || onException != null)
-            //{
-            //    HandleException(ex, onException);
-
-            //    if (_shouldAlwaysRethrowException)
-            //        throw;
-            //}
+                if (_shouldAlwaysRethrowException)
+                    throw;
+            }
         }
 
-        public static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
+        static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
         {
             _onException?.Invoke(exception);
             onException?.Invoke(exception);
