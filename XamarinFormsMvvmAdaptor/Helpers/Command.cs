@@ -6,28 +6,30 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 {
 	public sealed class Command<T> : Command
 	{
-		public Command(Action<T> execute)
+		public Command(Action<T> execute, Action<Exception>? onException = null)
 					: base(o =>
 					{
 						if (IsValidParameter(o))
 						{
 							execute((T)o);
 						}
-					})
+					},onException)
 		{
 			if (execute == null)
 			{
 				throw new ArgumentNullException(nameof(execute));
 			}
 		}
-		public Command(Action<T> execute, Func<T, bool> canExecute)
+		public Command(Action<T> execute, Func<T, bool> canExecute, Action<Exception>? onException = null)
 					: base(o =>
 					{
 						if (IsValidParameter(o))
 						{
 							execute((T)o);
 						}
-					}, o => IsValidParameter(o) && canExecute((T)o))
+					}
+					, o => IsValidParameter(o) && canExecute((T)o)
+					, onException)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
@@ -55,25 +57,27 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 	{
 		readonly Func<object, bool> _canExecute;
 		readonly Action<object> _execute;
+		readonly Action<Exception>? _onException;
 		readonly WeakEventManager _weakEventManager = new WeakEventManager();
-		public Command(Action<object> execute)
+		public Command(Action<object> execute, Action<Exception>? onException = null)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
 			_execute = execute;
+			_onException = onException;
 		}
-		public Command(Action execute) : this(o => execute())
+		public Command(Action execute, Action<Exception>? onException = null) : this(o => execute(),onException)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
 		}
-		public Command(Action<object> execute, Func<object, bool> canExecute) : this(execute)
+		public Command(Action<object> execute, Func<object, bool> canExecute, Action<Exception>? onException = null) : this(execute, onException)
 		{
 			if (canExecute == null)
 				throw new ArgumentNullException(nameof(canExecute));
 			_canExecute = canExecute;
 		}
-		public Command(Action execute, Func<bool> canExecute) : this(o => execute(), o => canExecute())
+		public Command(Action execute, Func<bool> canExecute, Action<Exception>? onException = null) : this(o => execute(), o => canExecute(), onException)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
@@ -93,7 +97,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		}
 		public void Execute(object parameter)
 		{
-			_execute(parameter);
+			try
+			{
+				_execute(parameter);
+			}
+			catch(Exception ex)
+            {
+				SafeFireAndForgetExtensions.HandleException(ex, _onException);
+            }
 		}
 		public void ChangeCanExecute()
 		{

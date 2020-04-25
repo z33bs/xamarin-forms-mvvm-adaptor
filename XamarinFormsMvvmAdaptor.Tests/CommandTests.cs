@@ -264,5 +264,31 @@ namespace XamarinFormsMvvmAdaptor.Tests
 			Assert.Null(exception);
 			Assert.True(executions == 0, "the Command should not have executed");
 		}
+
+        #region GA Tests
+		[Fact]
+		public void Execute_TargetThrows_NotThrow()
+        {
+			var command = new Command(() => throw new Exception());
+
+			var exception = Record.Exception(()=>command.Execute(null));
+
+			Assert.Null(exception);
+        }
+
+		[Fact]
+		public void Execute_ParameterOnExceptionSet_TargetThrows_OnExceptionRuns()
+		{
+			bool isHandled = false;
+			void onException(Exception ex) { isHandled = true; }
+			var command = new Command(() => throw new Exception(),onException);
+
+			command.Execute(null);
+
+			Assert.True(isHandled);
+		}
+
+
+		#endregion
 	}
 }

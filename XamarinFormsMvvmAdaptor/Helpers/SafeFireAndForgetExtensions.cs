@@ -71,7 +71,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                         , TaskContinuationOptions.OnlyOnFaulted);
         }
 
-        static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
+        public static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
         {
             _onException?.Invoke(exception);
             onException?.Invoke(exception);
