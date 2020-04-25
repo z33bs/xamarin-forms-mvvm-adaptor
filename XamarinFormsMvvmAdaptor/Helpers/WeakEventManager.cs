@@ -1,4 +1,6 @@
-﻿using System;
+﻿//From Xamarin.Forms https://github.com/xamarin/Xamarin.Forms
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;

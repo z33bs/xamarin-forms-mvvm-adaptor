@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
-    public class Tests_SafeFireAndForget
+    [Collection("SafeTests")]
+    public class SafeFireAndForgetTests
     {
         protected const int Delay = 500;
         //protected WeakEventManager TestWeakEventManager { get; } = new WeakEventManager();

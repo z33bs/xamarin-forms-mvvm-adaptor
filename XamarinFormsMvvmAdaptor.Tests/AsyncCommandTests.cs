@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
+    [Collection("SafeTests")]
     public class AsyncCommandTests
     {
         const int Delay = 500;

@@ -60,6 +60,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         static void HandleSafeFireAndForget<TException>(Task task, Action<TException>? onException) where TException : Exception
         {
             //GA Modified to use ContinueWith instead of async/await
+            task.SafeTask(onException);
+        }
+        
+        //GA Add
+        public static Task SafeTask<TException>(this Task task, Action<TException>? onException) where TException : Exception
+        {
             if (_onException != null || onException != null)
                 task.ContinueWith(
                         t =>
@@ -69,9 +75,24 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                                 Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
                         }
                         , TaskContinuationOptions.OnlyOnFaulted);
+
+            return task;
         }
 
-        public static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
+        //GA Add
+        public static void SafeInvoke<TException>(this Action<object> action, object parameter, in Action<TException>? onException) where TException : Exception
+        {
+            try
+            {
+                action(parameter);
+            }
+            catch (TException ex) when (_onException != null || onException != null)
+            {
+                HandleException(ex, onException);
+            }
+        }
+
+        static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
         {
             _onException?.Invoke(exception);
             onException?.Invoke(exception);

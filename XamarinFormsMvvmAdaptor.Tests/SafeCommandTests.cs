@@ -1,12 +1,18 @@
 ﻿using System;
 using Xunit;
 using XamarinFormsMvvmAdaptor.Helpers;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Windows.Input;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
+    [Collection("SafeTests")]
 	public class SafeCommandTests
 	{
-		[Fact]
+        const int Delay = 100;
+
+        [Fact]
 		public void Constructor()
 		{
 			var cmd = new SafeCommand(() => { });
@@ -265,19 +271,17 @@ namespace XamarinFormsMvvmAdaptor.Tests
 			Assert.True(executions == 0, "the Command should not have executed");
 		}
 
-        #region GA Tests
+        #region GA Safe Exception Tests
 		[Fact]
-		public void Execute_TargetThrows_NotThrow()
+		public void Execute_TargetThrows_ThrowsException()
         {
 			var command = new SafeCommand(() => throw new Exception());
 
-			var exception = Record.Exception(()=>command.Execute(null));
-
-			Assert.Null(exception);
+            Assert.Throws<Exception>(() => command.Execute(null));
         }
 
 		[Fact]
-		public void Execute_ParameterOnExceptionSet_TargetThrows_OnExceptionRuns()
+		public void Execute_ParameterOnExceptionSet_TargetThrows_ExceptionHandled()
 		{
 			bool isHandled = false;
 			void onException(Exception ex) { isHandled = true; }
@@ -287,8 +291,488 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
 			Assert.True(isHandled);
 		}
+        #endregion
+
+        #region GA - Thread Tests <T>
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteT_InForeground_RunsOnNewThread(string parameter)
+        {
+            //Arrange
+            int callingThreadId = -1, executingThreadId = -1;
+
+            void MockMethod(string text)
+            {
+                executingThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand<string>(MockMethod);
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(parameter);
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            //Assert
+            Assert.NotEqual(callingThreadId, executingThreadId);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_InForeground_RunsOnTaskPool(string parameter)
+        {
+            bool isTpThread_Calling = true, isTpThread_Executing = false;
+
+            void MockMethod(string text)
+            {
+                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand<string>(MockMethod);
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(parameter);
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isTpThread_Calling);
+            Assert.True(isTpThread_Executing);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_InBackground_RunsOnCurrentThread(string parameter)
+        {
+            //Arrange
+            int callingThreadId = -1, taskThreadId = -1;
+
+            void MockMethod(string text)
+            {
+                taskThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand<string>(MockMethod);
 
 
-		#endregion
-	}
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(parameter);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+            //Assert
+            Assert.Equal(callingThreadId, taskThreadId);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_InBackground_NotRunOnTaskPool(string parameter)
+        {
+            bool isTpThread_Calling = true, isTpThread_Executing = true;
+
+            void MockMethod(string text)
+            {
+                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand<string>(MockMethod);
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(parameter);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isTpThread_Calling);
+            Assert.False(isTpThread_Executing);
+        }
+        #endregion
+
+        #region GA - Thread Tests <T> With onBackgroundThread = false
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InForeground_RunsOnCurrentThread(string parameter)
+        {
+            //Arrange
+            int callingThreadId = -1, executingThreadId = -1;
+
+            void MockMethod(string text)
+            {
+                executingThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand<string>(MockMethod, null, false);
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(parameter);
+
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            //Assert
+            Assert.Equal(callingThreadId, executingThreadId);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InForeground_NotRunOnTaskPool(string parameter)
+        {
+            bool isCallingThreadPoolThread = true, isExecutingThreadPoolThread = false;
+            void MockMethod(string text)
+            {
+                isExecutingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                ICommand command = new SafeCommand<string>(MockMethod, null, false);
+
+                isCallingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(parameter);
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isExecutingThreadPoolThread);
+            Assert.False(isCallingThreadPoolThread);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InBackground_RunsOnCurrentThread(string parameter)
+        {
+            //Arrange
+            int callingThreadId = -1, taskThreadId = -1;
+
+            void MockMethod(string text)
+            {
+                taskThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+            ICommand command = new SafeCommand<string>(MockMethod, null, false);
+
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(parameter);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+            //Assert
+            Assert.Equal(callingThreadId, taskThreadId);
+        }
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InBackground_NotRunOnTaskPool(string parameter)
+        {
+            bool isTpThread_Calling = true, isTpThread_Executing = true;
+
+            void MockMethod(string text)
+            {
+                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand<string>(MockMethod, null, false);
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(parameter);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isTpThread_Calling);
+            Assert.False(isTpThread_Executing);
+        }
+
+        #endregion
+        //
+        #region GA - Thread Tests
+
+        [Fact]
+        public void ExecuteAsync_InForeground_RunsOnNewThread()
+        {
+            //Arrange
+            int callingThreadId = -1, executingThreadId = -1;
+
+            void MockMethod()
+            {
+                executingThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand(MockMethod);
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(null);
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            //Assert
+            Assert.NotEqual(callingThreadId, executingThreadId);
+        }
+
+        [Fact]
+        public void ExecuteAsync_InForeground_RunsOnTaskPool()
+        {
+            bool isTpThread_Calling = true, isTpThread_Executing = false;
+
+            void MockMethod()
+            {
+                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand(MockMethod);
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(null);
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isTpThread_Calling);
+            Assert.True(isTpThread_Executing);
+        }
+
+        [Fact]
+        public void ExecuteAsync_InBackground_RunsOnCurrentThread()
+        {
+            //Arrange
+            int callingThreadId = -1, taskThreadId = -1;
+
+            void MockMethod()
+            {
+                taskThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand(MockMethod);
+
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(null);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+            //Assert
+            Assert.Equal(callingThreadId, taskThreadId);
+        }
+
+        [Fact]
+        public void ExecuteAsync_InBackground_NotRunOnTaskPool()
+        {
+            bool isTpThread_Calling = true, isTpThread_Executing = true;
+
+            void MockMethod()
+            {
+                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand(MockMethod);
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(null);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isTpThread_Calling);
+            Assert.False(isTpThread_Executing);
+        }
+        #endregion
+
+        #region GA - Thread Tests With onBackgroundThread = false
+        [Fact]
+        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InForeground_RunsOnCurrentThread()
+        {
+            //Arrange
+            int callingThreadId = -1, executingThreadId = -1;
+
+            void MockMethod()
+            {
+                executingThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand(MockMethod, null, false);
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(null);
+
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            //Assert
+            Assert.Equal(callingThreadId, executingThreadId);
+        }
+
+        [Fact]
+        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InForeground_NotRunOnTaskPool()
+        {
+            bool isCallingThreadPoolThread = true, isExecutingThreadPoolThread = false;
+            void MockMethod()
+            {
+                isExecutingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                ICommand command = new SafeCommand(MockMethod, null, false);
+
+                isCallingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(null);
+            }));
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isExecutingThreadPoolThread);
+            Assert.False(isCallingThreadPoolThread);
+        }
+
+        [Fact]
+        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InBackground_RunsOnCurrentThread()
+        {
+            //Arrange
+            int callingThreadId = -1, taskThreadId = -1;
+
+            void MockMethod()
+            {
+                taskThreadId = Thread.CurrentThread.ManagedThreadId;
+                Thread.Sleep(Delay);
+            }
+            ICommand command = new SafeCommand(MockMethod, null, false);
+
+
+            //Act
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                command.Execute(null);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+            //Assert
+            Assert.Equal(callingThreadId, taskThreadId);
+        }
+
+        [Fact]
+        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InBackground_NotRunOnTaskPool()
+        {
+            bool isTpThread_Calling = true, isTpThread_Executing = true;
+
+            void MockMethod()
+            {
+                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
+                Thread.Sleep(Delay);
+            }
+
+            ICommand command = new SafeCommand(MockMethod, null, false);
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                command.Execute(null);
+            }))
+            { IsBackground = true };
+
+            thread.Start();
+            Thread.Sleep(Delay);
+            thread.Join();
+
+            Assert.False(isTpThread_Calling);
+            Assert.False(isTpThread_Executing);
+        }
+
+        #endregion
+
+    }
 }
