@@ -4,50 +4,50 @@ using XamarinFormsMvvmAdaptor.Helpers;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
-	public class CommandTests
+	public class SafeCommandTests
 	{
 		[Fact]
 		public void Constructor()
 		{
-			var cmd = new Command(() => { });
+			var cmd = new SafeCommand(() => { });
 			Assert.True(cmd.CanExecute(null));
 		}
 
 		[Fact]
 		public void ThrowsWithNullConstructor()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command((Action)null));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand((Action)null));
 		}
 
 		[Fact]
 		public void ThrowsWithNullParameterizedConstructor()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command((Action<object>)null));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand((Action<object>)null));
 		}
 
 		[Fact]
 		public void ThrowsWithNullCanExecute()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command(() => { }, null));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand(() => { }, null));
 		}
 
 		[Fact]
 		public void ThrowsWithNullParameterizedCanExecute()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command(o => { }, null));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand(o => { }, null));
 		}
 
 		[Fact]
 		public void ThrowsWithNullExecuteValidCanExecute()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command(null, () => true));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand(null, () => true));
 		}
 
 		[Fact]
 		public void Execute()
 		{
 			bool executed = false;
-			var cmd = new Command(() => executed = true);
+			var cmd = new SafeCommand(() => executed = true);
 
 			cmd.Execute(null);
 			Assert.True(executed);
@@ -57,7 +57,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteParameterized()
 		{
 			object executed = null;
-			var cmd = new Command(o => executed = o);
+			var cmd = new SafeCommand(o => executed = o);
 
 			var expected = new object();
 			cmd.Execute(expected);
@@ -69,7 +69,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteWithCanExecute()
 		{
 			bool executed = false;
-			var cmd = new Command(() => executed = true, () => true);
+			var cmd = new SafeCommand(() => executed = true, () => true);
 
 			cmd.Execute(null);
 			Assert.True(executed);
@@ -81,7 +81,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void CanExecute(bool expected)
 		{
 			bool canExecuteRan = false;
-			var cmd = new Command(() => { }, () => {
+			var cmd = new SafeCommand(() => { }, () => {
 				canExecuteRan = true;
 				return expected;
 			});
@@ -94,7 +94,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ChangeCanExecute()
 		{
 			bool signaled = false;
-			var cmd = new Command(() => { });
+			var cmd = new SafeCommand(() => { });
 
 			cmd.CanExecuteChanged += (sender, args) => signaled = true;
 
@@ -105,26 +105,26 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void GenericThrowsWithNullExecute()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command<string>(null));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand<string>(null));
 		}
 
 		[Fact]
 		public void GenericThrowsWithNullExecuteAndCanExecuteValid()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command<string>(null, s => true));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand<string>(null, s => true));
 		}
 
 		[Fact]
 		public void GenericThrowsWithValidExecuteAndCanExecuteNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => new Command<string>(s => { }, null));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand<string>(s => { }, null));
 		}
 
 		[Fact]
 		public void GenericExecute()
 		{
 			string result = null;
-			var cmd = new Command<string>(s => result = s);
+			var cmd = new SafeCommand<string>(s => result = s);
 
 			cmd.Execute("Foo");
 			Assert.Equal("Foo", result);
@@ -134,7 +134,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void GenericExecuteWithCanExecute()
 		{
 			string result = null;
-			var cmd = new Command<string>(s => result = s, s => true);
+			var cmd = new SafeCommand<string>(s => result = s, s => true);
 
 			cmd.Execute("Foo");
 			Assert.Equal("Foo", result);
@@ -146,7 +146,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void GenericCanExecute(bool expected)
 		{
 			string result = null;
-			var cmd = new Command<string>(s => { }, s => {
+			var cmd = new SafeCommand<string>(s => { }, s => {
 				result = s;
 				return expected;
 			});
@@ -167,7 +167,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteReturnsFalseIfParameterIsWrongReferenceType()
 		{
-			var command = new Command<FakeChildContext>(context => { }, context => true);
+			var command = new SafeCommand<FakeChildContext>(context => { }, context => true);
 
 			Assert.False(command.CanExecute(new FakeParentContext()), "the parameter is of the wrong type");
 		}
@@ -175,7 +175,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteReturnsFalseIfParameterIsWrongValueType()
 		{
-			var command = new Command<int>(context => { }, context => true);
+			var command = new SafeCommand<int>(context => { }, context => true);
 
 			Assert.False(command.CanExecute(10.5), "the parameter is of the wrong type");
 		}
@@ -183,7 +183,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteUsesParameterIfReferenceTypeAndSetToNull()
 		{
-			var command = new Command<FakeChildContext>(context => { }, context => true);
+			var command = new SafeCommand<FakeChildContext>(context => { }, context => true);
 
 			Assert.True(command.CanExecute(null), "null is a valid value for a reference type");
 		}
@@ -191,7 +191,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteUsesParameterIfNullableAndSetToNull()
 		{
-			var command = new Command<int?>(context => { }, context => true);
+			var command = new SafeCommand<int?>(context => { }, context => true);
 
 			Assert.True(command.CanExecute(null), "null is a valid value for a Nullable<int> type");
 		}
@@ -199,7 +199,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteIgnoresParameterIfValueTypeAndSetToNull()
 		{
-			var command = new Command<int>(context => { }, context => true);
+			var command = new SafeCommand<int>(context => { }, context => true);
 
 			Assert.False(command.CanExecute(null), "null is not a valid valid for int");
 		}
@@ -208,7 +208,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteDoesNotRunIfParameterIsWrongReferenceType()
 		{
 			int executions = 0;
-			var Command = new Command<FakeChildContext>(context => executions += 1);
+			var Command = new SafeCommand<FakeChildContext>(context => executions += 1);
 
 //			Assert.DoesNotThrow(() => Command.Execute(new FakeParentContext()), "the Command should not execute, so no exception should be thrown");
 			var exception = Record.Exception(() => Command.Execute(new FakeParentContext()));
@@ -221,7 +221,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteDoesNotRunIfParameterIsWrongValueType()
 		{
 			int executions = 0;
-			var Command = new Command<int>(context => executions += 1);
+			var Command = new SafeCommand<int>(context => executions += 1);
 
 //			Assert.DoesNotThrow(() => Command.Execute(10.5), "the Command should not execute, so no exception should be thrown");
 			var exception = Record.Exception(() => Command.Execute(10.5));
@@ -234,7 +234,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteRunsIfReferenceTypeAndSetToNull()
 		{
 			int executions = 0;
-			var Command = new Command<FakeChildContext>(context => executions += 1);
+			var Command = new SafeCommand<FakeChildContext>(context => executions += 1);
 
 			var exception = Record.Exception(() => Command.Execute(null));
 			Assert.Null(exception);
@@ -246,7 +246,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteRunsIfNullableAndSetToNull()
 		{
 			int executions = 0;
-			var Command = new Command<int?>(context => executions += 1);
+			var Command = new SafeCommand<int?>(context => executions += 1);
 
 			var exception = Record.Exception(() => Command.Execute(null));
 			//"null is a valid value for a Nullable<int> type");
@@ -258,7 +258,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteDoesNotRunIfValueTypeAndSetToNull()
 		{
 			int executions = 0;
-			var Command = new Command<int>(context => executions += 1);
+			var Command = new SafeCommand<int>(context => executions += 1);
 
 			var exception = Record.Exception(() => Command.Execute(null));
 			Assert.Null(exception);
@@ -269,7 +269,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void Execute_TargetThrows_NotThrow()
         {
-			var command = new Command(() => throw new Exception());
+			var command = new SafeCommand(() => throw new Exception());
 
 			var exception = Record.Exception(()=>command.Execute(null));
 
@@ -281,7 +281,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		{
 			bool isHandled = false;
 			void onException(Exception ex) { isHandled = true; }
-			var command = new Command(() => throw new Exception(),onException);
+			var command = new SafeCommand(() => throw new Exception(),onException);
 
 			command.Execute(null);
 

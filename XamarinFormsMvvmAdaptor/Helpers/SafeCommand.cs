@@ -4,9 +4,9 @@ using System.Windows.Input;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-	public sealed class Command<T> : Command
+	public sealed class SafeCommand<T> : SafeCommand
 	{
-		public Command(Action<T> execute, Action<Exception>? onException = null)
+		public SafeCommand(Action<T> execute, Action<Exception>? onException = null)
 					: base(o =>
 					{
 						if (IsValidParameter(o))
@@ -20,7 +20,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 				throw new ArgumentNullException(nameof(execute));
 			}
 		}
-		public Command(Action<T> execute, Func<T, bool> canExecute, Action<Exception>? onException = null)
+		public SafeCommand(Action<T> execute, Func<T, bool> canExecute, Action<Exception>? onException = null)
 					: base(o =>
 					{
 						if (IsValidParameter(o))
@@ -53,31 +53,31 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 			return !t.GetTypeInfo().IsValueType;
 		}
 	}
-	public class Command : ICommand
+	public class SafeCommand : ICommand
 	{
 		readonly Func<object, bool> _canExecute;
 		readonly Action<object> _execute;
 		readonly Action<Exception>? _onException;
 		readonly WeakEventManager _weakEventManager = new WeakEventManager();
-		public Command(Action<object> execute, Action<Exception>? onException = null)
+		public SafeCommand(Action<object> execute, Action<Exception>? onException = null)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
 			_execute = execute;
 			_onException = onException;
 		}
-		public Command(Action execute, Action<Exception>? onException = null) : this(o => execute(),onException)
+		public SafeCommand(Action execute, Action<Exception>? onException = null) : this(o => execute(),onException)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
 		}
-		public Command(Action<object> execute, Func<object, bool> canExecute, Action<Exception>? onException = null) : this(execute, onException)
+		public SafeCommand(Action<object> execute, Func<object, bool> canExecute, Action<Exception>? onException = null) : this(execute, onException)
 		{
 			if (canExecute == null)
 				throw new ArgumentNullException(nameof(canExecute));
 			_canExecute = canExecute;
 		}
-		public Command(Action execute, Func<bool> canExecute, Action<Exception>? onException = null) : this(o => execute(), o => canExecute(), onException)
+		public SafeCommand(Action execute, Func<bool> canExecute, Action<Exception>? onException = null) : this(o => execute(), o => canExecute(), onException)
 		{
 			if (execute == null)
 				throw new ArgumentNullException(nameof(execute));
