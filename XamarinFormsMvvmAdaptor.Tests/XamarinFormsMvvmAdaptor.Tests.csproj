@@ -28,7 +28,4 @@
     <Folder Include="ViewModels\" />
     <Folder Include="Views\" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="BackgroundCommandTests.cs" />
-  </ItemGroup>
 </Project>

@@ -36,6 +36,7 @@
         <None Include="Art\icon.png" Pack="true" PackagePath="" />
         <!--AUTO-->
         <PackageReference Include="Xamarin.Forms" Version="4.5.0.356" />
+        <None Include="SafeFireAndForgetExtensions.ValueTask.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Helpers\" />
@@ -45,10 +46,5 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="SafeFireAndForgetExtensions.ValueTask.cs" />
-      <Compile Remove="BackgroundCommand.cs" />
-      <Compile Remove="BackgroundCommand2.cs" />
-      <Compile Remove="SafeFireAndForgetExtensions.cs" />
-      <Compile Remove="WeakEventManager.cs" />
-      <Compile Remove="InvalidCommandParameterException.cs" />
     </ItemGroup>
 </Project>
