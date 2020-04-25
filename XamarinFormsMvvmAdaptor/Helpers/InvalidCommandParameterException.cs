@@ -1,5 +1,5 @@
 ﻿using System;
-namespace XamarinFormsMvvmAdaptor
+namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
     /// Represents errors that occur during IAsyncCommand execution.
