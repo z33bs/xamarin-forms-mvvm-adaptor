@@ -4,6 +4,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -19,6 +20,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         readonly Action<Exception>? _onException;
         //GA _continueOnCapturedContext redundant due to SafeFireAndForget modification
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
+        readonly bool _onBackgroundThread; //GA add
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.AsyncCommand`1"/> class.
@@ -28,11 +30,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
         public AsyncCommand(Func<T, Task> execute,
                             Func<object?, bool>? canExecute = null,
-                            Action<Exception>? onException = null)
+                            Action<Exception>? onException = null,
+                            bool onBackgroundThread = true)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute), $"{nameof(execute)} cannot be null");
             _canExecute = canExecute ?? (_ => true);
             _onException = onException;
+            _onBackgroundThread = onBackgroundThread;
         }
 
         /// <summary>
@@ -61,7 +65,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         /// <returns>The executed Task</returns>
         /// <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
-        public Task ExecuteAsync(T parameter) => _execute(parameter);
+        public Task ExecuteAsync(T parameter)
+        {
+            //GA
+            if(_onBackgroundThread)
+            {
+                if(Thread.CurrentThread.IsBackground)
+                    return _execute(parameter);
+
+                return Task.Run(()=>_execute(parameter));
+            }
+
+            return _execute(parameter);
+        }
 
         void ICommand.Execute(object parameter)
         {
@@ -96,6 +112,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         readonly Action<Exception>? _onException;
         //GA _continueOnCapturedContext redundant due to SafeFireAndForget modification
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
+        readonly bool _onBackgroundThread; //GA add
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.AsyncCommand`1"/> class.
@@ -105,11 +123,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
         public AsyncCommand(Func<Task> execute,
                             Func<object?, bool>? canExecute = null,
-                            Action<Exception>? onException = null)
+                            Action<Exception>? onException = null,
+                            bool onBackgroundThread = true)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute), $"{nameof(execute)} cannot be null");
             _canExecute = canExecute ?? (_ => true);
             _onException = onException;
+            _onBackgroundThread = onBackgroundThread;
         }
 
         /// <summary>
@@ -137,8 +157,20 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// Executes the Command as a Task
         /// </summary>
         /// <returns>The executed Task</returns>
-        public Task ExecuteAsync() => _execute();
+        public Task ExecuteAsync()
+        {
+            //GA
+            if(_onBackgroundThread)
+            {
+                if (Thread.CurrentThread.IsBackground)
+                    return _execute();
 
-        void ICommand.Execute(object parameter) => _execute().SafeFireAndForget(_onException);
+                return Task.Run(_execute);
+            }
+
+            return _execute();
+        }
+
+        void ICommand.Execute(object parameter) => ExecuteAsync().SafeFireAndForget(_onException);
     }
 }
