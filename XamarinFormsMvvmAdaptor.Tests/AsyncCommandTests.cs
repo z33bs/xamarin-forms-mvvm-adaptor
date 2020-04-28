@@ -10,7 +10,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
     [Collection("SafeTests")]
     public class AsyncCommandTests
     {
-        const int Delay = 500;
+        const int Delay = 50;
         Task NoParameterTask() => Task.Delay(Delay);
         Task IntParameterTask(int delay) => Task.Delay(delay);
         Task StringParameterTask(string text) => Task.Delay(Delay);
@@ -48,13 +48,16 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Theory]
         [InlineData(500)]
         [InlineData(0)]
-        public async Task AsyncCommand_ExecuteAsync_IntParameter_Test(int parameter)
+        public void AsyncCommand_ExecuteAsync_IntParameter_Test(int parameter)
         {
             //Arrange
-            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask);
+            var dts = new DeterministicTaskScheduler();
+
+            ICommand command = new AsyncCommand<int>(IntParameterTask,dts,null,null);
 
             //Act
-            await command.ExecuteAsync(parameter);
+            command.Execute(parameter);
+            dts.RunTasksUntilIdle();
 
             //Assert
 
@@ -63,36 +66,38 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Theory]
         [InlineData("Hello")]
         [InlineData(default)]
-        public async Task AsyncCommand_ExecuteAsync_StringParameter_Test(string parameter)
+        public void AsyncCommand_ExecuteAsync_StringParameter_Test(string parameter)
         {
             //Arrange
-            AsyncCommand<string> command = new AsyncCommand<string>(StringParameterTask);
+            var dts = new DeterministicTaskScheduler();
+            ICommand command = new AsyncCommand<string>(StringParameterTask,dts,null,null);
 
             //Act
-            await command.ExecuteAsync(parameter);
+             command.Execute(parameter);
+            dts.RunTasksUntilIdle();
 
             //Assert
 
         }
 
         [Fact]
-        public void AsyncCommand_Parameter_CanExecuteTrue_Test()
+        public void CanExecuteT_NullParameterWithNonNullableValueType_False()
         {
             //Arrange
-            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask, CanExecuteTrue);
+            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask, o => CanExecuteTrue(o));
 
             //Act
 
             //Assert
 
-            Assert.True(command.CanExecute(null));
+            Assert.False(command.CanExecute(null));
         }
 
         [Fact]
         public void AsyncCommand_Parameter_CanExecuteFalse_Test()
         {
             //Arrange
-            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask, CanExecuteFalse);
+            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask, o=>CanExecuteFalse(o));
 
             //Act
 
@@ -155,486 +160,337 @@ namespace XamarinFormsMvvmAdaptor.Tests
             Assert.True(command.CanExecute(null));
         }
         #endregion
-        #region GA - Thread Tests <T>
+        #region GA - Thread Tests on AsyncCommand<T>
         [Theory]
         [InlineData("Hello")]
-        public void ExecuteAsyncT_InForeground_RunsOnNewThread(string parameter)
+        public void ExecuteAsyncT_RunsOnNewThread(string parameter)
         {
-            //Arrange
-            int callingThreadId = -1, executingThreadId = -1;
+            ICommand command = new AsyncCommand<string>(MockTask);
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
 
-            Task MockTask(string text)
-            {
-                executingThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
+            async Task MockTask(string text)
+            {                
+                await Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                isExecuting = false;
             }
 
-            ICommand command = new AsyncCommand<string>(MockTask);
-
-            //Act
             var thread = new Thread(new ThreadStart(() =>
             {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
+                callingThread = Thread.CurrentThread;
                 command.Execute(parameter);
             }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            while (isExecuting)
+                Thread.Sleep(Delay/25);
 
             //Assert
-            Assert.NotEqual(callingThreadId, executingThreadId);
+            Assert.NotEqual(callingThread.ManagedThreadId, executingThread.ManagedThreadId);
         }
 
         [Theory]
         [InlineData("Hello")]
-        public void ExecuteAsyncT_InForeground_RunsOnTaskPool(string parameter)
+        public void ExecuteAsyncT_RunsOnTaskPool(string parameter)
         {
-            bool isTpThread_Calling = true, isTpThread_Executing = false;
-
-            Task MockTask(string text)
-            {
-                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
-            }
-
             ICommand command = new AsyncCommand<string>(MockTask);
 
-            var thread = new Thread(new ThreadStart(() =>
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask(string text)
             {
-                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
-                command.Execute(parameter);                
-            }));
-
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-            
-            Assert.False(isTpThread_Calling);
-            Assert.True(isTpThread_Executing);
-        }
-
-        [Theory]
-        [InlineData("Hello")]
-        public void ExecuteAsyncT_InBackground_RunsOnCurrentThread(string parameter)
-        {
-            //Arrange
-            int callingThreadId = -1, taskThreadId = -1;
-
-            Task MockTask(string text)
-            {
-                taskThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
-            }
-
-            ICommand command = new AsyncCommand<string>(MockTask);
-
-
-            //Act
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                command.Execute(parameter);
-            }))
-            { IsBackground = true };
-
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-            //Assert
-            Assert.Equal(callingThreadId, taskThreadId);
-        }
-
-        [Theory]
-        [InlineData("Hello")]
-        public void ExecuteAsyncT_InBackground_NotRunOnTaskPool(string parameter)
-        {
-            bool isTpThread_Calling = true, isTpThread_Executing = true;
-
-            Task MockTask(string text)
-            {
-                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
-            }
-
-            ICommand command = new AsyncCommand<string>(MockTask);
-
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
-                command.Execute(parameter);
-            }))
-            { IsBackground = true };
-
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-
-            Assert.False(isTpThread_Calling);
-            Assert.False(isTpThread_Executing);
-        }
-        #endregion
-
-        #region GA - Thread Tests <T> With onBackgroundThread = false
-        [Theory]
-        [InlineData("Hello")]
-        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InForeground_RunsOnCurrentThread(string parameter)
-        {
-            //Arrange
-            int callingThreadId = -1, executingThreadId = -1;
-
-            Task MockTask(string text)
-            {
-                executingThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
-            }
-
-            ICommand command = new AsyncCommand<string>(MockTask, null, null, false);
-
-            //Act
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                command.Execute(parameter);
-
-            }));
-
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-
-            //Assert
-            Assert.Equal(callingThreadId, executingThreadId);
-        }
-
-        [Theory]
-        [InlineData("Hello")]
-        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InForeground_NotRunOnTaskPool(string parameter)
-        {
-            bool isCallingThreadPoolThread = true, isExecutingThreadPoolThread = false;
-            Task MockTask(string text)
-            {
-                isExecutingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
+                await Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                isExecuting = false;
             }
 
             var thread = new Thread(new ThreadStart(() =>
             {
-                ICommand command = new AsyncCommand<string>(MockTask, null, null, false);
-
-                isCallingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
+                callingThread = Thread.CurrentThread;
                 command.Execute(parameter);
             }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            while (isExecuting)
+                Thread.Sleep(Delay/25);
 
-            Assert.False(isExecutingThreadPoolThread);
-            Assert.False(isCallingThreadPoolThread);
+            Assert.False(callingThread.IsThreadPoolThread);
+            Assert.True(executingThread.IsThreadPoolThread);
+        }
+
+
+        [Theory]
+        [InlineData("Hello")]
+        public void ExecuteAsyncT_MustRunOnCurrentSyncContextTrue_RunsOnCurrentThread(string parameter)
+        {
+            ICommand command = new AsyncCommand<string>(MockTask, null, null, true);
+
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask(string text)
+            {
+                executingThread = Thread.CurrentThread;
+                await Task.Delay(Delay);                
+                isExecuting = false;
+            }
+
+            var thread = new Thread(new ThreadStart(() =>
+            {
+                callingThread = Thread.CurrentThread;
+                command.Execute(parameter);
+            }));
+
+            thread.Start();
+            while (isExecuting)
+                Thread.Sleep(Delay / 25);
+
+            Assert.Equal(callingThread.ManagedThreadId, executingThread.ManagedThreadId);
         }
 
         [Theory]
         [InlineData("Hello")]
-        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InBackground_RunsOnCurrentThread(string parameter)
+        public void ExecuteAsyncT_MustRunOnCurrentSyncContextTrue_NotRunOnTaskPool(string parameter)
         {
-            //Arrange
-            int callingThreadId = -1, taskThreadId = -1;
+            ICommand command = new AsyncCommand<string>(MockTask, null, null, true);
 
-            Task MockTask(string text)
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask(string text)
             {
-                taskThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                await Task.Delay(Delay);                
+                isExecuting = false;
             }
-            ICommand command = new AsyncCommand<string>(MockTask,null,null,false);
-
-
-            //Act
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                command.Execute(parameter);
-            }))
-            { IsBackground = true };
-
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-            //Assert
-            Assert.Equal(callingThreadId, taskThreadId);
-        }
-
-        [Theory]
-        [InlineData("Hello")]
-        public void ExecuteAsyncT_ParameterOnBackgoundIsFalse_InBackground_NotRunOnTaskPool(string parameter)
-        {
-            bool isTpThread_Calling = true, isTpThread_Executing = true;
-
-            Task MockTask(string text)
-            {
-                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
-            }
-
-            ICommand command = new AsyncCommand<string>(MockTask,null,null,false);
 
             var thread = new Thread(new ThreadStart(() =>
             {
-                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                callingThread = Thread.CurrentThread;
                 command.Execute(parameter);
-            }))
-            { IsBackground = true };
+            }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            while (isExecuting)
+                Thread.Sleep(Delay / 25);
 
-            Assert.False(isTpThread_Calling);
-            Assert.False(isTpThread_Executing);
+            Assert.False(executingThread.IsThreadPoolThread);
+            Assert.False(callingThread.IsThreadPoolThread);
         }
 
         #endregion
-        //
-        #region GA - Thread Tests
+        
+        #region GA - Thread Tests on AsyncCommand
 
         [Fact]
-        public void ExecuteAsync_InForeground_RunsOnNewThread()
+        public void ExecuteAsync_RunsOnNewThread()
         {
-            //Arrange
-            int callingThreadId = -1, executingThreadId = -1;
-
-            Task MockTask()
-            {
-                executingThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
-            }
-
             ICommand command = new AsyncCommand(MockTask);
 
-            //Act
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask()
+            {
+                await Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                isExecuting = false;
+            }
+
             var thread = new Thread(new ThreadStart(() =>
             {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
+                callingThread = Thread.CurrentThread;
                 command.Execute(null);
             }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            while (isExecuting)
+                Thread.Sleep(Delay / 25);
 
-            //Assert
-            Assert.NotEqual(callingThreadId, executingThreadId);
+            Assert.NotEqual(callingThread.ManagedThreadId, executingThread.ManagedThreadId);
         }
-
+        //Marker
         [Fact]
-        public void ExecuteAsync_InForeground_RunsOnTaskPool()
+        public void ExecuteAsync_RunsOnTaskPool()
         {
-            bool isTpThread_Calling = true, isTpThread_Executing = false;
-
-            Task MockTask()
-            {
-                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
-            }
-
             ICommand command = new AsyncCommand(MockTask);
+
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask()
+            {
+                await Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                isExecuting = false;
+            }
 
             var thread = new Thread(new ThreadStart(() =>
             {
-                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                callingThread = Thread.CurrentThread;
                 command.Execute(null);
             }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            while (isExecuting)
+                Thread.Sleep(Delay / 25);
 
-            Assert.False(isTpThread_Calling);
-            Assert.True(isTpThread_Executing);
+            Assert.False(callingThread.IsThreadPoolThread);
+            Assert.True(executingThread.IsThreadPoolThread);
         }
 
         [Fact]
-        public void ExecuteAsync_InBackground_RunsOnCurrentThread()
+        public void ExecuteAsync_MustRunOnCurrentSyncContextTrue_RunsOnCurrentThread()
         {
-            //Arrange
-            int callingThreadId = -1, taskThreadId = -1;
+            ICommand command = new AsyncCommand(MockTask, null, null, true);
 
-            Task MockTask()
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask()
             {
-                taskThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                await Task.Delay(Delay).ConfigureAwait(true);                
+                isExecuting = false;
             }
 
-            ICommand command = new AsyncCommand(MockTask);
-
-
-            //Act
             var thread = new Thread(new ThreadStart(() =>
             {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
+                callingThread = Thread.CurrentThread;
                 command.Execute(null);
-            }))
-            { IsBackground = true };
+            }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-            //Assert
-            Assert.Equal(callingThreadId, taskThreadId);
+            while (isExecuting)
+                Thread.Sleep(Delay / 25);
+
+            Assert.Equal(callingThread.ManagedThreadId, executingThread.ManagedThreadId);
         }
 
         [Fact]
-        public void ExecuteAsync_InBackground_NotRunOnTaskPool()
+        public void ExecuteAsync_MustRunOnCurrentSyncContextTrue_NotRunOnTaskPool()
         {
-            bool isTpThread_Calling = true, isTpThread_Executing = true;
+            ICommand command = new AsyncCommand(MockTask, null, null, true);
 
-            Task MockTask()
+            bool isExecuting = true;
+            Thread callingThread = null, executingThread = null;
+
+            async Task MockTask()
             {
-                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
+                executingThread = Thread.CurrentThread;
+                await Task.Delay(Delay);                
+                isExecuting = false;
             }
-
-            ICommand command = new AsyncCommand(MockTask);
 
             var thread = new Thread(new ThreadStart(() =>
             {
-                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
+                callingThread = Thread.CurrentThread;
                 command.Execute(null);
-            }))
-            { IsBackground = true };
+            }));
 
             thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            while (isExecuting)
+                Thread.Sleep(Delay / 25);
 
-            Assert.False(isTpThread_Calling);
-            Assert.False(isTpThread_Executing);
+            Assert.False(executingThread.IsThreadPoolThread);
+            Assert.False(callingThread.IsThreadPoolThread);
         }
         #endregion
 
-        #region GA - Thread Tests With onBackgroundThread = false
+        #region Monkey Tests
         [Fact]
-        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InForeground_RunsOnCurrentThread()
+        public void ExecuteT_CalledTwice_FiresOnceIfBusy()
         {
-            //Arrange
-            int callingThreadId = -1, executingThreadId = -1;
-
-            Task MockTask()
+            int times = 0;
+            async Task MockTask(string text)
             {
-                executingThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
+                await Task.Delay(Delay);
+                times++;
             }
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new AsyncCommand<string>(MockTask, dts, null,null) ;
 
-            ICommand command = new AsyncCommand(MockTask, null, null, false);
+            command.Execute("test");
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-            //Act
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                command.Execute(null);
-
-            }));
-
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-
-            //Assert
-            Assert.Equal(callingThreadId, executingThreadId);
+            Assert.Equal(1, times);
         }
 
         [Fact]
-        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InForeground_NotRunOnTaskPool()
+        public void ExecuteT_CalledTwice_FiresTwiceIfNotBusy()
         {
-            bool isCallingThreadPoolThread = true, isExecutingThreadPoolThread = false;
-            Task MockTask()
-            {
-                isExecutingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
+            int times = 0;
+            async Task MockTask(string text)
+            {                
+                await Task.Delay(Delay);
+                times++;
             }
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new AsyncCommand<string>(MockTask,dts,null,null);
 
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                ICommand command = new AsyncCommand(MockTask, null, null, false);
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-                isCallingThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
-                command.Execute(null);
-            }));
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-
-            Assert.False(isExecutingThreadPoolThread);
-            Assert.False(isCallingThreadPoolThread);
+            Assert.Equal(2, times);
         }
 
         [Fact]
-        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InBackground_RunsOnCurrentThread()
+        public void ExecuteT_OnExceptionSet_SecondCallAfterException_Executes()
         {
-            //Arrange
-            int callingThreadId = -1, taskThreadId = -1;
-
-            Task MockTask()
+            int times = 0;
+            bool isHandled = false;
+            async Task MockTask(string text)
             {
-                taskThreadId = Thread.CurrentThread.ManagedThreadId;
-                return Task.Delay(Delay);
+                await Task.Delay(Delay);
+                if (times++ == 0)
+                    throw new Exception(); //Throws only on first try
             }
-            ICommand command = new AsyncCommand(MockTask, null, null, false);
 
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new AsyncCommand<string>(MockTask, dts, null, (ex)=> { isHandled = true; });
 
-            //Act
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                callingThreadId = Thread.CurrentThread.ManagedThreadId;
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-                command.Execute(null);
-            }))
-            { IsBackground = true };
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
-            //Assert
-            Assert.Equal(callingThreadId, taskThreadId);
+            Assert.NotEmpty(dts.Exceptions);
+            Assert.True(isHandled);
+            Assert.Equal(2, times);
         }
 
         [Fact]
-        public void ExecuteAsync_ParameterOnBackgoundIsFalse_InBackground_NotRunOnTaskPool()
+        public void ExecuteT_SecondCallAfterException_Executes()
         {
-            bool isTpThread_Calling = true, isTpThread_Executing = true;
-
-            Task MockTask()
+            int times = 0;
+            async Task MockTask(string text)
             {
-                isTpThread_Executing = Thread.CurrentThread.IsThreadPoolThread;
-                return Task.Delay(Delay);
+                await Task.Delay(Delay);
+                if (times++ == 0)
+                    throw new Exception(); //Throws only on first try
             }
 
-            ICommand command = new AsyncCommand(MockTask, null, null, false);
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new AsyncCommand<string>(MockTask, dts, null, null);
 
-            var thread = new Thread(new ThreadStart(() =>
-            {
-                isTpThread_Calling = Thread.CurrentThread.IsThreadPoolThread;
-                command.Execute(null);
-            }))
-            { IsBackground = true };
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-            thread.Start();
-            Thread.Sleep(Delay);
-            thread.Join();
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
 
-            Assert.False(isTpThread_Calling);
-            Assert.False(isTpThread_Executing);
+            Assert.NotEmpty(dts.Exceptions);
+            Assert.Equal(2, times);
         }
 
         #endregion
-
     }
+
 }

@@ -14,7 +14,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
     /// </summary> 
     public static class SafeFireAndForgetExtensions
     {
-        static Action<Exception>? _onException;
+        public static Action<Exception>? DefaultExceptionHandler { get; private set; }
         static bool _shouldAlwaysRethrowException;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         /// <param name="task">Task.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        public static void SafeFireAndForget(this Task task, in Action<Exception>? onException = null) => HandleSafeFireAndForget(task, onException);
+        public static void SafeFireAndForget(this Task task, in Action<Exception>? onException = null, in TaskScheduler scheduler = null) => InternalSafeFireAndForget(task, onException, scheduler);
 
         /// <summary>
         /// Safely execute the Task without waiting for it to complete before moving to the next line of code; commonly known as "Fire And Forget". Inspired by John Thiriet's blog post, "Removing Async Void": https://johnthiriet.com/removing-async-void/.
@@ -30,7 +30,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="task">Task.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
         /// <typeparam name="TException">Exception type. If an exception is thrown of a different type, it will not be handled</typeparam>
-        public static void SafeFireAndForget<TException>(this Task task, in Action<TException>? onException = null) where TException : Exception => HandleSafeFireAndForget(task, onException);
+        public static void SafeFireAndForget<TException>(this Task task, in Action<TException>? onException = null, in TaskScheduler scheduler = null) where TException : Exception => InternalSafeFireAndForget(task, onException, scheduler);
 
         /// <summary>
         /// Initialize SafeFireAndForget
@@ -43,7 +43,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <summary>
         /// Remove the default action for SafeFireAndForget
         /// </summary>
-        public static void RemoveDefaultExceptionHandling() => _onException = null;
+        public static void RemoveDefaultExceptionHandling() => DefaultExceptionHandler = null;
 
         /// <summary>
         /// Set the default action for SafeFireAndForget to handle every exception
@@ -54,19 +54,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             if (onException is null)
                 throw new ArgumentNullException(nameof(onException));
 
-            _onException = onException;
+            DefaultExceptionHandler = onException;
         }
 
-        static void HandleSafeFireAndForget<TException>(Task task, Action<TException>? onException) where TException : Exception
+        static void InternalSafeFireAndForget<TException>(Task task, Action<TException>? onException, TaskScheduler scheduler) where TException : Exception
         {
             //GA Modified to use ContinueWith instead of async/await
-            task.SafeTask(onException);
+            task.SafeTask(onException, scheduler);
         }
         
         //GA Add
-        public static Task SafeTask<TException>(this Task task, Action<TException>? onException) where TException : Exception
+        public static Task SafeTask<TException>(this Task task, Action<TException>? onException, TaskScheduler scheduler = null) where TException : Exception
         {
-            if (_onException != null || onException != null)
+            if (DefaultExceptionHandler != null || onException != null)
                 task.ContinueWith(
                         t =>
                         {
@@ -74,7 +74,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                             if (_shouldAlwaysRethrowException)
                                 Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
                         }
-                        , TaskContinuationOptions.OnlyOnFaulted);
+                        , CancellationToken.None
+                        , TaskContinuationOptions.OnlyOnFaulted
+                        , scheduler ?? TaskScheduler.FromCurrentSynchronizationContext()); //todo check doesn't fail .Current might be more robust
 
             return task;
         }
@@ -86,15 +88,43 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             {
                 action(parameter);
             }
-            catch (TException ex) when (_onException != null || onException != null)
+            catch (TException ex) when (DefaultExceptionHandler != null || onException != null)
             {
                 HandleException(ex, onException);
             }
         }
 
-        static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
+        //GA Add
+        public static void SafeInvoke<T,TException>(this Action<T> action, T parameter, in Action<TException>? onException) where TException : Exception
         {
-            _onException?.Invoke(exception);
+            try
+            {
+                action(parameter);
+            }
+            catch (TException ex) when (DefaultExceptionHandler != null || onException != null)
+            {
+                HandleException(ex, onException);
+            }
+        }
+
+
+        //GA Add
+        public static void SafeInvoke<TException>(this Action action, in Action<TException>? onException) where TException : Exception
+        {
+            try
+            {
+                action();
+            }
+            catch (TException ex) when (DefaultExceptionHandler != null || onException != null)
+            {
+                HandleException(ex, onException);
+            }
+        }
+
+
+        public static void HandleException<TException>(in TException exception, in Action<TException>? onException) where TException : Exception
+        {
+            DefaultExceptionHandler?.Invoke(exception);
             onException?.Invoke(exception);
         }
 

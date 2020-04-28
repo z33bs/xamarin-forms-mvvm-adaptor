@@ -10,7 +10,7 @@
         /// </summary>
         /// <returns>The Task to execute</returns>
         /// <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
-        System.Threading.Tasks.Task ExecuteAsync(T parameter);
+        //System.Threading.Tasks.Task ExecuteAsync(T parameter);
 
         /// <summary>
         /// Raises the CanExecuteChanged event.
@@ -27,7 +27,7 @@
         /// Executes the Command as a Task
         /// </summary>
         /// <returns>The Task to execute</returns>
-        System.Threading.Tasks.Task ExecuteAsync();
+        //System.Threading.Tasks.Task ExecuteAsync();
 
         /// <summary>
         /// Raises the CanExecuteChanged event.
