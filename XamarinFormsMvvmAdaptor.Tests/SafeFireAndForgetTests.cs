@@ -8,7 +8,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
     [Collection("SafeTests")]
     public class SafeFireAndForgetTests
     {
-        protected const int Delay = 500;
+        protected const int Delay = 50;
         //protected WeakEventManager TestWeakEventManager { get; } = new WeakEventManager();
         //protected WeakEventManager<string> TestStringWeakEventManager { get; } = new WeakEventManager<string>();
 

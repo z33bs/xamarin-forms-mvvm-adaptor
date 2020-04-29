@@ -3,7 +3,7 @@
     /// <summary>
     /// An Async implementation of ICommand for Task
     /// </summary>
-    public interface IAsyncCommand<T> : System.Windows.Input.ICommand
+    public interface ISafeCommand<T> : System.Windows.Input.ICommand
     {
         /// <summary>
         /// Executes the Command as a Task
@@ -21,7 +21,7 @@
     /// <summary>
     /// An Async implementation of ICommand for Task
     /// </summary>
-    public interface IAsyncCommand : System.Windows.Input.ICommand
+    public interface ISafeCommand : System.Windows.Input.ICommand
     {
         /// <summary>
         /// Executes the Command as a Task

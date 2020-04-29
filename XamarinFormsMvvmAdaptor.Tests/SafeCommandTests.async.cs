@@ -8,7 +8,7 @@ using System.Windows.Input;
 namespace XamarinFormsMvvmAdaptor.Tests
 {
     [Collection("SafeTests")]
-    public class AsyncCommandTests
+    public class SafeCommandTests_Async
     {
         const int Delay = 50;
         Task NoParameterTask() => Task.Delay(Delay);
@@ -28,7 +28,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             //Assert
 #pragma warning disable CS8625 //Cannot convert null literal to non-nullable reference type
-            Assert.Throws<ArgumentNullException>(() => new AsyncCommand(null));
+            Assert.Throws<ArgumentNullException>(() => new SafeCommand(null));
 #pragma warning restore CS8625
         }
 
@@ -41,7 +41,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             //Assert
 #pragma warning disable CS8625 //Cannot convert null literal to non-nullable reference type
-            Assert.Throws<ArgumentNullException>(() => new AsyncCommand<object>(null));
+            Assert.Throws<ArgumentNullException>(() => new SafeCommand<object>(null));
 #pragma warning restore CS8625
         }
 
@@ -53,7 +53,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             //Arrange
             var dts = new DeterministicTaskScheduler();
 
-            ICommand command = new AsyncCommand<int>(IntParameterTask,dts,null,null);
+            ICommand command = new SafeCommand<int>(IntParameterTask,dts,null,null);
 
             //Act
             command.Execute(parameter);
@@ -70,7 +70,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         {
             //Arrange
             var dts = new DeterministicTaskScheduler();
-            ICommand command = new AsyncCommand<string>(StringParameterTask,dts,null,null);
+            ICommand command = new SafeCommand<string>(StringParameterTask,dts,null,null);
 
             //Act
              command.Execute(parameter);
@@ -84,7 +84,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void CanExecuteT_NullParameterWithNonNullableValueType_False()
         {
             //Arrange
-            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask, o => CanExecuteTrue(o));
+            SafeCommand<int> command = new SafeCommand<int>(IntParameterTask, o => CanExecuteTrue(o));
 
             //Act
 
@@ -97,7 +97,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void AsyncCommand_Parameter_CanExecuteFalse_Test()
         {
             //Arrange
-            AsyncCommand<int> command = new AsyncCommand<int>(IntParameterTask, o=>CanExecuteFalse(o));
+            SafeCommand<int> command = new SafeCommand<int>(IntParameterTask, o=>CanExecuteFalse(o));
 
             //Act
 
@@ -109,7 +109,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void AsyncCommand_NoParameter_CanExecuteTrue_Test()
         {
             //Arrange
-            AsyncCommand command = new AsyncCommand(NoParameterTask, CanExecuteTrue);
+            SafeCommand command = new SafeCommand(NoParameterTask, CanExecuteTrue);
 
             //Act
 
@@ -121,7 +121,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void AsyncCommand_NoParameter_CanExecuteFalse_Test()
         {
             //Arrange
-            AsyncCommand command = new AsyncCommand(NoParameterTask, CanExecuteFalse);
+            SafeCommand command = new SafeCommand(NoParameterTask, CanExecuteFalse);
 
             //Act
 
@@ -137,7 +137,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             bool canCommandExecute = false;
             bool didCanExecuteChangeFire = false;
 
-            AsyncCommand command = new AsyncCommand(NoParameterTask, commandCanExecute);
+            SafeCommand command = new SafeCommand(NoParameterTask, commandCanExecute);
             command.CanExecuteChanged += handleCanExecuteChanged;
 
             void handleCanExecuteChanged(object? sender, EventArgs e) => didCanExecuteChangeFire = true;
@@ -165,7 +165,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [InlineData("Hello")]
         public void ExecuteAsyncT_RunsOnNewThread(string parameter)
         {
-            ICommand command = new AsyncCommand<string>(MockTask);
+            ICommand command = new SafeCommand<string>(MockTask);
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
 
@@ -194,7 +194,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [InlineData("Hello")]
         public void ExecuteAsyncT_RunsOnTaskPool(string parameter)
         {
-            ICommand command = new AsyncCommand<string>(MockTask);
+            ICommand command = new SafeCommand<string>(MockTask);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -225,7 +225,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [InlineData("Hello")]
         public void ExecuteAsyncT_MustRunOnCurrentSyncContextTrue_RunsOnCurrentThread(string parameter)
         {
-            ICommand command = new AsyncCommand<string>(MockTask, null, null, true);
+            ICommand command = new SafeCommand<string>(MockTask, null, null, true);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -254,7 +254,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [InlineData("Hello")]
         public void ExecuteAsyncT_MustRunOnCurrentSyncContextTrue_NotRunOnTaskPool(string parameter)
         {
-            ICommand command = new AsyncCommand<string>(MockTask, null, null, true);
+            ICommand command = new SafeCommand<string>(MockTask, null, null, true);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -287,7 +287,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public void ExecuteAsync_RunsOnNewThread()
         {
-            ICommand command = new AsyncCommand(MockTask);
+            ICommand command = new SafeCommand(MockTask);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -315,7 +315,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public void ExecuteAsync_RunsOnTaskPool()
         {
-            ICommand command = new AsyncCommand(MockTask);
+            ICommand command = new SafeCommand(MockTask);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -344,7 +344,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public void ExecuteAsync_MustRunOnCurrentSyncContextTrue_RunsOnCurrentThread()
         {
-            ICommand command = new AsyncCommand(MockTask, null, null, true);
+            ICommand command = new SafeCommand(MockTask, null, null, true);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -372,7 +372,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public void ExecuteAsync_MustRunOnCurrentSyncContextTrue_NotRunOnTaskPool()
         {
-            ICommand command = new AsyncCommand(MockTask, null, null, true);
+            ICommand command = new SafeCommand(MockTask, null, null, true);
 
             bool isExecuting = true;
             Thread callingThread = null, executingThread = null;
@@ -410,7 +410,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
                 times++;
             }
             var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
-            ICommand command = new AsyncCommand<string>(MockTask, dts, null,null) ;
+            ICommand command = new SafeCommand<string>(MockTask, dts, null,null) ;
 
             command.Execute("test");
             command.Execute("test");
@@ -429,7 +429,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
                 times++;
             }
             var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
-            ICommand command = new AsyncCommand<string>(MockTask,dts,null,null);
+            ICommand command = new SafeCommand<string>(MockTask,dts,null,null);
 
             command.Execute("test");
             dts.RunTasksUntilIdle();
@@ -453,7 +453,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             }
 
             var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
-            ICommand command = new AsyncCommand<string>(MockTask, dts, null, (ex)=> { isHandled = true; });
+            ICommand command = new SafeCommand<string>(MockTask, dts, null, (ex)=> { isHandled = true; });
 
             command.Execute("test");
             dts.RunTasksUntilIdle();
@@ -478,7 +478,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             }
 
             var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
-            ICommand command = new AsyncCommand<string>(MockTask, dts, null, null);
+            ICommand command = new SafeCommand<string>(MockTask, dts, null, null);
 
             command.Execute("test");
             dts.RunTasksUntilIdle();
