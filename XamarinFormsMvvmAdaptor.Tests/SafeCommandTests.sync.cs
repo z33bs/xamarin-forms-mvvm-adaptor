@@ -22,16 +22,16 @@ namespace XamarinFormsMvvmAdaptor.Tests
 			Assert.Throws<ArgumentNullException>(() => new SafeCommand(executeAction: (Action)null));
 		}
 
-		[Fact]
-		public void ThrowsWithNullParameterizedConstructor()
-		{
-			Assert.Throws<ArgumentNullException>(() => new SafeCommand((Action<object>)null));
-		}
+        [Fact]
+        public void ThrowsWithNullParameterizedConstructor()
+        {
+            Assert.Throws<ArgumentNullException>(() => new SafeCommand<object>(executeAction: (Action<object>)null));
+        }
 
-		[Fact]
+        [Fact]
 		public void Execute_WithNullExecuteAndValidCanExecute_Throws()
 		{
-			Assert.Throws<ArgumentNullException>(() => new SafeCommand(executeAction: null, () => true));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand(executeAction: null, canExecute: () => true));
 		}
 
 		[Fact]
@@ -60,7 +60,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void ExecuteWithCanExecute()
 		{
 			bool executed = false;
-			var cmd = new SafeCommand(() => executed = true, () => true);
+			var cmd = new SafeCommand(() => executed = true, canExecute: () => true);
 
 			cmd.Execute(null);
 			Assert.True(executed);
@@ -72,7 +72,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void CanExecute(bool expected)
 		{
 			bool canExecuteRan = false;
-			var cmd = new SafeCommand(() => { }, () => {
+			var cmd = new SafeCommand(() => { }, canExecute: () => {
 				canExecuteRan = true;
 				return expected;
 			});
@@ -102,7 +102,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void GenericThrowsWithNullExecuteAndCanExecuteValid()
 		{
-			Assert.Throws<ArgumentNullException>(() => new SafeCommand<string>(null, s => true));
+			Assert.Throws<ArgumentNullException>(() => new SafeCommand<string>(null, canExecute: s => true));
 		}
 
 		[Fact]
@@ -119,7 +119,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void GenericExecuteWithCanExecute()
 		{
 			string result = null;
-			var cmd = new SafeCommand<string>(s => result = s, s => true);
+			var cmd = new SafeCommand<string>(s => result = s, canExecute: s => true);
 
 			cmd.Execute("Foo");
 			Assert.Equal("Foo", result);
@@ -131,7 +131,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void GenericCanExecute(bool expected)
 		{
 			string result = null;
-			var cmd = new SafeCommand<string>(s => { }, s => {
+			var cmd = new SafeCommand<string>(s => { }, canExecute: s => {
 				result = s;
 				return expected;
 			});
@@ -152,7 +152,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteReturnsFalseIfParameterIsWrongReferenceType()
 		{
-			var command = new SafeCommand<FakeChildContext>(executeAction: context => { }, context => true);
+			var command = new SafeCommand<FakeChildContext>(executeAction: context => { }, canExecute: context => true);
 
 			Assert.False(command.CanExecute(new FakeParentContext()), "the parameter is of the wrong type");
 		}
@@ -160,7 +160,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteReturnsFalseIfParameterIsWrongValueType()
 		{
-			var command = new SafeCommand<int>(executeAction: context => { }, context => true);
+			var command = new SafeCommand<int>(executeAction: context => { }, canExecute: context => true);
 
 			Assert.False(command.CanExecute(10.5), "the parameter is of the wrong type");
 		}
@@ -168,7 +168,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteUsesParameterIfReferenceTypeAndSetToNull()
 		{
-			var command = new SafeCommand<FakeChildContext>(context => { }, context => true);
+			var command = new SafeCommand<FakeChildContext>(context => { }, canExecute: context => true);
 
 			Assert.True(command.CanExecute(null), "null is a valid value for a reference type");
 		}
@@ -176,7 +176,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecuteUsesParameterIfNullableAndSetToNull()
 		{
-			var command = new SafeCommand<int?>(context => { }, context => true);
+			var command = new SafeCommand<int?>(context => { }, canExecute: context => true);
 
 			Assert.True(command.CanExecute(null), "null is a valid value for a Nullable<int> type");
 		}
@@ -184,7 +184,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void CanExecute_ValueTypeAndSetToNull_IgnoresParameter()
 		{
-			var command = new SafeCommand<int>(executeAction: context => { }, context => true);
+			var command = new SafeCommand<int>(executeAction: context => { }, canExecute: context => true);
 
 			Assert.False(command.CanExecute(null));
 		}
@@ -257,7 +257,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		{
 			bool isHandled = false;
 			void onException(Exception ex) { isHandled = true; }
-			var command = new SafeCommand(executeAction: () => throw new Exception(),null, onException);
+			var command = new SafeCommand(executeAction: () => throw new Exception(),onException: onException);
 
 			command.Execute(null);
 
@@ -323,7 +323,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[InlineData("Hello")]
 		public void ExecuteT_MustRunOnCurrentSyncContextTrue_RunsOnCurrentThread(string parameter)
 		{
-			ICommand command = new SafeCommand<string>(MockTask, null, null, true);
+			ICommand command = new SafeCommand<string>(MockTask, mustRunOnCurrentSyncContext: true);
 
 			Thread callingThread = null, executingThread = null;
 
@@ -348,7 +348,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[InlineData("Hello")]
 		public void ExecuteT_MustRunOnCurrentSyncContextTrue_NotRunOnTaskPool(string parameter)
 		{
-			ICommand command = new SafeCommand<string>(MockTask, null, null, true);
+			ICommand command = new SafeCommand<string>(MockTask, mustRunOnCurrentSyncContext: true);
 
 			Thread callingThread = null, executingThread = null;
 
@@ -426,7 +426,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void Execute_MustRunOnCurrentSyncContextTrue_RunsOnCurrentThread()
 		{
-			ICommand command = new SafeCommand(MockTask, null, null, true);
+			ICommand command = new SafeCommand(MockTask, mustRunOnCurrentSyncContext: true);
 
 			Thread callingThread = null, executingThread = null;
 
@@ -450,7 +450,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void Execute_MustRunOnCurrentSyncContextTrue_NotRunOnTaskPool()
 		{
-			ICommand command = new SafeCommand(MockTask, null, null, true);
+			ICommand command = new SafeCommand(MockTask, mustRunOnCurrentSyncContext: true);
 
 			Thread callingThread = null, executingThread = null;
 
@@ -526,7 +526,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 			}
 
 
-			ICommand command = new SafeCommand<string>(MockTask,null, (ex) => { isHandled = true; });
+			ICommand command = new SafeCommand<string>(MockTask, onException: (ex) => { isHandled = true; });
 
 			command.Execute("test"); //should throw
 

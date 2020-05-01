@@ -25,9 +25,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         readonly Action<Exception>? _onException;
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
         readonly TaskScheduler _scheduler; //GA add
-        bool _mustRunOnCurrentSyncContext;
+        readonly bool _mustRunOnCurrentSyncContext;
         readonly Action<T> _execute;
-        IViewModelBase _viewModel;
+        readonly IViewModelBase _viewModel;
 
         static bool IsValidParameter(object o)
         {
@@ -52,33 +52,26 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="executeFunction">The Function executed when Execute or ExecuteAsync is called. This does not check canExecute before executing and will execute even if canExecute is false</param>
         /// <param name="canExecute">The Function that verifies whether or not AsyncCommand should execute.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
+
         public SafeCommand(
             Func<T, Task> executeFunction,
+            IViewModelBase viewModel = null,
             Func<T, bool>? canExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
             : this(
-                  o =>
-                    {
-                        if (canExecute is null)
-                            return true;
+                  viewModel,
+                  baseCanExecute: o =>
+                  {
+                      if (canExecute is null)
+                          return true;
 
-                        return IsValidParameter(o) && canExecute((T)o);
-                    },
+                      return IsValidParameter(o) && canExecute((T)o);
+                  },
                   onException,
                   mustRunOnCurrentSyncContext)
-{
-            _executeAsync = executeFunction ?? throw new ArgumentNullException(nameof(executeFunction), $"{nameof(executeFunction)} cannot be null");
-        }
-
-        public SafeCommand(
-            Func<T, Task> executeFunction,
-            IViewModelBase viewModel,
-            Func<T, bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false) : this(executeFunction,canExecute,onException,mustRunOnCurrentSyncContext)
         {
-            _viewModel = viewModel;
+            _executeAsync = executeFunction ?? throw new ArgumentNullException(nameof(executeFunction), $"{nameof(executeFunction)} cannot be null");
         }
 
 
@@ -86,48 +79,46 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public SafeCommand(
             Func<T, Task> executeFunction,
             TaskScheduler scheduler,
-            Func<T, bool>? canExecute,
-            Action<Exception>? onException) : this(executeFunction, canExecute, onException)
+            IViewModelBase viewModel = null,
+            Func<T, bool>? canExecute = null,
+            Action<Exception>? onException = null
+            //bool mustRunOnCurrentSyncContext is moot
+            )
+            : this(executeFunction:executeFunction,viewModel,canExecute,onException)
         {
             _scheduler = scheduler;
         }
 
         public SafeCommand(
             Action<T> executeAction,
+            IViewModelBase viewModel = null,
             Func<T, bool>? canExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
             : this(
-                  o =>
-                    {
-                        if (canExecute is null)
-                            return true;
+                  viewModel,
+                  baseCanExecute: o =>
+                  {
+                      if (canExecute is null)
+                          return true;
 
-                        return IsValidParameter(o) && canExecute((T)o);
-                    },
+                      return IsValidParameter(o) && canExecute((T)o);
+                  },
                   onException,
                   mustRunOnCurrentSyncContext)
         {
             _execute = executeAction ?? throw new ArgumentNullException(nameof(executeAction), $"{nameof(executeAction)} cannot be null");
         }
 
-        public SafeCommand(
-            Action<T> executeAction,
-            IViewModelBase viewModel,
-            Func<T, bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false) : this(executeAction,canExecute,onException,mustRunOnCurrentSyncContext)
-        {
-            _viewModel = viewModel;
-        }
-
 
         SafeCommand(
-            Func<object?, bool>? canExecute = null,
+            IViewModelBase viewModel = null,
+            Func<object?, bool>? baseCanExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
         {
-            _canExecute = canExecute ?? (_ => true);
+            _viewModel = viewModel;
+            _canExecute = baseCanExecute ?? (_ => true);
             _onException = onException;
             _mustRunOnCurrentSyncContext = mustRunOnCurrentSyncContext;
         }
@@ -258,14 +249,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
     /// </summary>
     public class SafeCommand : ISafeCommand
     {
-        readonly Func<Task> _executeAsync;
+        readonly Func<object,Task> _executeAsync;
         readonly Func<object?, bool> _canExecute;
         readonly Action<Exception>? _onException;
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
         readonly TaskScheduler _scheduler; //GA add
-        bool _mustRunOnCurrentSyncContext;
+        readonly bool _mustRunOnCurrentSyncContext;
         readonly Action<object> _execute;
-        IViewModelBase _viewModel;
+        readonly IViewModelBase _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.AsyncCommand`1"/> class.
@@ -273,66 +264,70 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="executeFunction">The Function executed when Execute or ExecuteAsync is called. This does not check canExecute before executing and will execute even if canExecute is false</param>
         /// <param name="canExecute">The Function that verifies whether or not AsyncCommand should execute.</param>
         /// <param name="onException">If an exception is thrown in the Task, <c>onException</c> will execute. If onException is null, the exception will be re-thrown</param>
-        public SafeCommand(
-            Func<Task> executeFunction,
-            Func<object?, bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : this(canExecute, onException, mustRunOnCurrentSyncContext)
-        {
-            _executeAsync = executeFunction ?? throw new ArgumentNullException(nameof(executeFunction), $"{nameof(executeFunction)} cannot be null");
-        }
 
         public SafeCommand(
             Func<Task> executeFunction,
-            IViewModelBase viewModel,
+            IViewModelBase viewModel = null,
+            Func<bool>? canExecute = null,
+            Action<Exception>? onException = null,
+            bool mustRunOnCurrentSyncContext = false)
+            : this(
+                  internalExecuteFunction: o => executeFunction(),
+                  viewModel,
+                  o => canExecute?.Invoke() ?? true,
+                  onException,
+                  mustRunOnCurrentSyncContext)
+        {
+            if (executeFunction == null)
+                throw new ArgumentNullException(nameof(executeFunction));
+        }
+        private SafeCommand(
+            Func<object,Task> internalExecuteFunction,
+            IViewModelBase viewModel = null,
             Func<object?, bool>? canExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
-            : this(executeFunction ,canExecute, onException, mustRunOnCurrentSyncContext)
+    : this(viewModel ,baseCanExecute: canExecute, onException, mustRunOnCurrentSyncContext)
         {
-            _viewModel = viewModel;
+            _executeAsync = internalExecuteFunction ?? throw new ArgumentNullException(nameof(internalExecuteFunction), $"{nameof(internalExecuteFunction)} cannot be null");
         }
+
 
 
         [EditorBrowsable(EditorBrowsableState.Never)] //Designed for Testing purposes only
         public SafeCommand(
-            Func<Task> execute,
+            Func<Task> executeFunction,
             TaskScheduler scheduler,
-            Func<object?, bool>? canExecute,
-            Action<Exception>? onException) : this(execute, canExecute, onException)
+            IViewModelBase viewModel = null,
+            Func<bool>? canExecute = null,
+            Action<Exception>? onException = null
+            //mustRunOnCurrentSyncContext is moot
+            )
+            : this(executeFunction:executeFunction,viewModel,canExecute,onException)
         {
             _scheduler = scheduler;
-        }
-
-        public SafeCommand(
-            Func<Task> execute,
-            IViewModelBase viewModel,
-            TaskScheduler scheduler,
-            Func<object?, bool>? canExecute,
-            Action<Exception>? onException)
-            : this(execute, scheduler, canExecute, onException)
-        {
-            _viewModel = viewModel;
         }
 
         #region Action overloads
 
         //Warning! If using lambda expression, the compiler will choose the Func<Task> overload over Action delegate. It's logic is that a delegate with a return type is a better match than a delegate without a return type. To be explicit, either abstract the lamda into a separate method or specify the parameter name before the lambda executeAction: () => {}
+
         public SafeCommand(
             Action executeAction,
+            IViewModelBase viewModel = null,
             Func<bool>? canExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
             : this(
-                  o => executeAction(),
+                  internalExecuteAction: o => executeAction(),
+                  viewModel,
                   o =>
-                       {
-                           if (canExecute is null)
-                               return true;
-                           else
-                               return canExecute();
-                       },
+                  {
+                      if (canExecute is null)
+                          return true;
+                      else
+                          return canExecute();
+                  },
                   onException,
                   mustRunOnCurrentSyncContext)
         {
@@ -340,47 +335,27 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 throw new ArgumentNullException(nameof(executeAction));
         }
 
-        public SafeCommand(
-            Action executeAction,
-            IViewModelBase viewModel,
-            Func<bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : this(executeAction: executeAction,canExecute,onException,mustRunOnCurrentSyncContext)
-        {
-            _viewModel = viewModel;
-        }
-
-
-        public SafeCommand(
-            Action<object> executeAction,
+        private SafeCommand(
+            Action<object> internalExecuteAction,
+            IViewModelBase viewModel = null,
             Func<object?, bool>? canExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
-            : this(canExecute, onException, mustRunOnCurrentSyncContext)
+            : this(viewModel, baseCanExecute: canExecute, onException, mustRunOnCurrentSyncContext)
         {
-            _execute = executeAction ?? throw new ArgumentNullException(nameof(executeAction), $"{nameof(executeAction)} cannot be null");
-        }
-
-        public SafeCommand(
-            Action<object> executeAction,
-            IViewModelBase viewModel,
-            Func<object?, bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : this(executeAction: executeAction, canExecute, onException, mustRunOnCurrentSyncContext)
-        {
-            _viewModel = viewModel;
+            _execute = internalExecuteAction ?? throw new ArgumentNullException(nameof(internalExecuteAction), $"{nameof(internalExecuteAction)} cannot be null");
         }
 
         #endregion
 
         SafeCommand(
-            Func<object?, bool>? canExecute = null,
+            IViewModelBase viewModel = null,
+            Func<object?, bool>? baseCanExecute = null,
             Action<Exception>? onException = null,
             bool mustRunOnCurrentSyncContext = false)
         {
-            _canExecute = canExecute ?? (_ => true);
+            _viewModel = viewModel;
+            _canExecute = baseCanExecute ?? (_ => true);
             _onException = onException;
             _mustRunOnCurrentSyncContext = mustRunOnCurrentSyncContext;
         }
@@ -436,7 +411,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             if (_scheduler != null)
                 return
                     Task.Factory
-                    .StartNew(() => _executeAsync().GetAwaiter().GetResult(),
+                    .StartNew(() => _executeAsync(null).GetAwaiter().GetResult(),
                                     CancellationToken.None,
                                     TaskCreationOptions.DenyChildAttach,
                                     _scheduler)
@@ -448,12 +423,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
             if (_mustRunOnCurrentSyncContext)
                 return
-                    _executeAsync()
+                    _executeAsync(null)
                     .SafeTask(_onException)
                     .ContinueWith(t => { IsBusy = false; });
 
             return
-                Task.Run(() => _executeAsync().GetAwaiter().GetResult())
+                Task.Run(() => _executeAsync(null).GetAwaiter().GetResult())
                                .SafeTask(_onException)
                                .ContinueWith(t => { IsBusy = false; });
         }
