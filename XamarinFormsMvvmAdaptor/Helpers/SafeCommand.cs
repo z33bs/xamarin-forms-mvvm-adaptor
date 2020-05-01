@@ -69,6 +69,44 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                     , $"{nameof(executeFunction)} cannot be null");
         }
 
+        public SafeCommand(Func<T, Task> executeFunction)
+            : this(executeFunction, null, null, null, false)
+        { }
+
+        public SafeCommand(
+            Action<T> executeAction,
+            IViewModelBase viewModel = null,
+            Func<T, bool>? canExecute = null,
+            Action<Exception>? onException = null,
+            bool mustRunOnCurrentSyncContext = false)
+            : base(
+                  internalExecuteAction: o =>
+                  {
+                      if (!IsValidParameter(o))
+                          throw new InvalidCommandParameterException(typeof(T));
+
+                      executeAction((T)o);
+                  },
+                  viewModel,
+                  o =>
+                  {
+                      if (canExecute is null)
+                          return true;
+
+                      return IsValidParameter(o) && canExecute((T)o);
+                  },
+                  onException,
+                  mustRunOnCurrentSyncContext)
+        {
+            if (executeAction is null)
+                throw new ArgumentNullException(nameof(executeAction)
+                    , $"{nameof(executeAction)} cannot be null");
+        }
+
+        public SafeCommand(Action<T> executeAction)
+            : this(executeAction, null, null, null, false)
+        { }
+
         [EditorBrowsable(EditorBrowsableState.Never)] //Designed for Testing purposes only
         public SafeCommand(
             Func<T, Task> executeFunction,
@@ -101,36 +139,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 throw new ArgumentNullException(nameof(executeFunction)
                     , $"{nameof(executeFunction)} cannot be null");
         }
-
-        public SafeCommand(
-            Action<T> executeAction,
-            IViewModelBase viewModel = null,
-            Func<T, bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : base(
-                  internalExecuteAction: o =>
-                  {
-                      if (!IsValidParameter(o))
-                          throw new InvalidCommandParameterException(typeof(T));
-
-                      executeAction((T)o);
-                  },
-                  viewModel,
-                  o =>
-                  {
-                      if (canExecute is null)
-                          return true;
-
-                      return IsValidParameter(o) && canExecute((T)o);
-                  },
-                  onException,
-                  mustRunOnCurrentSyncContext)
-        {
-            if (executeAction is null)
-                throw new ArgumentNullException(nameof(executeAction)
-                    , $"{nameof(executeAction)} cannot be null");
-        }
     }
 
     /// <summary>
@@ -138,7 +146,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
     /// </summary>
     public class SafeCommand : ICommand
     {
-        readonly Func<object,Task> _executeAsync;
+        readonly Func<object, Task> _executeAsync;
         readonly Func<object?, bool> _canExecute;
         readonly Action<Exception>? _onException;
         readonly WeakEventManager _weakEventManager = new WeakEventManager();
@@ -173,39 +181,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                     , $"{nameof(executeFunction)} cannot be null");
         }
 
-        protected SafeCommand(
-            Func<object,Task> internalExecuteFunction,
-            IViewModelBase viewModel = null,
-            Func<object?, bool>? canExecute = null,
-            Action<Exception>? onException = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : this(viewModel ,baseCanExecute: canExecute, onException, mustRunOnCurrentSyncContext)
-        {
-            _executeAsync = internalExecuteFunction
-                ?? throw new ArgumentNullException(nameof(internalExecuteFunction)
-                        , $"{nameof(internalExecuteFunction)} cannot be null");
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)] //Designed for Testing purposes only
-        public SafeCommand(
-            Func<object?,Task> executeFunction,
-            TaskScheduler scheduler,
-            IViewModelBase viewModel = null,
-            Func<object?,bool>? canExecute = null,
-            Action<Exception>? onException = null
-            //mustRunOnCurrentSyncContext is moot
-            )
-            : this(internalExecuteFunction:executeFunction,viewModel,canExecute,onException)
-        {
-            _scheduler = scheduler
-                ?? throw new ArgumentNullException(nameof(scheduler)
-                        , $"{nameof(scheduler)} cannot be null");
-        }
-
-        #region Action overloads
+        public SafeCommand(Func<Task> executeFunction)
+            : this(executeFunction, null, null, null, false)
+        { }
 
         //Warning! If using lambda expression, the compiler will choose the Func<Task> overload over Action delegate. It's logic is that a delegate with a return type is a better match than a delegate without a return type. To be explicit, either abstract the lamda into a separate method or specify the parameter name before the lambda executeAction: () => {}
-
         public SafeCommand(
             Action executeAction,
             IViewModelBase viewModel = null,
@@ -230,6 +210,42 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 throw new ArgumentNullException(nameof(executeAction));
         }
 
+        public SafeCommand(Action executeAction)
+            : this(executeAction: executeAction, null, null, null, false)
+        { }
+
+        [EditorBrowsable(EditorBrowsableState.Never)] //Designed for Testing purposes only
+        public SafeCommand(
+            Func<object?, Task> executeFunction,
+            TaskScheduler scheduler,
+            IViewModelBase viewModel = null,
+            Func<object?, bool>? canExecute = null,
+            Action<Exception>? onException = null
+            //mustRunOnCurrentSyncContext is moot
+            )
+            : this(internalExecuteFunction: executeFunction, viewModel, canExecute, onException)
+        {
+            _scheduler = scheduler
+                ?? throw new ArgumentNullException(nameof(scheduler)
+                        , $"{nameof(scheduler)} cannot be null");
+        }
+
+        #region Internal Constructors
+
+
+        protected SafeCommand(
+            Func<object, Task> internalExecuteFunction,
+            IViewModelBase viewModel = null,
+            Func<object?, bool>? canExecute = null,
+            Action<Exception>? onException = null,
+            bool mustRunOnCurrentSyncContext = false)
+            : this(viewModel, baseCanExecute: canExecute, onException, mustRunOnCurrentSyncContext)
+        {
+            _executeAsync = internalExecuteFunction
+                ?? throw new ArgumentNullException(nameof(internalExecuteFunction)
+                        , $"{nameof(internalExecuteFunction)} cannot be null");
+        }
+
         protected SafeCommand(
             Action<object> internalExecuteAction,
             IViewModelBase viewModel = null,
@@ -243,8 +259,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                         , $"{nameof(internalExecuteAction)} cannot be null");
         }
 
-        #endregion
-
         private SafeCommand(
             IViewModelBase viewModel = null,
             Func<object?, bool>? baseCanExecute = null,
@@ -257,6 +271,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             _mustRunOnCurrentSyncContext = mustRunOnCurrentSyncContext;
         }
 
+        #endregion
         /// <inheritdoc/>
         public event EventHandler CanExecuteChanged
         {
