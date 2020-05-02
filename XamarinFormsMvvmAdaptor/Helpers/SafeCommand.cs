@@ -211,7 +211,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
     /// Sets <see cref="IViewModelBase.IsBusy"/> to <c>true</c>
     /// while Command is executing. 
     /// </summary>
-    public class SafeCommand : ICommand
+    public class SafeCommand : ISafeCommand
     {
         readonly Func<object, Task> _executeAsync;
         readonly Func<object?, bool> _canExecute;
@@ -417,10 +417,17 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #endregion
 
-        /// <summary>
-        /// Raises the CanExecuteChanged event.
-        /// </summary>
+        /// <inheritdoc/>
         public void RaiseCanExecuteChanged() => _weakEventManager.HandleEvent(this, EventArgs.Empty, nameof(CanExecuteChanged));
+
+        /// <inheritdoc/>
+        public async Task RawExecuteAsync(object parameter)
+        {
+            if (_execute != null)
+                _execute(parameter);
+            else
+                await _executeAsync(parameter);
+        }
 
         bool _isBusy;
         bool IsBusy
