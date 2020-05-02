@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
@@ -29,6 +30,17 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                     .CreateDelegate(typeof(Action<object, TEventArgs>), target))
                     ?.Invoke(sender, e);
             }
+        }
+
+        public void HandlerOnMainThread(object sender, TEventArgs e)
+        {
+            var target = _targetReference.Target;
+
+            if (target != null)
+                Device.BeginInvokeOnMainThread(() =>
+                    ((Action<object, TEventArgs>)_method
+                        .CreateDelegate(typeof(Action<object, TEventArgs>), target))
+                        ?.Invoke(sender, e));
         }
     }
 }
