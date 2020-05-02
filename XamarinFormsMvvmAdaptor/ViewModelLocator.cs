@@ -94,11 +94,11 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (viewModel is IOnViewAppearing appearingVm)
                     page.Appearing += new WeakEventHandler<EventArgs>(
-                        appearingVm.OnViewAppearing).Handler;
+                        appearingVm.OnViewAppearing).HandlerOnMainThread;
 
                 if (viewModel is IOnViewDisappearing disappearingVm)
                     page.Disappearing += new WeakEventHandler<EventArgs>(
-                        disappearingVm.OnViewDisappearing).Handler;
+                        disappearingVm.OnViewDisappearing).HandlerOnMainThread;
             }
 
             view.BindingContext = viewModel;
