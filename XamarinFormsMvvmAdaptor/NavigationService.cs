@@ -49,6 +49,8 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public IReadOnlyList<Page> ModalStack => navigation.ModalStack;
 
+        ///<inheritdoc/>
+        public Helpers.IMessagingCenter MessagingCenter => Helpers.MessagingCenter.Instance;
 
         #region CONSTRUCTIVE
         ///<inheritdoc/>

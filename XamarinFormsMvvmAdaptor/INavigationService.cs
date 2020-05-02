@@ -12,7 +12,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Returns Xamarin.Forms.Shell.Current
         /// </summary>
-        public Shell CurrentShell { get; }
+        Shell CurrentShell { get; }
         /// <summary>
         /// Gets the Current Shell's NavigationStack
         /// </summary>
@@ -21,6 +21,11 @@ namespace XamarinFormsMvvmAdaptor
         /// Gets the Current Shell's ModalStack
         /// </summary>
         IReadOnlyList<Page> ModalStack { get; }
+
+        /// <summary>
+        /// Returns a singleton instance of the MessagingCenter
+        /// </summary>
+        Helpers.IMessagingCenter MessagingCenter { get; }
 
         /// <summary>
         /// Navigates to a <see cref="Page"/>
