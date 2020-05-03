@@ -27,5 +27,7 @@
   <ItemGroup>
     <Folder Include="ViewModels\" />
     <Folder Include="Views\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Helpers\SafeExecution\" />
   </ItemGroup>
 </Project>

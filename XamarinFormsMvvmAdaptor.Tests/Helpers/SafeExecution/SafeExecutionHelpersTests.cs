@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 namespace XamarinFormsMvvmAdaptor.Tests
 {
     [Collection("SafeTests")]
-    public class SafeFireAndForgetTests
+    public class SafeExecutionHelpersTests
     {
         protected const int Delay = 50;
         //protected WeakEventManager TestWeakEventManager { get; } = new WeakEventManager();
         //protected WeakEventManager<string> TestStringWeakEventManager { get; } = new WeakEventManager<string>();
+
+        class SpecificException : Exception { };
 
         protected Task NoParameterTask() => Task.Delay(Delay);
         protected Task IntParameterTask(int delay) => Task.Delay(delay);
@@ -41,18 +43,54 @@ namespace XamarinFormsMvvmAdaptor.Tests
         #region Setup/TearDown
         public void BeforeEachTest()
         {
-            SafeFireAndForgetExtensions.Initialize(false);
-            SafeFireAndForgetExtensions.RemoveDefaultExceptionHandling();
+            SafeExecutionHelpers.Initialize(false);
+            SafeExecutionHelpers.RemoveDefaultExceptionHandler();
         }
 
         public void AfterEachTest()
         {
-            SafeFireAndForgetExtensions.Initialize(false);
-            SafeFireAndForgetExtensions.RemoveDefaultExceptionHandling();
+            SafeExecutionHelpers.Initialize(false);
+            SafeExecutionHelpers.RemoveDefaultExceptionHandler();
         }
         #endregion
 
         #region Tests
+        [Fact]
+        public void SafeAction_Runs()
+        {
+            BeforeEachTest();
+            Action EmptyAction = ()=>{ };
+            EmptyAction.SafeInvoke((Exception ex) => { });
+            AfterEachTest();
+        }
+
+        [Fact]
+        public void SafeActionTExceptionSpecificException_ThrowsDifferentException_NotHandled()
+        {
+            bool wasHandled = false;
+            BeforeEachTest();
+            Action ActionThatThrowsException = () => { throw new Exception(); };
+            void OnVanillaException(Exception ex) { wasHandled = true; }
+
+            Assert.Throws<Exception>(()=>ActionThatThrowsException.SafeInvoke<SpecificException>(OnVanillaException));
+            Assert.False(wasHandled);
+            AfterEachTest();
+        }
+
+        [Fact]
+        public void SafeAction_Throws_ExceptionHandled()
+        {
+            
+            bool wasHandled = false;
+            BeforeEachTest();
+            Action ActionThatThrowsException = () => { throw new Exception(); };
+            void OnVanillaException(Exception ex) { wasHandled = true; }
+            ActionThatThrowsException.SafeInvoke(OnVanillaException);
+            Assert.True(wasHandled);
+            AfterEachTest();
+        }
+
+
         [Fact]
         public async Task SafeFireAndForget_HandledException()
         {
@@ -79,7 +117,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             //Arrange
             Exception? exception = null;
-            SafeFireAndForgetExtensions.SetDefaultExceptionHandling(ex => exception = ex);
+            SafeExecutionHelpers.SetDefaultExceptionHandler(ex => exception = ex);
 
             //Act
             NoParameterDelayedNullReferenceExceptionTask().SafeFireAndForget();
@@ -100,7 +138,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             //Arrange
             Exception? exception1 = null;
             Exception? exception2 = null;
-            SafeFireAndForgetExtensions.SetDefaultExceptionHandling(ex => exception1 = ex);
+            SafeExecutionHelpers.SetDefaultExceptionHandler(ex => exception1 = ex);
 
             //Act
             NoParameterDelayedNullReferenceExceptionTask().SafeFireAndForget(onException: ex => exception2 = ex);
@@ -142,7 +180,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             //Arrange
             Exception? exception = null;
-            SafeFireAndForgetExtensions.SetDefaultExceptionHandling(ex => exception = ex);
+            SafeExecutionHelpers.SetDefaultExceptionHandler(ex => exception = ex);
 
             //Act
             NoParameterDelayedNullReferenceExceptionTask().SafeFireAndForget();
@@ -163,7 +201,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             //Arrange
             Exception? exception1 = null;
             NullReferenceException? exception2 = null;
-            SafeFireAndForgetExtensions.SetDefaultExceptionHandling(ex => exception1 = ex);
+            SafeExecutionHelpers.SetDefaultExceptionHandler(ex => exception1 = ex);
 
             //Act
             NoParameterDelayedNullReferenceExceptionTask().SafeFireAndForget<NullReferenceException>(onException: ex => exception2 = ex);

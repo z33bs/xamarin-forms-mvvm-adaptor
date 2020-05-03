@@ -19,6 +19,7 @@
         <Title>Xamarin Forms Mvvm Adaptor</Title>
         <Description>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Description>
         <PackageId>XamarinFormsMvvmAdaptor</PackageId>
+        <ReleaseVersion></ReleaseVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>
@@ -35,15 +36,12 @@
         <None Include="Art\icon.png" Pack="true" PackagePath="" />
         <!--AUTO-->
         <PackageReference Include="Xamarin.Forms" Version="4.5.0.356" />
-        <None Include="Helpers\SafeFireAndForgetExtensions.ValueTask.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Helpers\" />
       <Folder Include="Exceptions\" />
       <Folder Include="IoC\Attributes\" />
       <Folder Include="FluentApi\" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Remove="Helpers\SafeFireAndForgetExtensions.ValueTask.cs" />
+      <Folder Include="Helpers\SafeExecution\" />
     </ItemGroup>
 </Project>

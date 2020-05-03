@@ -5,6 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+// Built on the foundation of Brandon Minnick's
+// AsyncAwaitBestPractices
+// https://github.com/brminnick/AsyncAwaitBestPractices, 
+// which in turn was inspired by John Thiriet's blog post,
+// https://johnthiriet.com/mvvm-going-async-with-async-command
+
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <summary>
@@ -460,7 +466,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                                     CancellationToken.None,
                                     TaskCreationOptions.DenyChildAttach,
                                     _scheduler)
-                    .SafeTask(_onException, _scheduler) //Handles exception if faulted
+                    .SafeContinueWith(_onException, _scheduler) //Handles exception if faulted
                     .ContinueWith(t => IsBusy = false,
                                     CancellationToken.None,
                                     TaskContinuationOptions.None,
@@ -469,12 +475,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             if (_mustRunOnCurrentSyncContext)
                 return
                     _executeAsync(parameter)
-                    .SafeTask(_onException)
+                    .SafeContinueWith(_onException)
                     .ContinueWith(t => IsBusy = false);
 
             return //run on TaskPool
                 Task.Run(() => _executeAsync(parameter).GetAwaiter().GetResult())
-                               .SafeTask(_onException)
+                               .SafeContinueWith(_onException)
                                .ContinueWith(t => IsBusy = false);
         }
 
