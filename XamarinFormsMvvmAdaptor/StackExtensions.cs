@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -9,26 +10,26 @@ namespace XamarinFormsMvvmAdaptor
     /// </summary>
     public static class StackExtensions
 	{
+        private static readonly IStack defaultImplementation = new Stack();
+
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public static IStack Implementation { private get; set; } = defaultImplementation;
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public static void RevertToDefaultImplementation() => Implementation = defaultImplementation;
+
         /// <summary>
         /// Removes all Pages behind the Top Page of the <see cref="INavigationService.NavigationStack"/>
         /// </summary>
         /// <param name="stack"></param>
         /// <returns></returns>
-        public static async Task Collapse(this IReadOnlyList<Page> stack)
-        {
-            if (stack.Count > 1)
-            {
-                while (stack.Count > 1
-                    && stack[stack.Count - 2] != null) //In shell, stack[0] is null
-                {
-                    var viewModel = stack.GetPreviousViewModel();
-                    Shell.Current.Navigation.RemovePage(stack.GetPreviousPage());
-
-                    if(viewModel is IOnViewRemoved removedViewModel)
-                        await removedViewModel.OnViewRemovedAsync();
-                }
-            }
-        }
+        public static Task Collapse(this IReadOnlyList<Page> stack)
+            => Implementation.Collapse(stack);
 
         /// <summary>
         /// Returns the top-most page of the stack.
@@ -36,18 +37,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="stack"></param>
         /// <returns></returns>
         public static Page GetCurrentPage(this IReadOnlyList<Page> stack)
-        {
-            return InternalGetCurrentPage(stack);
-        }
-
-        private static Page InternalGetCurrentPage(IReadOnlyList<Page> stack)
-        {
-            var page = stack[stack.Count - 1];
-            if (page is NavigationPage)
-                return (page as NavigationPage).RootPage;
-
-            return page;
-        }
+            => Implementation.GetCurrentPage(stack);
 
         /// <summary>
         /// Returns the page beneath the top-most page of the stack
@@ -55,24 +45,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="stack"></param>
         /// <returns></returns>
         public static Page GetPreviousPage(this IReadOnlyList<Page> stack)
-        {
-            return InternalGetPreviousPage(stack);
-        }
-
-        private static Page InternalGetPreviousPage(IReadOnlyList<Page> stack)
-        {
-            if (stack.Count > 1
-                && stack[stack.Count-2] != null) //In shell, stack[0] is null
-            {
-                var page = stack[stack.Count - 2];
-                if (page is NavigationPage)
-                    return (page as NavigationPage).RootPage;
-
-                return page;
-            }
-
-            return null;
-        }
+            => Implementation.GetPreviousPage(stack);
 
         /// <summary>
         /// Returns the ViewModel bound with the top-most page of the stack.
@@ -80,9 +53,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="stack"></param>
         /// <returns></returns>
         public static object GetCurrentViewModel(this IReadOnlyList<Page> stack)
-        {
-            return InternalGetCurrentPage(stack).BindingContext;
-        }
+            => Implementation.GetCurrentViewModel(stack);
 
         /// <summary>
         /// Returns the ViewModel bound with the page beneath the top-most page of the stack
@@ -90,14 +61,6 @@ namespace XamarinFormsMvvmAdaptor
         /// <param name="stack"></param>
         /// <returns></returns>
         public static object GetPreviousViewModel(this IReadOnlyList<Page> stack)
-        {
-            if (stack.Count > 1)
-            {
-                return InternalGetPreviousPage(stack)?.BindingContext;
-            }
-
-            return null;
-        }
-
+            => Implementation.GetPreviousViewModel(stack);
     }
 }
