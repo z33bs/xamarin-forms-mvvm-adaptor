@@ -76,10 +76,16 @@ namespace XamarinFormsMvvmAdaptor
                 }
             });
 
-            if (await isPushed.Task.ConfigureAwait(false)
-                && (Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?
-                .PresentedPage.BindingContext is IOnViewNavigated viewModel)
-                await viewModel.OnViewNavigatedAsync(navigationData).ConfigureAwait(false);
+            if (await isPushed.Task.ConfigureAwait(false))
+            {
+                var presentedViewModel = (Shell.Current?.CurrentItem?.CurrentItem as IShellSectionController)?
+                .PresentedPage.BindingContext;
+                if (presentedViewModel is IOnViewNavigated viewModel)
+                    await viewModel.OnViewNavigatedAsync(navigationData).ConfigureAwait(false);
+                else
+                    throw new ArgumentException($"You are trying to pass {nameof(navigationData)}" +
+                        $" to a ViewModel that doesn't implement {nameof(IOnViewNavigated)}");
+            }
         }
 
         ///<inheritdoc/>
