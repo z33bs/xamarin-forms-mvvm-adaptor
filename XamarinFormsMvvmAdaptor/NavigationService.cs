@@ -108,7 +108,7 @@ namespace XamarinFormsMvvmAdaptor
             bool animated = true)
             where TViewModel : class
         {
-            var page = await InternalPushAsync<TViewModel>(animated);
+            var page = await InternalPushAsync<TViewModel>(null, animated);
             return page.BindingContext as TViewModel; //can be null if no viewModel resolved
         }
 
@@ -127,12 +127,14 @@ namespace XamarinFormsMvvmAdaptor
             bool animated = true)
             where TViewModel : class
         {
-            var page = await InternalPushAsync<TViewModel>(animated, isModal: true);
+            var page = await InternalPushAsync<TViewModel>(null, animated, isModal: true);
             return page.BindingContext as TViewModel;
         }
 
         private async Task<Page> InternalPushAsync<TViewModel>(
-            bool animated = true, bool isModal = false)
+            object navigationData,
+            bool animated = true,
+            bool isModal = false)
             where TViewModel : class
         {
             var page = Activator.CreateInstance(
@@ -158,18 +160,6 @@ namespace XamarinFormsMvvmAdaptor
 
 
             if (await isPushed.Task.ConfigureAwait(false) && page.BindingContext is IOnViewNavigated viewModel)
-                await viewModel.OnViewNavigatedAsync(null).ConfigureAwait(false);
-
-            return page;
-        }
-
-        private async Task<Page> InternalPushAsync<TViewModel>(
-            object navigationData, bool animated = true, bool isModal = false)
-            where TViewModel : class, IOnViewNavigated
-        {
-            var page = await InternalPushAsync<TViewModel>(animated, isModal);
-
-            if (page.BindingContext is IOnViewNavigated viewModel)
                 await viewModel.OnViewNavigatedAsync(navigationData).ConfigureAwait(false);
 
             return page;
