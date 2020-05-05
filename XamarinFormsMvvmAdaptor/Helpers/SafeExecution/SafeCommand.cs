@@ -45,8 +45,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public SafeCommand(
             Func<T, Task> executeFunction,
             IViewModelBase viewModel = null,
-            Func<T, bool>? canExecute = null,
             Action<Exception>? onException = null,
+            Func<T, bool>? canExecute = null,
             bool mustRunOnCurrentSyncContext = false)
             : base(
                   internalExecuteFunction: o =>
@@ -57,6 +57,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                       return executeFunction((T)o);
                   },
                   viewModel,
+                  onException,
                   o =>
                   {
                       if (canExecute is null)
@@ -64,7 +65,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
                       return IsValidParameter(o) && canExecute((T)o);
                   },
-                  onException,
                   mustRunOnCurrentSyncContext)
         {
             if (executeFunction is null)
@@ -110,8 +110,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public SafeCommand(
             Action<T> executeAction,
             IViewModelBase viewModel = null,
-            Func<T, bool>? canExecute = null,
             Action<Exception>? onException = null,
+            Func<T, bool>? canExecute = null,
             bool mustRunOnCurrentSyncContext = false)
             : base(
                   internalExecuteAction: o =>
@@ -122,6 +122,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                       executeAction((T)o);
                   },
                   viewModel,
+                  onException,
                   o =>
                   {
                       if (canExecute is null)
@@ -129,7 +130,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
                       return IsValidParameter(o) && canExecute((T)o);
                   },
-                  onException,
                   mustRunOnCurrentSyncContext)
         {
             if (executeAction is null)
@@ -162,8 +162,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             Func<T, Task> executeFunction,
             TaskScheduler scheduler,
             IViewModelBase viewModel = null,
-            Func<T, bool>? canExecute = null,
-            Action<Exception>? onException = null
+            Action<Exception>? onException = null,
+            Func<T, bool>? canExecute = null
             //bool mustRunOnCurrentSyncContext is moot
             )
             : base(
@@ -176,14 +176,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                   },
                   scheduler,
                   viewModel,
+                  onException,
                   o =>
                   {
                       if (canExecute is null)
                           return true;
 
                       return IsValidParameter(o) && canExecute((T)o);
-                  },
-                  onException)
+                  })
         {
             if (executeFunction is null)
                 throw new ArgumentNullException(nameof(executeFunction)
@@ -248,15 +248,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// In Xamarin.Forms this will be the Main (UI) thread.</param>
         public SafeCommand(Func<Task> executeFunction,
             IViewModelBase viewModel = null,
-            Func<bool>? canExecute = null,
             Action<Exception>? onException = null,
+            Func<bool>? canExecute = null,
             bool mustRunOnCurrentSyncContext = false)
             : this(
                   internalExecuteFunction:
                     o => executeFunction(),
                   viewModel,
-                  o => canExecute?.Invoke() ?? true,
                   onException,
+                  o => canExecute?.Invoke() ?? true,
                   mustRunOnCurrentSyncContext)
         {
             if (executeFunction is null)
@@ -302,13 +302,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public SafeCommand(
             Action executeAction,
             IViewModelBase viewModel = null,
-            Func<bool>? canExecute = null,
             Action<Exception>? onException = null,
+            Func<bool>? canExecute = null,
             bool mustRunOnCurrentSyncContext = false)
             : this(
                   internalExecuteAction:
                     o => executeAction(),
                   viewModel,
+                  onException,
                   o =>
                   {
                       if (canExecute is null)
@@ -316,7 +317,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                       else
                           return canExecute();
                   },
-                  onException,
                   mustRunOnCurrentSyncContext)
         {
             if (executeAction == null)
@@ -348,11 +348,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             Func<object?, Task> executeFunction,
             TaskScheduler scheduler,
             IViewModelBase viewModel = null,
-            Func<object?, bool>? canExecute = null,
-            Action<Exception>? onException = null
+            Action<Exception>? onException = null,
+            Func<object?, bool>? canExecute = null
             //mustRunOnCurrentSyncContext is moot
             )
-            : this(internalExecuteFunction: executeFunction, viewModel, canExecute, onException)
+            : this(internalExecuteFunction: executeFunction, viewModel, onException, canExecute)
         {
             _scheduler = scheduler
                 ?? throw new ArgumentNullException(nameof(scheduler)
@@ -364,10 +364,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         protected SafeCommand(
             Func<object, Task> internalExecuteFunction,
             IViewModelBase viewModel = null,
-            Func<object?, bool>? canExecute = null,
             Action<Exception>? onException = null,
+            Func<object?, bool>? canExecute = null,
             bool mustRunOnCurrentSyncContext = false)
-            : this(viewModel, baseCanExecute: canExecute, onException, mustRunOnCurrentSyncContext)
+            : this(viewModel, onException, baseCanExecute: canExecute, mustRunOnCurrentSyncContext)
         {
             _executeAsync = internalExecuteFunction
                 ?? throw new ArgumentNullException(nameof(internalExecuteFunction)
@@ -377,10 +377,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         protected SafeCommand(
             Action<object> internalExecuteAction,
             IViewModelBase viewModel = null,
-            Func<object?, bool>? canExecute = null,
             Action<Exception>? onException = null,
+            Func<object?, bool>? canExecute = null,
             bool mustRunOnCurrentSyncContext = false)
-            : this(viewModel, baseCanExecute: canExecute, onException, mustRunOnCurrentSyncContext)
+            : this(viewModel, onException ,baseCanExecute: canExecute, mustRunOnCurrentSyncContext)
         {
             _execute = internalExecuteAction
                 ?? throw new ArgumentNullException(nameof(internalExecuteAction)
@@ -389,8 +389,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         private SafeCommand(
             IViewModelBase viewModel = null,
-            Func<object?, bool>? baseCanExecute = null,
             Action<Exception>? onException = null,
+            Func<object?, bool>? baseCanExecute = null,
             bool mustRunOnCurrentSyncContext = false)
         {
             _viewModel = viewModel;
