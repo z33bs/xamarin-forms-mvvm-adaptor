@@ -24,7 +24,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                         }
                         , CancellationToken.None
                         , TaskContinuationOptions.OnlyOnFaulted
-                        , scheduler ?? TaskScheduler.FromCurrentSynchronizationContext()); //todo check doesn't fail .Current might be more robust
+                        , scheduler ?? TaskScheduler.Default); //todo check doesn't fail .Current might be more robust
 
             return task;
         }
