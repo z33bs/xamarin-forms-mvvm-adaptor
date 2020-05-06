@@ -5,243 +5,347 @@ using System.Reflection;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-	public class MessagingCenter : IMessagingCenter
-	{
-		public static IMessagingCenter Instance { get; } = new MessagingCenter();
+    public class MessagingCenter : IMessagingCenter
+    {
+        public static IMessagingCenter Instance { get; } = new MessagingCenter();
 
-		class Sender : Tuple<string, Type, Type>
-		{
-			public Sender(string message, Type senderType, Type argType) : base(message, senderType, argType)
-			{
-			}
-		}
+        class Sender : Tuple<string, Type, Type>
+        {
+            public Sender(string message, Type senderType, Type argType) : base(message, senderType, argType)
+            {
+            }
+        }
 
-		delegate bool Filter(object sender);
+        delegate bool Filter(object sender);
 
-		class MaybeWeakReference
-		{
-			WeakReference DelegateWeakReference { get; }
-			object DelegateStrongReference { get; }
+        class MaybeWeakReference
+        {
+            WeakReference DelegateWeakReference { get; }
+            object DelegateStrongReference { get; }
 
-			readonly bool _isStrongReference;
+            readonly bool _isStrongReference;
 
-			public MaybeWeakReference(object subscriber, object delegateSource)
-			{
-				if (subscriber.Equals(delegateSource))
-				{
-					// The target is the subscriber; we can use a weakreference
-					DelegateWeakReference = new WeakReference(delegateSource);
-					_isStrongReference = false;
-				}
-				else
-				{
-					DelegateStrongReference = delegateSource;
-					_isStrongReference = true;
-				}
-			}
+            public MaybeWeakReference(object subscriber, object delegateSource)
+            {
+                if (subscriber.Equals(delegateSource))
+                {
+                    // The target is the subscriber; we can use a weakreference
+                    DelegateWeakReference = new WeakReference(delegateSource);
+                    _isStrongReference = false;
+                }
+                else
+                {
+                    DelegateStrongReference = delegateSource;
+                    _isStrongReference = true;
+                }
+            }
 
-			public object Target => _isStrongReference ? DelegateStrongReference : DelegateWeakReference.Target;
-			public bool IsAlive => _isStrongReference || DelegateWeakReference.IsAlive;
-		}
+            public object Target => _isStrongReference ? DelegateStrongReference : DelegateWeakReference.Target;
+            public bool IsAlive => _isStrongReference || DelegateWeakReference.IsAlive;
+        }
 
-		class Subscription : Tuple<WeakReference, MaybeWeakReference, MethodInfo, Filter>
-		{
-			public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter)
-				: base(new WeakReference(subscriber), new MaybeWeakReference(subscriber, delegateSource), methodInfo, filter)
-			{
-			}
+        class Subscription : Tuple<WeakReference, MaybeWeakReference, MethodInfo, Filter>
+        {
+            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter)
+                : base(new WeakReference(subscriber), new MaybeWeakReference(subscriber, delegateSource), methodInfo, filter)
+            {
+            }
 
-			public WeakReference Subscriber => Item1;
-			MaybeWeakReference DelegateSource => Item2;
-			MethodInfo MethodInfo => Item3;
-			Filter Filter => Item4;
+            public WeakReference Subscriber => Item1;
+            MaybeWeakReference DelegateSource => Item2;
+            MethodInfo MethodInfo => Item3;
+            Filter Filter => Item4;
 
-			public void InvokeCallback(object sender, object args)
-			{
-				if (!Filter(sender))
-				{
-					return;
-				}
+            public void InvokeCallback(object sender, object args)
+            {
+                if (!Filter(sender))
+                {
+                    return;
+                }
 
-				if (MethodInfo.IsStatic)
-				{
-					MethodInfo.Invoke(null, MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args });
-					return;
-				}
+                if (MethodInfo.IsStatic)
+                {
+                    MethodInfo.Invoke(null, MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args });
+                    return;
+                }
 
-				var target = DelegateSource.Target;
+                var target = DelegateSource.Target;
 
-				if (target == null)
-				{
-					return; // Collected 
-				}
+                if (target == null)
+                {
+                    return; // Collected 
+                }
 
-				MethodInfo.Invoke(target, MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args });
-			}
+                #region Custom Overloads - without Sender
+                //was
+                //var parameters = MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args };
+                var parameters = MethodInfo.GetParameters().Any()
+                    ? (MethodInfo.GetParameters().Length == 1
+                        ? new[] { sender }
+                        : new[] { sender, args })
+                    : new object[] { };
+                #endregion
 
-			public bool CanBeRemoved()
-			{
-				return !Subscriber.IsAlive || !DelegateSource.IsAlive;
-			}
-		}
+                MethodInfo.Invoke(target, parameters);
+            }
 
-		readonly Dictionary<Sender, List<Subscription>> _subscriptions =
-			new Dictionary<Sender, List<Subscription>>();
+            public bool CanBeRemoved()
+            {
+                return !Subscriber.IsAlive || !DelegateSource.IsAlive;
+            }
+        }
 
-		public static void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
-		{
-			Instance.Send(sender, message, args);
-		}
+        readonly Dictionary<Sender, List<Subscription>> _subscriptions =
+            new Dictionary<Sender, List<Subscription>>();
 
-		void IMessagingCenter.Send<TSender, TArgs>(TSender sender, string message, TArgs args)
-		{
-			if (sender == null)
-				throw new ArgumentNullException(nameof(sender));
-			InnerSend(message, typeof(TSender), typeof(TArgs), sender, args);
-		}
+        public static void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
+        {
+            Instance.Send(sender, message, args);
+        }
 
-		public static void Send<TSender>(TSender sender, string message) where TSender : class
-		{
-			Instance.Send(sender, message);
-		}
+        void IMessagingCenter.Send<TSender, TArgs>(TSender sender, string message, TArgs args)
+        {
+            if (sender == null)
+                throw new ArgumentNullException(nameof(sender));
+            InnerSend(message, typeof(TSender), typeof(TArgs), sender, args);
+        }
 
-		void IMessagingCenter.Send<TSender>(TSender sender, string message)
-		{
-			if (sender == null)
-				throw new ArgumentNullException(nameof(sender));
-			InnerSend(message, typeof(TSender), null, sender, null);
-		}
+        public static void Send<TSender>(TSender sender, string message) where TSender : class
+        {
+            Instance.Send(sender, message);
+        }
 
-		public static void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source = null) where TSender : class
-		{
-			Instance.Subscribe(subscriber, message, callback, source);
-		}
+        void IMessagingCenter.Send<TSender>(TSender sender, string message)
+        {
+            if (sender == null)
+                throw new ArgumentNullException(nameof(sender));
+            InnerSend(message, typeof(TSender), null, sender, null);
+        }
 
-		void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source)
-		{
-			if (subscriber == null)
-				throw new ArgumentNullException(nameof(subscriber));
-			if (callback == null)
-				throw new ArgumentNullException(nameof(callback));
+        public static void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source = null) where TSender : class
+        {
+            Instance.Subscribe(subscriber, message, callback, source);
+        }
 
-			var target = callback.Target;
+        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
 
-			Filter filter = sender =>
-			{
-				var send = (TSender)sender;
-				return (source == null || send == source);
-			};
+            var target = callback.Target;
 
-			InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, callback.GetMethodInfo(), filter);
-		}
+            Filter filter = sender =>
+            {
+                var send = (TSender)sender;
+                return (source == null || send == source);
+            };
 
-		public static void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source = null) where TSender : class
-		{
-			Instance.Subscribe(subscriber, message, callback, source);
-		}
+            InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, callback.GetMethodInfo(), filter);
+        }
 
-		void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source)
-		{
-			if (subscriber == null)
-				throw new ArgumentNullException(nameof(subscriber));
-			if (callback == null)
-				throw new ArgumentNullException(nameof(callback));
+        public static void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source = null) where TSender : class
+        {
+            Instance.Subscribe(subscriber, message, callback, source);
+        }
 
-			var target = callback.Target;
+        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
 
-			Filter filter = sender =>
-			{
-				var send = (TSender)sender;
-				return (source == null || send == source);
-			};
+            var target = callback.Target;
 
-			InnerSubscribe(subscriber, message, typeof(TSender), null, target, callback.GetMethodInfo(), filter);
-		}
+            Filter filter = sender =>
+            {
+                var send = (TSender)sender;
+                return (source == null || send == source);
+            };
 
-		public static void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
-		{
-			Instance.Unsubscribe<TSender, TArgs>(subscriber, message);
-		}
+            InnerSubscribe(subscriber, message, typeof(TSender), null, target, callback.GetMethodInfo(), filter);
+        }
 
-		void IMessagingCenter.Unsubscribe<TSender, TArgs>(object subscriber, string message)
-		{
-			InnerUnsubscribe(message, typeof(TSender), typeof(TArgs), subscriber);
-		}
+        public static void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
+        {
+            Instance.Unsubscribe<TSender, TArgs>(subscriber, message);
+        }
 
-		public static void Unsubscribe<TSender>(object subscriber, string message) where TSender : class
-		{
-			Instance.Unsubscribe<TSender>(subscriber, message);
-		}
+        void IMessagingCenter.Unsubscribe<TSender, TArgs>(object subscriber, string message)
+        {
+            InnerUnsubscribe(message, typeof(TSender), typeof(TArgs), subscriber);
+        }
 
-		void IMessagingCenter.Unsubscribe<TSender>(object subscriber, string message)
-		{
-			InnerUnsubscribe(message, typeof(TSender), null, subscriber);
-		}
+        public static void Unsubscribe<TSender>(object subscriber, string message) where TSender : class
+        {
+            Instance.Unsubscribe<TSender>(subscriber, message);
+        }
 
-		void InnerSend(string message, Type senderType, Type argType, object sender, object args)
-		{
-			if (message == null)
-				throw new ArgumentNullException(nameof(message));
-			var key = new Sender(message, senderType, argType);
-			if (!_subscriptions.ContainsKey(key))
-				return;
-			List<Subscription> subcriptions = _subscriptions[key];
-			if (subcriptions == null || !subcriptions.Any())
-				return; // should not be reachable
+        void IMessagingCenter.Unsubscribe<TSender>(object subscriber, string message)
+        {
+            InnerUnsubscribe(message, typeof(TSender), null, subscriber);
+        }
 
-			// ok so this code looks a bit funky but here is the gist of the problem. It is possible that in the course
-			// of executing the callbacks for this message someone will subscribe/unsubscribe from the same message in
-			// the callback. This would invalidate the enumerator. To work around this we make a copy. However if you unsubscribe 
-			// from a message you can fairly reasonably expect that you will therefor not receive a call. To fix this we then
-			// check that the item we are about to send the message to actually exists in the live list.
-			List<Subscription> subscriptionsCopy = subcriptions.ToList();
-			foreach (Subscription subscription in subscriptionsCopy)
-			{
-				if (subscription.Subscriber.Target != null && subcriptions.Contains(subscription))
-				{
-					subscription.InvokeCallback(sender, args);
-				}
-			}
-		}
+        void InnerSend(string message, Type senderType, Type argType, object sender, object args)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
 
-		void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter)
-		{
-			if (message == null)
-				throw new ArgumentNullException(nameof(message));
-			var key = new Sender(message, senderType, argType);
-			var value = new Subscription(subscriber, target, methodInfo, filter);
-			if (_subscriptions.ContainsKey(key))
-			{
-				_subscriptions[key].Add(value);
-			}
-			else
-			{
-				var list = new List<Subscription> { value };
-				_subscriptions[key] = list;
-			}
-		}
+            //NB to not make a new list, but keep handle
+            // on _subscriptions so if unregister while
+            // in callback, will be picked up
+            List<Subscription> subcriptions;            
 
-		void InnerUnsubscribe(string message, Type senderType, Type argType, object subscriber)
-		{
-			if (subscriber == null)
-				throw new ArgumentNullException(nameof(subscriber));
-			if (message == null)
-				throw new ArgumentNullException(nameof(message));
+            var key = new Sender(message, senderType, argType);
+            if (_subscriptions.ContainsKey(key))
+            {
+                subcriptions = _subscriptions[key];
+                InvokeCallbacks(sender, args, subcriptions);
+            }
 
-			var key = new Sender(message, senderType, argType);
-			if (!_subscriptions.ContainsKey(key))
-				return;
-			_subscriptions[key].RemoveAll(sub => sub.CanBeRemoved() || sub.Subscriber.Target == subscriber);
-			if (!_subscriptions[key].Any())
-				_subscriptions.Remove(key);
-		}
+            //Process unfiltered version
+            key = new Sender(message, null, argType);
+            if (_subscriptions.ContainsKey(key))
+            {
+                subcriptions = _subscriptions[key];
+                InvokeCallbacks(sender, args, subcriptions);
+            }
+        }
 
-		// This is a bit gross; it only exists to support the unit tests in PageTests
-		// because the implementations of ActionSheet, Alert, and IsBusy are all very
-		// tightly coupled to the MessagingCenter singleton 
-		internal static void ClearSubscribers()
-		{
-			(Instance as MessagingCenter)?._subscriptions.Clear();
-		}
-	}
+        private static void InvokeCallbacks(object sender, object args, List<Subscription> subcriptions)
+        {
+            if (subcriptions == null || !subcriptions.Any())
+                return;
+
+            // ok so this code looks a bit funky but here is the gist of the problem. It is possible that in the course
+            // of executing the callbacks for this message someone will subscribe/unsubscribe from the same message in
+            // the callback. This would invalidate the enumerator. To work around this we make a copy. However if you unsubscribe 
+            // from a message you can fairly reasonably expect that you will therefor not receive a call. To fix this we then
+            // check that the item we are about to send the message to actually exists in the live list.
+            List<Subscription> subscriptionsCopy = subcriptions.ToList();
+            foreach (Subscription subscription in subscriptionsCopy)
+            {
+                if (subscription.Subscriber.Target != null && subcriptions.Contains(subscription))
+                {
+                    subscription.InvokeCallback(sender, args);
+                }
+            }
+        }
+
+        void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+            var key = new Sender(message, senderType, argType);
+            var value = new Subscription(subscriber, target, methodInfo, filter);
+            if (_subscriptions.ContainsKey(key))
+            {
+                _subscriptions[key].Add(value);
+            }
+            else
+            {
+                var list = new List<Subscription> { value };
+                _subscriptions[key] = list;
+            }
+        }
+
+        void InnerUnsubscribe(string message, Type senderType, Type argType, object subscriber)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
+            var key = new Sender(message, senderType, argType);
+            if (!_subscriptions.ContainsKey(key))
+                return;
+            _subscriptions[key].RemoveAll(sub => sub.CanBeRemoved() || sub.Subscriber.Target == subscriber);
+            if (!_subscriptions[key].Any())
+                _subscriptions.Remove(key);
+        }
+
+        // This is a bit gross; it only exists to support the unit tests in PageTests
+        // because the implementations of ActionSheet, Alert, and IsBusy are all very
+        // tightly coupled to the MessagingCenter singleton 
+        internal static void ClearSubscribers()
+        {
+            (Instance as MessagingCenter)?._subscriptions.Clear();
+        }
+
+        #region Custom Overloads - without Sender
+        public static void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback)
+            => Instance.UnfilteredSubscribe(subscriber, message, callback);        
+
+        void IMessagingCenter.UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            var target = callback.Target;
+
+            Filter filter = sender => true;
+
+            InnerSubscribe(subscriber, message, null, typeof(TArgs), target, callback.GetMethodInfo(), filter);
+        }
+
+        public static void UnfilteredSubscribe(object subscriber, string message, Action<object> callback)
+            => Instance.UnfilteredSubscribe(subscriber, message, callback);        
+
+        void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Action<object> callback)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            var target = callback.Target;
+
+            Filter filter = (sender) => true;
+
+            InnerSubscribe(subscriber, message, null, null, target, callback.GetMethodInfo(), filter);
+        }
+
+        //public static void AnonymousSend<TArgs>(string message, TArgs args)
+        //{
+        //    Instance.AnonymousSend(message, args);
+        //}
+
+        //void IMessagingCenter.AnonymousSend<TArgs>(string message, TArgs args)
+        //{
+        //    InnerSend(message, null, typeof(TArgs), null, args);
+        //}
+
+        //public static void AnonymousSend(string message)
+        //{
+        //    Instance.AnonymousSend(message);
+        //}
+
+        //void IMessagingCenter.AnonymousSend(string message)
+        //{
+        //    InnerSend(message, null, null, null, null);
+        //}
+
+        public static void UnfilteredUnsubscribe<TArgs>(object subscriber, string message)
+            => Instance.UnfilteredUnsubscribe<TArgs>(subscriber, message);        
+
+        void IMessagingCenter.UnfilteredUnsubscribe<TArgs>(object subscriber, string message)
+        {
+            InnerUnsubscribe(message, null, typeof(TArgs), subscriber);
+        }
+
+        public static void UnfilteredUnsubscribe(object subscriber, string message)
+            => Instance.UnfilteredUnsubscribe(subscriber, message);
+
+        void IMessagingCenter.UnfilteredUnsubscribe(object subscriber, string message)
+        {
+            InnerUnsubscribe(message, null, null, subscriber);
+        }
+
+
+        #endregion
+    }
 }

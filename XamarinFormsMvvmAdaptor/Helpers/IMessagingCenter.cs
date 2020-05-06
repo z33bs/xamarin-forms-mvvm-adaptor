@@ -38,5 +38,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		/// Unsubscribes a subscriber from the specified messages that come from the specified sender
 		/// </summary>
 		void Unsubscribe<TSender>(object subscriber, string message) where TSender : class;
+
+		#region Custom Overloads - without Sender
+		void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object,TArgs> callback);
+		void UnfilteredSubscribe(object subscriber, string message, Action<object> callback);
+		//void AnonymousSend<TArgs>(string message, TArgs args);
+		//void AnonymousSend(string message);
+		void UnfilteredUnsubscribe<TArgs>(object subscriber, string message);
+		void UnfilteredUnsubscribe(object subscriber, string message);
+		#endregion
 	}
 }

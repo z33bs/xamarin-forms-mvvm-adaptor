@@ -454,7 +454,27 @@ namespace XamarinFormsMvvmAdaptor.Tests
 				WasSubscribeCalled = true;
 			}
 
-			public void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
+            public void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback)
+            {
+				WasSubscribeCalled = true;
+			}
+
+            public void UnfilteredSubscribe(object subscriber, string message, Action<object> callback)
+            {
+				WasSubscribeCalled = true;
+			}
+
+            public void UnfilteredUnsubscribe<TArgs>(object subscriber, string message)
+            {
+                
+            }
+
+            public void UnfilteredUnsubscribe(object subscriber, string message)
+            {
+                
+            }
+
+            public void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
 			{
 
 			}
