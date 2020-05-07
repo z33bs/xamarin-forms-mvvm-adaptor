@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using XamarinFormsMvvmAdaptor.Helpers;
 using Xunit;
@@ -454,12 +455,32 @@ namespace XamarinFormsMvvmAdaptor.Tests
 				WasSubscribeCalled = true;
 			}
 
+            public void Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
+            {
+				WasSubscribeCalled = true;
+			}
+
+            public void Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
+            {
+				WasSubscribeCalled = true;
+			}
+
             public void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception>? onException)
             {
 				WasSubscribeCalled = true;
 			}
 
             public void UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException)
+            {
+				WasSubscribeCalled = true;
+			}
+
+            public void UnfilteredSubscribe<TArgs>(object subscriber, string message, Func<object, TArgs, Task> callback, Action<Exception> onException = null)
+            {
+				WasSubscribeCalled = true;
+			}
+
+            public void UnfilteredSubscribe(object subscriber, string message, Func<object, Task> callback, Action<Exception> onException = null)
             {
 				WasSubscribeCalled = true;
 			}

@@ -1,5 +1,7 @@
 ﻿//From Xamarin.Forms https://github.com/xamarin/Xamarin.Forms
 using System;
+using System.Threading.Tasks;
+
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
 	/// <summary>
@@ -46,6 +48,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		//void AnonymousSend(string message);
 		void UnfilteredUnsubscribe<TArgs>(object subscriber, string message);
 		void UnfilteredUnsubscribe(object subscriber, string message);
+		#endregion
+		#region Task overloads
+		void Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception>? onException, TSender source) where TSender : class;
+		void Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception>? onException, TSender source) where TSender : class;
+		void UnfilteredSubscribe<TArgs>(object subscriber, string message, Func<object, TArgs, Task> callback, Action<Exception>? onException = null);
+		void UnfilteredSubscribe(object subscriber, string message, Func<object, Task> callback, Action<Exception>? onException = null);
+
+
 		#endregion
 	}
 }

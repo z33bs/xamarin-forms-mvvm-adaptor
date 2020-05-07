@@ -289,7 +289,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             (Instance as MessagingCenter)?._subscriptions.Clear();
         }
 
-        #region Custom Overloads - without Sender
+        #region Unfiltered Overloads
         public static void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception>? onException = null)
             => Instance.UnfilteredSubscribe(subscriber, message, callback,onException);        
 
@@ -360,6 +360,88 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             InnerUnsubscribe(message, null, null, subscriber);
         }
 
+
+        #endregion
+        #region Func<Task> overloads
+        public static void Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs,Task> asyncCallback, Action<Exception>? onException = null, TSender source = null) where TSender : class
+        {
+            Instance.Subscribe(subscriber, message, asyncCallback, onException, source);
+        }
+
+        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs,Task> asyncCallback, Action<Exception>? onException, TSender source)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (asyncCallback == null)
+                throw new ArgumentNullException(nameof(asyncCallback));
+
+            var target = asyncCallback.Target;
+
+            Filter filter = sender =>
+            {
+                var send = (TSender)sender;
+                return (source == null || send == source);
+            };
+
+            InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, asyncCallback.GetMethodInfo(), filter, onException);
+        }
+
+        public static void Subscribe<TSender>(object subscriber, string message, Func<TSender,Task> asyncCallback, Action<Exception>? onException = null, TSender source = null) where TSender : class
+        {
+            Instance.Subscribe(subscriber, message, asyncCallback, onException, source);
+        }
+
+        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender,Task> asyncCallback, Action<Exception>? onException, TSender source)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (asyncCallback == null)
+                throw new ArgumentNullException(nameof(asyncCallback));
+
+            var target = asyncCallback.Target;
+
+            Filter filter = sender =>
+            {
+                var send = (TSender)sender;
+                return (source == null || send == source);
+            };
+
+            InnerSubscribe(subscriber, message, typeof(TSender), null, target, asyncCallback.GetMethodInfo(), filter, onException);
+        }
+
+        public static void UnfilteredSubscribe<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception>? onException = null)
+    => Instance.UnfilteredSubscribe(subscriber, message, asyncCallback, onException);
+
+        void IMessagingCenter.UnfilteredSubscribe<TArgs>(object subscriber, string message, Func<object, TArgs,Task> asyncCallback, Action<Exception>? onException)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (asyncCallback == null)
+                throw new ArgumentNullException(nameof(asyncCallback));
+
+            var target = asyncCallback.Target;
+
+            Filter filter = sender => true;
+
+            InnerSubscribe(subscriber, message, null, typeof(TArgs), target, asyncCallback.GetMethodInfo(), filter, onException);
+        }
+
+        public static void UnfilteredSubscribe(object subscriber, string message, Func<object,Task> asyncCallback, Action<Exception>? onException = null)
+            => Instance.UnfilteredSubscribe(subscriber, message, asyncCallback, onException);
+
+        void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Func<object,Task> asyncCallback, Action<Exception>? onException)
+        {
+            if (subscriber == null)
+                throw new ArgumentNullException(nameof(subscriber));
+            if (asyncCallback == null)
+                throw new ArgumentNullException(nameof(asyncCallback));
+
+            var target = asyncCallback.Target;
+
+            Filter filter = (sender) => true;
+
+            InnerSubscribe(subscriber, message, null, null, target, asyncCallback.GetMethodInfo(), filter, onException);
+        }
 
         #endregion
     }
