@@ -22,12 +22,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		/// <summary>
 		/// Run the callback on subscriber in response to parameterised messages that are named message and that are created by source.
 		/// </summary>
-		void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source = null) where TSender : class;
+		void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception>? onException = null, TSender source = null) where TSender : class;
 
 		/// <summary>
 		/// Run the callback on subscriber in response to messages that are named message and that are created by source.
 		/// </summary>
-		void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source = null) where TSender : class;
+		void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception>? onException = null, TSender source = null) where TSender : class;
 
 		/// <summary>
 		/// Unsubscribes from the specified parameterless subscriber messages
@@ -40,8 +40,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Unsubscribe<TSender>(object subscriber, string message) where TSender : class;
 
 		#region Custom Overloads - without Sender
-		void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object,TArgs> callback);
-		void UnfilteredSubscribe(object subscriber, string message, Action<object> callback);
+		void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object,TArgs> callback, Action<Exception>? onException = null);
+		void UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException = null);
 		//void AnonymousSend<TArgs>(string message, TArgs args);
 		//void AnonymousSend(string message);
 		void UnfilteredUnsubscribe<TArgs>(object subscriber, string message);

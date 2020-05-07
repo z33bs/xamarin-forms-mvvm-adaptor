@@ -49,7 +49,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void Filter()
 		{
 			string sentMessage = null;
-			MessagingCenter.Subscribe<MessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args, this);
+			MessagingCenter.Subscribe<MessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args,null,this);
 
 			MessagingCenter.Send(new MessagingCenterTests(), "SimpleTest", "My Message");
 
@@ -117,7 +117,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		public void NoArgFilter()
 		{
 			bool sentMessage = false;
-			MessagingCenter.Subscribe(this, "SimpleTest", (sender) => sentMessage = true, this);
+			MessagingCenter.Subscribe(this, "SimpleTest", (sender) => sentMessage = true,null, this);
 
 			MessagingCenter.Send(new MessagingCenterTests(), "SimpleTest");
 
@@ -444,22 +444,22 @@ namespace XamarinFormsMvvmAdaptor.Tests
 				WasSendCalled = true;
 			}
 
-			public void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source = default(TSender)) where TSender : class
+			public void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception>? onException, TSender source = default(TSender)) where TSender : class
 			{
 				WasSubscribeCalled = true;
 			}
 
-			public void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source = default(TSender)) where TSender : class
+			public void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception>? onException, TSender source = default(TSender)) where TSender : class
 			{
 				WasSubscribeCalled = true;
 			}
 
-            public void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback)
+            public void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception>? onException)
             {
 				WasSubscribeCalled = true;
 			}
 
-            public void UnfilteredSubscribe(object subscriber, string message, Action<object> callback)
+            public void UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException)
             {
 				WasSubscribeCalled = true;
 			}

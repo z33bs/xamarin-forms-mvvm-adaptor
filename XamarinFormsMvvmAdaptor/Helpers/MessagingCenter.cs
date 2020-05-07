@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
@@ -44,10 +45,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             public bool IsAlive => _isStrongReference || DelegateWeakReference.IsAlive;
         }
 
-        class Subscription : Tuple<WeakReference, MaybeWeakReference, MethodInfo, Filter>
+        class Subscription : Tuple<WeakReference, MaybeWeakReference, MethodInfo, Filter, Action<Exception>?>
         {
-            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter)
-                : base(new WeakReference(subscriber), new MaybeWeakReference(subscriber, delegateSource), methodInfo, filter)
+            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter, Action<Exception>? onException)
+                : base(new WeakReference(subscriber), new MaybeWeakReference(subscriber, delegateSource), methodInfo, filter, onException)
             {
             }
 
@@ -55,6 +56,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             MaybeWeakReference DelegateSource => Item2;
             MethodInfo MethodInfo => Item3;
             Filter Filter => Item4;
+            Action<Exception>? OnException => Item5;
+
 
             public void InvokeCallback(object sender, object args)
             {
@@ -63,11 +66,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                     return;
                 }
 
-                if (MethodInfo.IsStatic)
-                {
-                    MethodInfo.Invoke(null, MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args });
-                    return;
-                }
+                //if (MethodInfo.IsStatic)
+                //{
+                //    MethodInfo.Invoke(null, MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args });
+                //    return;
+                //}
 
                 var target = DelegateSource.Target;
 
@@ -76,17 +79,29 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                     return; // Collected 
                 }
 
-                #region Custom Overloads - without Sender
-                //was
-                //var parameters = MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args };
-                var parameters = MethodInfo.GetParameters().Any()
-                    ? (MethodInfo.GetParameters().Length == 1
-                        ? new[] { sender }
-                        : new[] { sender, args })
-                    : new object[] { };
-                #endregion
+                var parameters = MethodInfo.GetParameters().Length == 1 ? new[] { sender } : new[] { sender, args };
+                //var parameters = MethodInfo.GetParameters().Any()
+                //    ? (MethodInfo.GetParameters().Length == 1
+                //        ? new[] { sender }
+                //        : new[] { sender, args })
+                //    : new object[] { };
 
-                MethodInfo.Invoke(target, parameters);
+                if (MethodInfo.ReturnType != typeof(Task))
+                {
+                    try
+                    {
+                        MethodInfo.Invoke(MethodInfo.IsStatic ? null : target, parameters);
+                    }
+                    catch (Exception ex)
+                        when (SafeExecutionHelpers.DefaultExceptionHandler != null
+                              || OnException != null)
+                    {
+                        SafeExecutionHelpers.HandleException(ex, OnException);
+                    }
+                } else
+                {
+                    ((Task)MethodInfo.Invoke(MethodInfo.IsStatic ? null : target, parameters)).SafeContinueWith(OnException);
+                }
             }
 
             public bool CanBeRemoved()
@@ -122,12 +137,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             InnerSend(message, typeof(TSender), null, sender, null);
         }
 
-        public static void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source = null) where TSender : class
+        public static void Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception>? onException = null, TSender source = null) where TSender : class
         {
-            Instance.Subscribe(subscriber, message, callback, source);
+            Instance.Subscribe(subscriber, message, callback,onException, source);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, TSender source)
+        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception>? onException, TSender source)
         {
             if (subscriber == null)
                 throw new ArgumentNullException(nameof(subscriber));
@@ -142,15 +157,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 return (source == null || send == source);
             };
 
-            InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, callback.GetMethodInfo(), filter);
+            InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, callback.GetMethodInfo(), filter, onException);
         }
 
-        public static void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source = null) where TSender : class
+        public static void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception>? onException = null,TSender source = null) where TSender : class
         {
-            Instance.Subscribe(subscriber, message, callback, source);
+            Instance.Subscribe(subscriber, message, callback,onException, source);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, TSender source)
+        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception>? onException, TSender source)
         {
             if (subscriber == null)
                 throw new ArgumentNullException(nameof(subscriber));
@@ -165,7 +180,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 return (source == null || send == source);
             };
 
-            InnerSubscribe(subscriber, message, typeof(TSender), null, target, callback.GetMethodInfo(), filter);
+            InnerSubscribe(subscriber, message, typeof(TSender), null, target, callback.GetMethodInfo(), filter,onException);
         }
 
         public static void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
@@ -234,12 +249,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter)
+        void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter, Action<Exception>? onException)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
             var key = new Sender(message, senderType, argType);
-            var value = new Subscription(subscriber, target, methodInfo, filter);
+            var value = new Subscription(subscriber, target, methodInfo, filter,onException);
             if (_subscriptions.ContainsKey(key))
             {
                 _subscriptions[key].Add(value);
@@ -275,10 +290,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
 
         #region Custom Overloads - without Sender
-        public static void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback)
-            => Instance.UnfilteredSubscribe(subscriber, message, callback);        
+        public static void UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception>? onException = null)
+            => Instance.UnfilteredSubscribe(subscriber, message, callback,onException);        
 
-        void IMessagingCenter.UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback)
+        void IMessagingCenter.UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception>? onException)
         {
             if (subscriber == null)
                 throw new ArgumentNullException(nameof(subscriber));
@@ -289,13 +304,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
             Filter filter = sender => true;
 
-            InnerSubscribe(subscriber, message, null, typeof(TArgs), target, callback.GetMethodInfo(), filter);
+            InnerSubscribe(subscriber, message, null, typeof(TArgs), target, callback.GetMethodInfo(), filter,onException);
         }
 
-        public static void UnfilteredSubscribe(object subscriber, string message, Action<object> callback)
-            => Instance.UnfilteredSubscribe(subscriber, message, callback);        
+        public static void UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException = null)
+            => Instance.UnfilteredSubscribe(subscriber, message, callback,onException);        
 
-        void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Action<object> callback)
+        void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException)
         {
             if (subscriber == null)
                 throw new ArgumentNullException(nameof(subscriber));
@@ -306,7 +321,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
             Filter filter = (sender) => true;
 
-            InnerSubscribe(subscriber, message, null, null, target, callback.GetMethodInfo(), filter);
+            InnerSubscribe(subscriber, message, null, null, target, callback.GetMethodInfo(), filter, onException);
         }
 
         //public static void AnonymousSend<TArgs>(string message, TArgs args)
