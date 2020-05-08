@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
     /// <inheritdoc/>
-    public class MessagingCenter : IMessagingCenter
+    public class SafeMessagingCenter : ISafeMessagingCenter
     {
         /// <summary>
         /// Singleton Instance
         /// </summary>
-        public static IMessagingCenter Instance { get; } = new MessagingCenter();
+        public static ISafeMessagingCenter Instance { get; } = new SafeMessagingCenter();
 
         class Sender : Tuple<string, Type, Type>
         {
@@ -205,7 +205,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         public static void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
             => Instance.Send(sender, message, args);
-        void IMessagingCenter.Send<TSender, TArgs>(TSender sender, string message, TArgs args)
+        void ISafeMessagingCenter.Send<TSender, TArgs>(TSender sender, string message, TArgs args)
         {
             if (sender == null)
                 throw new ArgumentNullException(nameof(sender));
@@ -215,7 +215,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         public static void Send<TSender>(TSender sender, string message) where TSender : class
             => Instance.Send(sender, message);
-        void IMessagingCenter.Send<TSender>(TSender sender, string message)
+        void ISafeMessagingCenter.Send<TSender>(TSender sender, string message)
         {
             if (sender == null)
                 throw new ArgumentNullException(nameof(sender));
@@ -242,7 +242,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         public static void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
             => Instance.Unsubscribe<TSender, TArgs>(subscriber, message);
-        void IMessagingCenter.Unsubscribe<TSender, TArgs>(object subscriber, string message)
+        void ISafeMessagingCenter.Unsubscribe<TSender, TArgs>(object subscriber, string message)
         {
             InnerUnsubscribe(message, typeof(TSender), typeof(TArgs), subscriber);
         }
@@ -250,7 +250,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         public static void Unsubscribe<TSender>(object subscriber, string message) where TSender : class
             => Instance.Unsubscribe<TSender>(subscriber, message);
-        void IMessagingCenter.Unsubscribe<TSender>(object subscriber, string message)
+        void ISafeMessagingCenter.Unsubscribe<TSender>(object subscriber, string message)
         {
             InnerUnsubscribe(message, typeof(TSender), null, subscriber);
         }
@@ -258,7 +258,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         public static void UnsubscribeAny<TArgs>(object subscriber, string message)
             => Instance.UnsubscribeAny<TArgs>(subscriber, message);
-        void IMessagingCenter.UnsubscribeAny<TArgs>(object subscriber, string message)
+        void ISafeMessagingCenter.UnsubscribeAny<TArgs>(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, typeof(TArgs), subscriber);
         }
@@ -266,7 +266,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         public static void UnsubscribeAny(object subscriber, string message)
             => Instance.UnsubscribeAny(subscriber, message);
-        void IMessagingCenter.UnsubscribeAny(object subscriber, string message)
+        void ISafeMessagingCenter.UnsubscribeAny(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, null, subscriber);
         }
@@ -278,7 +278,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         // tightly coupled to the MessagingCenter singleton 
         internal static void ClearSubscribers()
         {
-            (Instance as MessagingCenter)?._subscriptions.Clear();
+            (Instance as SafeMessagingCenter)?._subscriptions.Clear();
         }
 
         #region Subscriptions
@@ -306,7 +306,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -317,7 +317,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -328,7 +328,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -339,7 +339,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -350,7 +350,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -361,7 +361,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -372,7 +372,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, bool isBlocking, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, bool isBlocking, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -383,7 +383,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, bool isBlocking, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, bool isBlocking, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -394,7 +394,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -405,7 +405,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -416,7 +416,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, IViewModelBase viewModel, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, IViewModelBase viewModel, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -427,7 +427,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, IViewModelBase viewModel, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, IViewModelBase viewModel, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, callback);
 
@@ -439,7 +439,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
         #endregion
         #region Functions
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -450,7 +450,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -461,7 +461,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -472,7 +472,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -483,7 +483,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -494,7 +494,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -505,7 +505,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -516,7 +516,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -527,7 +527,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -538,7 +538,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
+        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -549,7 +549,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 
@@ -560,7 +560,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
+        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
         {
             ThrowIfNull(subscriber, message, asyncCallback);
 

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Globalization;
-using System.Threading.Tasks;
-using Xamarin.Forms;
 using XamarinFormsMvvmAdaptor.Helpers;
 using Xunit;
-using IMessagingCenter = XamarinFormsMvvmAdaptor.Helpers.IMessagingCenter;
-using MessagingCenter = XamarinFormsMvvmAdaptor.Helpers.MessagingCenter;
+
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
 
-    public class MessagingCenterTests
+    public class SafeMessagingCenterTests
     {
         TestSubcriber _subscriber;
 
@@ -37,30 +34,30 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void SingleSubscriber()
         {
             string sentMessage = null;
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args);
 
-            MessagingCenter.Send(this, "SimpleTest", "My Message");
+            SafeMessagingCenter.Send(this, "SimpleTest", "My Message");
 
             Assert.Equal("My Message", sentMessage);
 
-            MessagingCenter.Unsubscribe<MessagingCenterTests, string>(this, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(this, "SimpleTest");
         }
 
         [Fact]
         public void Filter()
         {
             string sentMessage = null;
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args, null, this);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args, null, this);
 
-            MessagingCenter.Send(new MessagingCenterTests(), "SimpleTest", "My Message");
+            SafeMessagingCenter.Send(new SafeMessagingCenterTests(), "SimpleTest", "My Message");
 
             Assert.Null(sentMessage);
 
-            MessagingCenter.Send(this, "SimpleTest", "My Message");
+            SafeMessagingCenter.Send(this, "SimpleTest", "My Message");
 
             Assert.Equal("My Message", sentMessage);
 
-            MessagingCenter.Unsubscribe<MessagingCenterTests, string>(this, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(this, "SimpleTest");
         }
 
         [Fact]
@@ -70,26 +67,26 @@ namespace XamarinFormsMvvmAdaptor.Tests
             var sub2 = new object();
             string sentMessage1 = null;
             string sentMessage2 = null;
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(sub1, "SimpleTest", (sender, args) => sentMessage1 = args);
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(sub2, "SimpleTest", (sender, args) => sentMessage2 = args);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(sub1, "SimpleTest", (sender, args) => sentMessage1 = args);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(sub2, "SimpleTest", (sender, args) => sentMessage2 = args);
 
-            MessagingCenter.Send(this, "SimpleTest", "My Message");
+            SafeMessagingCenter.Send(this, "SimpleTest", "My Message");
 
             Assert.Equal("My Message", sentMessage1);
             Assert.Equal("My Message", sentMessage2);
 
-            MessagingCenter.Unsubscribe<MessagingCenterTests, string>(sub1, "SimpleTest");
-            MessagingCenter.Unsubscribe<MessagingCenterTests, string>(sub2, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(sub1, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(sub2, "SimpleTest");
         }
 
         [Fact]
         public void Unsubscribe()
         {
             string sentMessage = null;
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args);
-            MessagingCenter.Unsubscribe<MessagingCenterTests, string>(this, "SimpleTest");
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args);
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(this, "SimpleTest");
 
-            MessagingCenter.Send(this, "SimpleTest", "My Message");
+            SafeMessagingCenter.Send(this, "SimpleTest", "My Message");
 
             Assert.Null(sentMessage);
         }
@@ -97,7 +94,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public void SendWithoutSubscribers()
         {
-            var exception = Record.Exception(() => MessagingCenter.Send(this, "SimpleTest", "My Message"));
+            var exception = Record.Exception(() => SafeMessagingCenter.Send(this, "SimpleTest", "My Message"));
             Assert.Null(exception);
         }
 
@@ -105,30 +102,30 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void NoArgSingleSubscriber()
         {
             bool sentMessage = false;
-            MessagingCenter.Subscribe<MessagingCenterTests>(this, "SimpleTest", sender => sentMessage = true);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(this, "SimpleTest", sender => sentMessage = true);
 
-            MessagingCenter.Send(this, "SimpleTest");
+            SafeMessagingCenter.Send(this, "SimpleTest");
 
             Assert.True(sentMessage);
 
-            MessagingCenter.Unsubscribe<MessagingCenterTests>(this, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(this, "SimpleTest");
         }
 
         [Fact]
         public void NoArgFilter()
         {
             bool sentMessage = false;
-            MessagingCenter.Subscribe(this, "SimpleTest", (sender) => sentMessage = true, null, this);
+            SafeMessagingCenter.Subscribe(this, "SimpleTest", (sender) => sentMessage = true, null, this);
 
-            MessagingCenter.Send(new MessagingCenterTests(), "SimpleTest");
+            SafeMessagingCenter.Send(new SafeMessagingCenterTests(), "SimpleTest");
 
             Assert.False(sentMessage);
 
-            MessagingCenter.Send(this, "SimpleTest");
+            SafeMessagingCenter.Send(this, "SimpleTest");
 
             Assert.True(sentMessage);
 
-            MessagingCenter.Unsubscribe<MessagingCenterTests>(this, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(this, "SimpleTest");
         }
 
         [Fact]
@@ -138,26 +135,26 @@ namespace XamarinFormsMvvmAdaptor.Tests
             var sub2 = new object();
             bool sentMessage1 = false;
             bool sentMessage2 = false;
-            MessagingCenter.Subscribe<MessagingCenterTests>(sub1, "SimpleTest", (sender) => sentMessage1 = true);
-            MessagingCenter.Subscribe<MessagingCenterTests>(sub2, "SimpleTest", (sender) => sentMessage2 = true);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(sub1, "SimpleTest", (sender) => sentMessage1 = true);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(sub2, "SimpleTest", (sender) => sentMessage2 = true);
 
-            MessagingCenter.Send(this, "SimpleTest");
+            SafeMessagingCenter.Send(this, "SimpleTest");
 
             Assert.True(sentMessage1);
             Assert.True(sentMessage2);
 
-            MessagingCenter.Unsubscribe<MessagingCenterTests>(sub1, "SimpleTest");
-            MessagingCenter.Unsubscribe<MessagingCenterTests>(sub2, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(sub1, "SimpleTest");
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(sub2, "SimpleTest");
         }
 
         [Fact]
         public void NoArgUnsubscribe()
         {
             bool sentMessage = false;
-            MessagingCenter.Subscribe<MessagingCenterTests>(this, "SimpleTest", (sender) => sentMessage = true);
-            MessagingCenter.Unsubscribe<MessagingCenterTests>(this, "SimpleTest");
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(this, "SimpleTest", (sender) => sentMessage = true);
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(this, "SimpleTest");
 
-            MessagingCenter.Send(this, "SimpleTest", "My Message");
+            SafeMessagingCenter.Send(this, "SimpleTest", "My Message");
 
             Assert.False(sentMessage);
         }
@@ -165,32 +162,32 @@ namespace XamarinFormsMvvmAdaptor.Tests
         [Fact]
         public void NoArgSendWithoutSubscribers()
         {
-            var exception = Record.Exception(() => MessagingCenter.Send(this, "SimpleTest"));
+            var exception = Record.Exception(() => SafeMessagingCenter.Send(this, "SimpleTest"));
             Assert.Null(exception);
         }
 
         [Fact]
         public void ThrowOnNullArgs()
         {
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Subscribe<MessagingCenterTests, string>(null, "Foo", (sender, args) => { }));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Subscribe<MessagingCenterTests, string>(this, null, (sender, args) => { }));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Subscribe<MessagingCenterTests, string>(this, "Foo", null));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(null, "Foo", (sender, args) => { }));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, null, (sender, args) => { }));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, "Foo", null));
 
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Subscribe<MessagingCenterTests>(null, "Foo", (sender) => { }));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Subscribe<MessagingCenterTests>(this, null, (sender) => { }));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Subscribe<MessagingCenterTests>(this, "Foo", null));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(null, "Foo", (sender) => { }));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(this, null, (sender) => { }));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(this, "Foo", null));
 
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Send<MessagingCenterTests, string>(null, "Foo", "Bar"));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Send<MessagingCenterTests, string>(this, null, "Bar"));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Send<SafeMessagingCenterTests, string>(null, "Foo", "Bar"));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Send<SafeMessagingCenterTests, string>(this, null, "Bar"));
 
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Send<MessagingCenterTests>(null, "Foo"));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Send<MessagingCenterTests>(this, null));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Send<SafeMessagingCenterTests>(null, "Foo"));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Send<SafeMessagingCenterTests>(this, null));
 
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Unsubscribe<MessagingCenterTests>(null, "Foo"));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Unsubscribe<MessagingCenterTests>(this, null));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(null, "Foo"));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(this, null));
 
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Unsubscribe<MessagingCenterTests, string>(null, "Foo"));
-            Assert.Throws<ArgumentNullException>(() => MessagingCenter.Unsubscribe<MessagingCenterTests, string>(this, null));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(null, "Foo"));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(this, null));
         }
 
         [Fact]
@@ -201,19 +198,19 @@ namespace XamarinFormsMvvmAdaptor.Tests
             var subscriber1 = new object();
             var subscriber2 = new object();
 
-            MessagingCenter.Subscribe<MessagingCenterTests>(subscriber1, "SimpleTest", (sender) =>
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(subscriber1, "SimpleTest", (sender) =>
             {
                 messageCount++;
-                MessagingCenter.Unsubscribe<MessagingCenterTests>(subscriber2, "SimpleTest");
+                SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(subscriber2, "SimpleTest");
             });
 
-            MessagingCenter.Subscribe<MessagingCenterTests>(subscriber2, "SimpleTest", (sender) =>
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(subscriber2, "SimpleTest", (sender) =>
             {
                 messageCount++;
-                MessagingCenter.Unsubscribe<MessagingCenterTests>(subscriber1, "SimpleTest");
+                SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests>(subscriber1, "SimpleTest");
             });
 
-            MessagingCenter.Send(this, "SimpleTest");
+            SafeMessagingCenter.Send(this, "SimpleTest");
 
             Assert.Equal(1, messageCount);
         }
@@ -224,7 +221,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             new Action(() =>
             {
                 var subscriber = new TestSubcriber();
-                MessagingCenter.Subscribe<TestPublisher>(subscriber, "test", p => Assert.True(false)); //ie Assert.Fail
+                SafeMessagingCenter.Subscribe<TestPublisher>(subscriber, "test", p => Assert.True(false)); //ie Assert.Fail
             })();
 
             GC.Collect();
@@ -270,7 +267,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
                 // This creates a closure, so the callback target is not 'subscriber', but an instancce of a compiler generated class 
                 // So MC has to keep a strong reference to it, and 'subscriber' won't be collectable
-                MessagingCenter.Subscribe<TestPublisher>(subscriber, "test", p => subscriber.SetSuccess());
+                SafeMessagingCenter.Subscribe<TestPublisher>(subscriber, "test", p => subscriber.SetSuccess());
             })();
 
             GC.Collect();
@@ -319,7 +316,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             _subscriber = new TestSubcriber(); // Using a class member so it doesn't get optimized away in Release build
 
-            MessagingCenter.Subscribe<TestPublisher>(_subscriber, "test", p => MessagingCenterTestsCallbackSource.Increment(ref i));
+            SafeMessagingCenter.Subscribe<TestPublisher>(_subscriber, "test", p => MessagingCenterTestsCallbackSource.Increment(ref i));
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -338,7 +335,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             _subscriber = new TestSubcriber(); // Using a class member so it doesn't get optimized away in Release build
 
             var source = new MessagingCenterTestsCallbackSource();
-            MessagingCenter.Subscribe<TestPublisher>(_subscriber, "test", p => source.SuccessCallback(ref success));
+            SafeMessagingCenter.Subscribe<TestPublisher>(_subscriber, "test", p => source.SuccessCallback(ref success));
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -359,11 +356,11 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             const string message = "message";
 
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(sub1, message, (sender, args) => { });
-            MessagingCenter.Subscribe<MessagingCenterTests, string>(sub2, message, (sender, args) => args2 = args);
-            MessagingCenter.Unsubscribe<MessagingCenterTests, string>(sub1, message);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(sub1, message, (sender, args) => { });
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(sub2, message, (sender, args) => args2 = args);
+            SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(sub1, message);
 
-            MessagingCenter.Send(this, message, "Testing");
+            SafeMessagingCenter.Send(this, message, "Testing");
             Assert.Equal("Testing", args2); //unsubscribing sub1 should not unsubscribe sub2
         }
 
@@ -378,7 +375,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             public void SubscribeToTestMessages()
             {
-                MessagingCenter.Subscribe<TestPublisher>(this, "test", p => SetSuccess());
+                SafeMessagingCenter.Subscribe<TestPublisher>(this, "test", p => SetSuccess());
             }
         }
 
@@ -386,7 +383,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         {
             public void Test()
             {
-                MessagingCenter.Send(this, "test");
+                SafeMessagingCenter.Send(this, "test");
             }
         }
 
@@ -418,9 +415,9 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
         class ComponentWithMessagingDependency
         {
-            readonly IMessagingCenter _messagingCenter;
+            readonly ISafeMessagingCenter _messagingCenter;
 
-            public ComponentWithMessagingDependency(IMessagingCenter messagingCenter)
+            public ComponentWithMessagingDependency(ISafeMessagingCenter messagingCenter)
             {
                 _messagingCenter = messagingCenter;
                 _messagingCenter.Subscribe<ComponentWithMessagingDependency>(this, "test", dependency => Console.WriteLine("test"));

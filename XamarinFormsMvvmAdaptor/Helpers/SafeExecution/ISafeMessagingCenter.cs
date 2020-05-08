@@ -8,7 +8,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 	/// <summary>
     /// Associates a callback on subscribers with a specific message name
 	/// </summary>
-	public interface IMessagingCenter
+	public interface ISafeMessagingCenter
 	{
 		/// <summary>
 		/// Sends a named message

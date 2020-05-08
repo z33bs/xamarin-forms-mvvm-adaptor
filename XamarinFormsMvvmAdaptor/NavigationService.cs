@@ -50,7 +50,7 @@ namespace XamarinFormsMvvmAdaptor
         public IReadOnlyList<Page> ModalStack => navigation.ModalStack;
 
         ///<inheritdoc/>
-        public Helpers.IMessagingCenter MessagingCenter => Helpers.MessagingCenter.Instance;
+        public ISafeMessagingCenter SafeMessagingCenter => Helpers.SafeMessagingCenter.Instance;
 
         #region CONSTRUCTIVE
         ///<inheritdoc/>

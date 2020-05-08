@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Returns a singleton instance of the MessagingCenter
         /// </summary>
-        Helpers.IMessagingCenter MessagingCenter { get; }
+        Helpers.ISafeMessagingCenter SafeMessagingCenter { get; }
 
         /// <summary>
         /// Navigates to a <see cref="Page"/>
