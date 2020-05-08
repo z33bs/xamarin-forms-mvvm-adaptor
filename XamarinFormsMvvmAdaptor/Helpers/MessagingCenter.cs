@@ -45,38 +45,31 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             public bool IsAlive => _isStrongReference || DelegateWeakReference.IsAlive;
         }
 
-        class Subscription : Tuple<WeakReference, MaybeWeakReference, MethodInfo, Filter, Action<Exception>?>
+        class Subscription : Tuple<WeakReference, MaybeWeakReference, MethodInfo>
         {
-            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter, Action<Exception>? onException, bool isBlocking) : this(subscriber, delegateSource, methodInfo, filter, onException)
-            {
-                _isBlocking = isBlocking;
-            }
 
-            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter, Action<Exception>? onException, IViewModelBase viewModel) : this(subscriber, delegateSource, methodInfo, filter, onException)
-            {
-                ViewModel = viewModel;
-            }
 
-            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo, Filter filter, Action<Exception>? onException)
-                : base(new WeakReference(subscriber), new MaybeWeakReference(subscriber, delegateSource), methodInfo, filter, onException)
+            public Subscription(object subscriber, object delegateSource, MethodInfo methodInfo)
+                : base(new WeakReference(subscriber), new MaybeWeakReference(subscriber, delegateSource), methodInfo)
             {
             }
 
             public WeakReference Subscriber => Item1;
             MaybeWeakReference DelegateSource => Item2;
             MethodInfo MethodInfo => Item3;
-            Filter Filter => Item4;
-            Action<Exception>? OnException => Item5;
-            bool _isBlocking = false;
 
+            //Filter Filter => Item4;
+            public Action<Exception>? OnException { get; set; } = null;
+            public bool IsBlocking { get; set; } = false;
+            public object Source { get; set; } = null;
             IViewModelBase viewModel = null;
-            IViewModelBase ViewModel
+            public IViewModelBase ViewModel
             {
                 get => viewModel;
                 set
                 {
                     if (value != null)
-                        _isBlocking = true;
+                        IsBlocking = true;
 
                     viewModel = value;
                 }
@@ -104,13 +97,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 if (IsBusy)
                     return;
 
-                if (_isBlocking)
+                if (IsBlocking)
                     IsBusy = true;
-
-                if (!Filter(sender))
-                {
+                //Filter filter = sender =>
+                //{
+                //    var send = (TSender)sender;
+                //    return (source == null || send == source);
+                //};
+                if (Source != null && sender != Source)
                     return;
-                }
 
                 //if (MethodInfo.IsStatic)
                 //{
@@ -209,20 +204,23 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception>? onException, TSender source)
         {
+            ThrowIfNull(subscriber,message, callback);
+
+            var key = new Sender(message, typeof(TSender), typeof(TArgs));
+            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+                { OnException = onException, Source = source };
+
+            AddSubscription(key, value);
+        }
+
+        private static void ThrowIfNull(object subscriber, string message, Delegate callback)
+        {
             if (subscriber == null)
                 throw new ArgumentNullException(nameof(subscriber));
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
-
-            var target = callback.Target;
-
-            Filter filter = sender =>
-            {
-                var send = (TSender)sender;
-                return (source == null || send == source);
-            };
-
-            InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, callback.GetMethodInfo(), filter, onException);
         }
 
         public static void Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception>? onException = null, TSender source = null) where TSender : class
@@ -232,20 +230,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception>? onException, TSender source)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            ThrowIfNull(subscriber, message, callback);
 
-            var target = callback.Target;
+            var key = new Sender(message, typeof(TSender), null);
+            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            { OnException = onException, Source = source };
 
-            Filter filter = sender =>
-            {
-                var send = (TSender)sender;
-                return (source == null || send == source);
-            };
-
-            InnerSubscribe(subscriber, message, typeof(TSender), null, target, callback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
         public static void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
@@ -314,35 +305,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter, Action<Exception>? onException, bool isBlocking)
-        {
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
-
-            var key = new Sender(message, senderType, argType);
-            var value = new Subscription(subscriber, target, methodInfo, filter, onException, isBlocking);
-            AddSubscription(key, value);
-        }
-        void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter, Action<Exception>? onException, IViewModelBase viewModel)
-        {
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
-
-            var key = new Sender(message, senderType, argType);
-            var value = new Subscription(subscriber, target, methodInfo, filter, onException, viewModel);
-            AddSubscription(key, value);
-        }
-
-        void InnerSubscribe(object subscriber, string message, Type senderType, Type argType, object target, MethodInfo methodInfo, Filter filter, Action<Exception>? onException)
-        {
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
-
-            var key = new Sender(message, senderType, argType);
-            var value = new Subscription(subscriber, target, methodInfo, filter, onException);
-            AddSubscription(key, value);
-        }
-
         private void AddSubscription(Sender key, Subscription value)
         {
             if (_subscriptions.ContainsKey(key))
@@ -385,16 +347,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.UnfilteredSubscribe<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception>? onException)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            ThrowIfNull(subscriber, message, callback);
 
-            var target = callback.Target;
+            var key = new Sender(message, null, typeof(TArgs));
+            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            { OnException = onException };
 
-            Filter filter = sender => true;
-
-            InnerSubscribe(subscriber, message, null, typeof(TArgs), target, callback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
         public static void UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException = null)
@@ -402,16 +361,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Action<object> callback, Action<Exception>? onException)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            ThrowIfNull(subscriber, message, callback);
 
-            var target = callback.Target;
+            var key = new Sender(message, null, null);
+            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            { OnException = onException };
 
-            Filter filter = (sender) => true;
-
-            InnerSubscribe(subscriber, message, null, null, target, callback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
         //public static void AnonymousSend<TArgs>(string message, TArgs args)
@@ -460,20 +416,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception>? onException, TSender source)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (asyncCallback == null)
-                throw new ArgumentNullException(nameof(asyncCallback));
+            ThrowIfNull(subscriber, message, asyncCallback);
 
-            var target = asyncCallback.Target;
+            var key = new Sender(message, typeof(TSender), typeof(TArgs));
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
+            { OnException = onException, Source = source };
 
-            Filter filter = sender =>
-            {
-                var send = (TSender)sender;
-                return (source == null || send == source);
-            };
-
-            InnerSubscribe(subscriber, message, typeof(TSender), typeof(TArgs), target, asyncCallback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
         public static void Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception>? onException = null, TSender source = null) where TSender : class
@@ -483,20 +432,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception>? onException, TSender source)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (asyncCallback == null)
-                throw new ArgumentNullException(nameof(asyncCallback));
+            ThrowIfNull(subscriber, message, asyncCallback);
 
-            var target = asyncCallback.Target;
+            var key = new Sender(message, typeof(TSender), null);
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
+            { OnException = onException, Source = source };
 
-            Filter filter = sender =>
-            {
-                var send = (TSender)sender;
-                return (source == null || send == source);
-            };
-
-            InnerSubscribe(subscriber, message, typeof(TSender), null, target, asyncCallback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
         public static void UnfilteredSubscribe<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception>? onException = null)
@@ -504,16 +446,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.UnfilteredSubscribe<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception>? onException)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (asyncCallback == null)
-                throw new ArgumentNullException(nameof(asyncCallback));
+            ThrowIfNull(subscriber, message, asyncCallback);
 
-            var target = asyncCallback.Target;
+            var key = new Sender(message, null, typeof(TArgs));
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
+            { OnException = onException };
 
-            Filter filter = sender => true;
-
-            InnerSubscribe(subscriber, message, null, typeof(TArgs), target, asyncCallback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
         public static void UnfilteredSubscribe(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception>? onException = null)
@@ -521,16 +460,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception>? onException)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (asyncCallback == null)
-                throw new ArgumentNullException(nameof(asyncCallback));
+            ThrowIfNull(subscriber, message, asyncCallback);
 
-            var target = asyncCallback.Target;
+            var key = new Sender(message, null, null);
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
+            { OnException = onException};
 
-            Filter filter = (sender) => true;
-
-            InnerSubscribe(subscriber, message, null, null, target, asyncCallback.GetMethodInfo(), filter, onException);
+            AddSubscription(key, value);
         }
 
 
@@ -540,16 +476,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception>? onException, bool isBlocking)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (asyncCallback == null)
-                throw new ArgumentNullException(nameof(asyncCallback));
+            ThrowIfNull(subscriber, message, asyncCallback);
 
-            var target = asyncCallback.Target;
+            var key = new Sender(message, null,null);
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
+            { OnException = onException, IsBlocking = isBlocking };
 
-            Filter filter = (sender) => true;
-
-            InnerSubscribe(subscriber, message, null, null, target, asyncCallback.GetMethodInfo(), filter, onException, isBlocking);
+            AddSubscription(key, value);
         }
 
         // Test viewModel
@@ -558,16 +491,13 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         void IMessagingCenter.UnfilteredSubscribe(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception>? onException, IViewModelBase viewModel)
         {
-            if (subscriber == null)
-                throw new ArgumentNullException(nameof(subscriber));
-            if (asyncCallback == null)
-                throw new ArgumentNullException(nameof(asyncCallback));
+            ThrowIfNull(subscriber, message, asyncCallback);
 
-            var target = asyncCallback.Target;
+            var key = new Sender(message, null, null);
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
+            { OnException = onException, ViewModel = viewModel };
 
-            Filter filter = (sender) => true;
-
-            InnerSubscribe(subscriber, message, null, null, target, asyncCallback.GetMethodInfo(), filter, onException, viewModel);
+            AddSubscription(key, value);
         }
 
         #endregion
