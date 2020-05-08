@@ -485,6 +485,16 @@ namespace XamarinFormsMvvmAdaptor.Tests
 				WasSubscribeCalled = true;
 			}
 
+            public void UnfilteredSubscribe(object subscriber, string message, Func<object, Task> callback, Action<Exception> onException = null, bool isBlocking = false)
+            {
+				WasSubscribeCalled = true;
+			}
+
+            public void UnfilteredSubscribe(object subscriber, string message, Func<object, Task> callback, Action<Exception> onException = null, IViewModelBase viewModel = null)
+            {
+				WasSubscribeCalled = true;
+            }
+
             public void UnfilteredUnsubscribe<TArgs>(object subscriber, string message)
             {
                 
