@@ -155,7 +155,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Subscribe<TSender, TArgs>(
 			object subscriber,
 			string message,
-			Func<TSender, TArgs, Task> callback,
+			Func<TSender, TArgs, Task> asyncCallback,
 			Action<Exception>? onException = null,
 			TSender source = null) where TSender : class;
 
@@ -165,20 +165,20 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
-			Func<TSender, Task> callback,
+			Func<TSender, Task> asyncCallback,
 			Action<Exception>? onException = null,
 			TSender source = null) where TSender : class;
 
 		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
-			Func<object, TArgs, Task> callback,
+			Func<object, TArgs, Task> asyncCallback,
 			Action<Exception>? onException = null);
 
 		void SubscribeAny(
 			object subscriber,
 			string message,
-			Func<object, Task> callback,
+			Func<object, Task> asyncCallback,
 			Action<Exception>? onException = null);
 
 		#region bool isBlocking
@@ -186,7 +186,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Subscribe<TSender, TArgs>(
 			object subscriber,
 			string message,
-			Func<TSender, TArgs, Task> callback,
+			Func<TSender, TArgs, Task> asyncCallback,
 			bool isBlocking,
 			Action<Exception>? onException = null,
 			TSender source = null) where TSender : class;
@@ -194,7 +194,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
-			Func<TSender, Task> callback,
+			Func<TSender, Task> asyncCallback,
 			bool isBlocking,
 			Action<Exception>? onException = null,
 			TSender source = null) where TSender : class;
@@ -202,14 +202,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
-			Func<object, TArgs, Task> callback,
+			Func<object, TArgs, Task> asyncCallback,
 			bool isBlocking,
 			Action<Exception>? onException = null);
 
 		void SubscribeAny(
 			object subscriber,
 			string message,
-			Func<object, Task> callback,
+			Func<object, Task> asyncCallback,
 			bool isBlocking,
 			Action<Exception>? onException = null);
 
@@ -220,7 +220,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Subscribe<TSender, TArgs>(
 			object subscriber,
 			string message,
-			Func<TSender, TArgs, Task> callback,
+			Func<TSender, TArgs, Task> asyncCallback,
 			IViewModelBase viewModel,
 			Action<Exception>? onException = null,
 			TSender source = null) where TSender : class;
@@ -231,7 +231,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
-			Func<TSender, Task> callback,
+			Func<TSender, Task> asyncCallback,
 			IViewModelBase viewModel,
 			Action<Exception>? onException = null,
 			TSender source = null) where TSender : class;
@@ -239,14 +239,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
-			Func<object, TArgs, Task> callback,
+			Func<object, TArgs, Task> asyncCallback,
 			IViewModelBase viewModel,
 			Action<Exception>? onException = null);
 
 		void SubscribeAny(
 			object subscriber,
 			string message,
-			Func<object, Task> callback,
+			Func<object, Task> asyncCallback,
 			IViewModelBase viewModel,
 			Action<Exception>? onException = null);
         #endregion

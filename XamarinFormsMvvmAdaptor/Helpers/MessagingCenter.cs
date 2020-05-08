@@ -430,133 +430,133 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
         #endregion
         #region Functions
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> callback, Action<Exception> onException, TSender source) where TSender : class
+        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, Source = source };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> callback, Action<Exception> onException, TSender source) where TSender : class
+        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, Source = source };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> callback, Action<Exception> onException)
+        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception> onException)
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> callback, Action<Exception> onException)
+        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception> onException)
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
+        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, Source = source, IsBlocking = isBlocking };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
+        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, Source = source, IsBlocking = isBlocking };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> callback, bool isBlocking, Action<Exception> onException)
+        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, IsBlocking = isBlocking };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> callback, bool isBlocking, Action<Exception> onException)
+        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, IsBlocking = isBlocking };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
+        void IMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, Source = source, ViewModel = viewModel };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
+        void IMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, Source = source, ViewModel = viewModel };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> callback, IViewModelBase viewModel, Action<Exception> onException)
+        void IMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, ViewModel = viewModel };
 
             AddSubscription(key, value);
         }
 
-        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> callback, IViewModelBase viewModel, Action<Exception> onException)
+        void IMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
         {
-            ThrowIfNull(subscriber, message, callback);
+            ThrowIfNull(subscriber, message, asyncCallback);
 
             var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
+            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
             { OnException = onException, ViewModel = viewModel };
 
             AddSubscription(key, value);
@@ -687,10 +687,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
-            Func<TSender, TArgs, Task> callback,
+            Func<TSender, TArgs, Task> asyncCallback,
             Action<Exception>? onException = null,
             TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, onException, source);
+            => Instance.Subscribe(subscriber, message, asyncCallback, onException, source);
 
         /// <summary>
         /// Run the callback on subscriber in response to messages that are named message and that are created by source.
@@ -698,60 +698,60 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public static void Subscribe<TSender>(
             object subscriber,
             string message,
-            Func<TSender, Task> callback,
+            Func<TSender, Task> asyncCallback,
             Action<Exception>? onException = null,
             TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, onException, source);
+            => Instance.Subscribe(subscriber, message, asyncCallback, onException, source);
 
         public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
-            Func<object, TArgs, Task> callback,
+            Func<object, TArgs, Task> asyncCallback,
             Action<Exception>? onException = null)
-            => Instance.Subscribe(subscriber, message, callback, onException);
+            => Instance.Subscribe(subscriber, message, asyncCallback, onException);
 
         public static void SubscribeAny(
             object subscriber,
             string message,
-            Func<object, Task> callback,
+            Func<object, Task> asyncCallback,
             Action<Exception>? onException = null)
-            => Instance.Subscribe(subscriber, message, callback, onException);
+            => Instance.Subscribe(subscriber, message, asyncCallback, onException);
 
         #region bool isBlocking
 
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
-            Func<TSender, TArgs, Task> callback,
+            Func<TSender, TArgs, Task> asyncCallback,
             bool isBlocking,
             Action<Exception>? onException = null,
             TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException, source);
+            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException, source);
 
         public static void Subscribe<TSender>(
             object subscriber,
             string message,
-            Func<TSender, Task> callback,
+            Func<TSender, Task> asyncCallback,
             bool isBlocking,
             Action<Exception>? onException = null,
             TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException, source);
+            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException, source);
 
         public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
-            Func<object, TArgs, Task> callback,
+            Func<object, TArgs, Task> asyncCallback,
             bool isBlocking,
             Action<Exception>? onException = null)
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException);
+            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException);
 
         public static void SubscribeAny(
             object subscriber,
             string message,
-            Func<object, Task> callback,
+            Func<object, Task> asyncCallback,
             bool isBlocking,
             Action<Exception>? onException = null)
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException);
+            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException);
 
 
         #endregion
@@ -760,11 +760,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
-            Func<TSender, TArgs, Task> callback,
+            Func<TSender, TArgs, Task> asyncCallback,
             IViewModelBase viewModel,
             Action<Exception>? onException = null,
             TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException, source);
+            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException, source);
 
         /// <summary>
         /// Run the callback on subscriber in response to messages that are named message and that are created by source.
@@ -772,27 +772,27 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         public static void Subscribe<TSender>(
             object subscriber,
             string message,
-            Func<TSender, Task> callback,
+            Func<TSender, Task> asyncCallback,
             IViewModelBase viewModel,
             Action<Exception>? onException = null,
             TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException, source);
+            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException, source);
 
         public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
-            Func<object, TArgs, Task> callback,
+            Func<object, TArgs, Task> asyncCallback,
             IViewModelBase viewModel,
             Action<Exception>? onException = null)
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException);
+            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException);
 
         public static void SubscribeAny(
             object subscriber,
             string message,
-            Func<object, Task> callback,
+            Func<object, Task> asyncCallback,
             IViewModelBase viewModel,
             Action<Exception>? onException = null)
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException);
+            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException);
 
         #endregion
 
