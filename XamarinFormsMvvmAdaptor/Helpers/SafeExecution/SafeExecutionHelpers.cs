@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 // Adapted from Brandon Minnick's AsyncAwaitBestPractices
 // https://github.com/brminnick/AsyncAwaitBestPractices, 
@@ -50,7 +50,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/></param>
         public static void Initialize(Action<Exception>? defaultOnException, bool shouldAlwaysRethrowException = false)
-            => _shouldAlwaysRethrowException = shouldAlwaysRethrowException;
+        {
+            _shouldAlwaysRethrowException = shouldAlwaysRethrowException;
+            DefaultExceptionHandler = defaultOnException;
+        }
 
         /// <summary>
         /// Removes the <see cref="DefaultExceptionHandler"/>
