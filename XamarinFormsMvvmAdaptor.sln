@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordJumble.Android", "Sampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordJumble.iOS", "SampleApps\WordJumble\WordJumble.iOS\WordJumble.iOS.csproj", "{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinFormsMvvmAdaptor.Tests", "XamarinFormsMvvmAdaptor.Tests\XamarinFormsMvvmAdaptor.Tests.csproj", "{354B3F90-DF6E-45F5-9867-74268DB9FF40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinFormsMvvmAdaptor.Tests", "XamarinFormsMvvmAdaptor.Tests\XamarinFormsMvvmAdaptor.Tests.csproj", "{6F717249-1EC6-40EF-91DA-BBDED138D400}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,24 +104,24 @@ Global
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|iPhone.ActiveCfg = Debug|iPhone
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|iPhone.Build.0 = Debug|iPhone
 		{8AE12CD9-8BE4-454A-A0AF-C1CC9326DA1C}.WithDi|Any CPU.ActiveCfg = Debug|iPhoneSimulator
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Release|Any CPU.Build.0 = Release|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.Release|iPhone.Build.0 = Release|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.WithDi|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.WithDi|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.WithDi|iPhone.ActiveCfg = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.WithDi|iPhone.Build.0 = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.WithDi|Any CPU.ActiveCfg = Debug|Any CPU
-		{354B3F90-DF6E-45F5-9867-74268DB9FF40}.WithDi|Any CPU.Build.0 = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.Release|iPhone.Build.0 = Release|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.WithDi|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.WithDi|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.WithDi|iPhone.ActiveCfg = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.WithDi|iPhone.Build.0 = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.WithDi|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F717249-1EC6-40EF-91DA-BBDED138D400}.WithDi|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		version = 
