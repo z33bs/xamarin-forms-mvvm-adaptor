@@ -42,11 +42,12 @@ steps:
     solution: '**/XamarinFormsMvvmAdaptor.csproj'
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
+
 - task: NuGetCommand@2
   displayName: 'Restore packages for Unit Tests'
   inputs:
     command: 'restore'
-    restoreSolution: '**/*Tests.csproj'
+    restoreSolution: '**/XamarinFormsMvvmAdaptor.Tests.csproj'
     feedsToUse: 'select'
     vstsFeed: '86153590-b7da-4504-b416-f06a4b16a355'
     versioningScheme: byBuildNumber
@@ -55,7 +56,7 @@ steps:
 - task: MSBuild@1
   displayName: 'Build Unit Tests project'
   inputs:
-    solution: '**/*Tests.csproj'
+    solution: '**/XamarinFormsMvvmAdaptor.Tests.csproj'
     configuration: 'Debug'
     msbuildArguments: '/t:restore;clean;build'
 
@@ -64,7 +65,7 @@ steps:
   displayName: 'Run unit tests with code coverage'
   inputs:
     command: 'test'
-    projects: '**/*Tests.csproj'
+    projects: '**/XamarinFormsMvvmAdaptor.Tests.csproj'
     arguments: '--no-build --configuration Debug /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
 
