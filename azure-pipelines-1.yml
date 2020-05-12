@@ -52,12 +52,12 @@ steps:
     versioningScheme: byBuildNumber
 
 
-- task: MSBuild@1
-  displayName: 'Build Unit Tests project'
-  inputs:
-    solution: '**/*UnitTests.csproj'
-    configuration: 'Debug'
-    msbuildArguments: '/t:restore;clean;build'
+#- task: MSBuild@1
+#  displayName: 'Build Unit Tests project'
+#  inputs:
+#    solution: '**/*UnitTests.csproj'
+#    configuration: 'Debug'
+#    msbuildArguments: '/t:restore;clean;build'
 
 #NB - For some reason coverage only runs on Debug configuration
 - task: DotNetCoreCLI@2
@@ -65,9 +65,9 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*.UnitTests.csproj'
-    arguments: '--no-build --configuration Debug /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    arguments: '--configuration Debug /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
-
+#--no-build was removed from arguments
 
 - task: DotNetCoreCLI@2
   displayName: 'Install ReportGenerator'
