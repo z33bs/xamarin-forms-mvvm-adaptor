@@ -57,7 +57,7 @@ steps:
   inputs:
     solution: '**/*UnitTests.csproj'
     configuration: 'Debug'
-    msbuildArguments: '/t:restore;build'
+    msbuildArguments: '/t:restore;clean;build'
 
 #NB - For some reason coverage only runs on Debug configuration
 - task: DotNetCoreCLI@2
