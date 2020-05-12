@@ -4,6 +4,7 @@ using XamarinFormsMvvmAdaptor.Helpers;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Input;
+using Moq;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
@@ -403,7 +404,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
         #region Monkey Tests
         [Fact]
-        public void ExecuteT_CalledTwice_FiresOnceIfBusy()
+        public void ExecuteT_CalledTwice_FiresTwice()
         {
             int times = 0;
             async Task MockTask(string text)
@@ -418,8 +419,53 @@ namespace XamarinFormsMvvmAdaptor.Tests
             command.Execute("test");
             dts.RunTasksUntilIdle();
 
+            Assert.Equal(2, times);
+        }
+
+        [Fact]
+        public void ExecuteT_isBlockingTrue_CalledTwice_FiresOnceIfBusy()
+        {
+            int times = 0;
+            async Task MockTask(string text)
+            {
+                await Task.Delay(Delay);
+                times++;
+            }
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new SafeCommand<string>(MockTask, dts, isBlocking:true, null, null);
+
+            command.Execute("test");
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
+
             Assert.Equal(1, times);
         }
+
+        [Fact]
+        public void ExecuteT_IViewModelBase_CalledTwice_FiresOnceIfBusy()
+        {
+            int times = 0;
+            async Task MockTask(string text)
+            {
+                await Task.Delay(Delay);
+                times++;
+            }
+
+            var mockVm = new Mock<IViewModelBase>();
+
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new SafeCommand<string>(MockTask, dts, mockVm.Object);
+            
+            command.Execute("test");
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
+
+            Assert.Equal(1, times);
+            mockVm.VerifyGet(vm => vm.IsBusy, Times.Exactly(2));
+            mockVm.VerifySet(vm => vm.IsBusy = true);
+            mockVm.VerifySet(vm => vm.IsBusy = false);
+        }
+
 
         [Fact]
         public void ExecuteT_CalledTwice_FiresTwiceIfNotBusy()
@@ -494,5 +540,4 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
         #endregion
     }
-
 }
