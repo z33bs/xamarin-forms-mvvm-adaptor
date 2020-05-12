@@ -135,7 +135,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <inheritdoc/>
         void ISafeExecutionHelpers.HandleException<TException>(Exception exception, Action<TException>? onException)
         {
-            if (exception != null && exception is TException)
+            if (exception is InvalidCommandParameterException)
+                throw exception; //internal exception from SafeCommand
+
+            if (onException != null && exception is TException)
                 onException.Invoke(exception as TException);
             else
                 DefaultExceptionHandler?.Invoke(exception);
