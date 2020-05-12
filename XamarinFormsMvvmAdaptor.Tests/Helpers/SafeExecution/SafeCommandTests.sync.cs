@@ -3,6 +3,7 @@ using Xunit;
 using XamarinFormsMvvmAdaptor.Helpers;
 using System.Threading;
 using System.Windows.Input;
+using Moq;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
@@ -245,11 +246,22 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
         #region GA Safe Exception Tests
 		[Fact]
-		public void Execute_TargetThrows_ThrowsException()
+		public void Execute_TargetThrows_HandlesException()
         {
-			var command = new SafeCommand(executeAction:() => throw new Exception());
+			SafeExecutionHelpers.Initialize();
+			SafeExecutionHelpers.RemoveDefaultExceptionHandler();
+			var mockHelpers = new Mock<ISafeExecutionHelpers>();
+			SafeExecutionHelpers.SetImplementation(mockHelpers.Object);
 
-            Assert.Throws<Exception>(() => command.Execute(null));
+			Exception exception = new Exception();
+
+			var command = new SafeCommand(executeAction:() => throw exception);
+
+			//Assert.Throws<Exception>(() => command.Execute(null));
+			command.Execute(null);
+			mockHelpers.Verify(h => h.HandleException<Exception>(exception, null));
+
+			SafeExecutionHelpers.RevertToDefaultImplementation();
         }
 
 		[Fact]
@@ -539,20 +551,32 @@ namespace XamarinFormsMvvmAdaptor.Tests
 		[Fact]
 		public void Execute_SecondCallAfterException_Executes()
 		{
+			SafeExecutionHelpers.Initialize();
+			var mockHelpers = new Mock<ISafeExecutionHelpers>();
+			SafeExecutionHelpers.SetImplementation(mockHelpers.Object);
+
+			Exception exception = new Exception();
+
 			int times = 0;
 			void MockTask(string text)
 			{
 				if (times++ == 0)
-					throw new Exception(); //Throws only on first try
+					throw exception; //Throws only on first try
 			}
 
 			ICommand command = new SafeCommand<string>(MockTask);
 
-			Assert.Throws<Exception>(()=>command.Execute("test"));
+			//Assert.Throws<Exception>(()=>command.Execute("test"));
 
+			//First run
 			command.Execute("test");
+			mockHelpers.Verify(h => h.HandleException<Exception>(exception, null));
 
+			//Second run
+			command.Execute("test");
 			Assert.Equal(2, times);
+
+			SafeExecutionHelpers.RevertToDefaultImplementation();
 		}
 
 		#endregion
