@@ -35,21 +35,21 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             where TException : Exception
         => Implementation.SafeInvoke(action, parameter, onException);
 
-        /// <inheritdoc cref="SafeInvoke{TException}(Action{object?}, object, Action{TException}?)"/>
+        ///<inheritdoc cref="SafeInvoke{TException}(Action{object?}, object, Action{TException}?)"/>
         public static void SafeInvoke<TException>(
             this Action action,
             Action<TException>? onException)
             where TException : Exception
         => Implementation.SafeInvoke(action, onException);
 
-        /// <inheritdoc cref="SafeInvoke{TException}(Action{object?}, object, Action{TException}?)"/>
+        ///<inheritdoc cref="SafeInvoke{TException}(Action{object?}, object, Action{TException}?)"/>
         public static void SafeInvoke(
             this Action<object?> action,
             object parameter,
             Action<Exception>? onException)
         => Implementation.SafeInvoke(action, parameter, onException);
 
-        /// <inheritdoc cref="SafeInvoke{TException}(Action{object?}, object, Action{TException}?)"/>
+        ///<inheritdoc cref="SafeInvoke{TException}(Action{object?}, object, Action{TException}?)"/>
         public static void SafeInvoke(
             this Action action,
             Action<Exception>? onException)

@@ -583,17 +583,17 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #region ICommand implementation
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public event EventHandler CanExecuteChanged
         {
             add => _weakEventManager.AddEventHandler(value);
             remove => _weakEventManager.RemoveEventHandler(value);
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public bool CanExecute(object? parameter) => _canExecute(parameter);
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public void Execute(object parameter)
         {
             if (_execute != null)
@@ -604,10 +604,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #endregion
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public void RaiseCanExecuteChanged() => _weakEventManager.HandleEvent(this, EventArgs.Empty, nameof(CanExecuteChanged));
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public async Task RawExecuteAsync(object parameter)
         {
             if (_execute != null)

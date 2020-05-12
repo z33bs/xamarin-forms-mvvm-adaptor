@@ -24,7 +24,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             where TException : Exception
             => Implementation.SafeContinueWith(task, onException);
 
-        /// <inheritdoc cref="SafeFireAndForget{TException}(Task, Action{TException}?)"/>
+        ///<inheritdoc cref="SafeFireAndForget{TException}(Task, Action{TException}?)"/>
         public static void SafeFireAndForget(this Task task, Action<Exception>? onException)
             => Implementation.SafeContinueWith(task, onException);
 
@@ -53,7 +53,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static void RevertToDefaultImplementation() => Implementation = defaultImplementation;
 
-        /// <inheritdoc cref="SafeContinueWith{TException}(Task, Action{TException}?, TaskScheduler)"/>
+        ///<inheritdoc cref="SafeContinueWith{TException}(Task, Action{TException}?, TaskScheduler)"/>
         public static Task SafeContinueWith(this Task task, Action<Exception>? onException)
             => Implementation.SafeContinueWith(task, onException);
 

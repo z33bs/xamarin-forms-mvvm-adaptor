@@ -11,7 +11,7 @@ namespace XamarinFormsMvvmAdaptor
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public class Stack : IStack
     {
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public async Task Collapse(IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)
@@ -28,7 +28,7 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public Page GetCurrentPage(IReadOnlyList<Page> stack)
         {
             return InternalGetCurrentPage(stack);
@@ -43,7 +43,7 @@ namespace XamarinFormsMvvmAdaptor
             return page;
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public Page GetPreviousPage(IReadOnlyList<Page> stack)
         {
             return InternalGetPreviousPage(stack);
@@ -64,13 +64,13 @@ namespace XamarinFormsMvvmAdaptor
             return null;
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public object GetCurrentViewModel(IReadOnlyList<Page> stack)
         {
             return InternalGetCurrentPage(stack).BindingContext;
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public object GetPreviousViewModel(IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)

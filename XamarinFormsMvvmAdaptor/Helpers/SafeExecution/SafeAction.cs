@@ -3,11 +3,11 @@ using System.ComponentModel;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-    /// <inheritdoc/>
+    ///<inheritdoc/>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public class SafeAction : ISafeAction
     {
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void SafeInvoke<TException>(
             Action<object?> action,
@@ -25,7 +25,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void SafeInvoke<TException>(Action action, Action<TException>? onException)
             where TException : Exception
