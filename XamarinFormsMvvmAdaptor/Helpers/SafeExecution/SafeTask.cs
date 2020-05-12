@@ -18,13 +18,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 task.ContinueWith(
                         t =>
                         {
-                            SafeExecutionHelpers.HandleException(t.Exception.InnerException as TException, onException);
+                            SafeExecutionHelpers.HandleException<TException>(t.Exception.InnerException, onException);
+                            //todo move this to HandleException but ensure runs even if not handlers to handle
                             if (SafeExecutionHelpers._shouldAlwaysRethrowException)
                                 Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
                         }
                         , CancellationToken.None
                         , TaskContinuationOptions.OnlyOnFaulted
-                        , scheduler ?? TaskScheduler.Default); //todo check doesn't fail .Current might be more robust
+                        , scheduler ?? TaskScheduler.Default);
 
             return task;
         }
