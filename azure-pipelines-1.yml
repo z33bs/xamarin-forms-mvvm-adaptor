@@ -46,7 +46,7 @@ steps:
   displayName: 'Restore packages for Unit Tests'
   inputs:
     command: 'restore'
-    restoreSolution: '**/*UnitTests.csproj'
+    restoreSolution: '**/*Tests.csproj'
     feedsToUse: 'select'
     vstsFeed: '86153590-b7da-4504-b416-f06a4b16a355'
     versioningScheme: byBuildNumber
@@ -64,7 +64,7 @@ steps:
   displayName: 'Run unit tests with code coverage'
   inputs:
     command: 'test'
-    projects: '**/*.UnitTests.csproj'
+    projects: '**/.Tests.csproj'
     arguments: '--configuration Debug /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
 #--no-build was removed from arguments
