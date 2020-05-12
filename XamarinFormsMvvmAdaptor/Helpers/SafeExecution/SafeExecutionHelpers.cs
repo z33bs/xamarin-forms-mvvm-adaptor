@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Xamarin.Forms;
 
 // Adapted from Brandon Minnick's AsyncAwaitBestPractices
 // https://github.com/brminnick/AsyncAwaitBestPractices, 
@@ -39,7 +40,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         public static ISafeExecutionHelpers Instance { get; private set; } = defaultImplementation;
 
-        internal static bool _shouldAlwaysRethrowException;
+        static bool _shouldAlwaysRethrowException;
 
         /// <summary>
         /// The default action to execute when an exception is caught by
@@ -138,6 +139,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 onException.Invoke(exception as TException);
             else
                 DefaultExceptionHandler?.Invoke(exception);
+
+            if (_shouldAlwaysRethrowException)
+                Device.BeginInvokeOnMainThread(() => throw exception);
         }
 
         /// <summary>

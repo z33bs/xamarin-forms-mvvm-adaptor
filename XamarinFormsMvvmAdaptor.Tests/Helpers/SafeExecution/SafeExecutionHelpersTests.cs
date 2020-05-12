@@ -362,5 +362,20 @@ namespace XamarinFormsMvvmAdaptor.Tests
         }
         #endregion
         #endregion
+
+        [Fact]
+        public void HandleException_ShouldRethrow_Throws()
+        {
+            Xamarin.Forms.Mocks.MockForms.Init(); //For Device.BeginInvokeOnMainThread
+            SafeExecutionHelpers.Initialize(shouldAlwaysRethrowException: true);
+            SafeExecutionHelpers.RemoveDefaultExceptionHandler();
+
+            var exception = new NullReferenceException();
+            var handler = new Mock<Action<Exception>>();
+
+            Assert.Throws<NullReferenceException>(()=>SafeExecutionHelpers.HandleException(exception, handler.Object));
+            handler.Verify(h => h.Invoke(exception));
+        }
+
     }
 }

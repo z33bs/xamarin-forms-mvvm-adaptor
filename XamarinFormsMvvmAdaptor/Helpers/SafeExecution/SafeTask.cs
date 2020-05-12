@@ -14,18 +14,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Task SafeContinueWith<TException>(Task task, Action<TException>? onException, TaskScheduler scheduler = null) where TException : Exception
         {
-            if (SafeExecutionHelpers.DefaultExceptionHandler != null || onException != null)
-                task.ContinueWith(
-                        t =>
-                        {
-                            SafeExecutionHelpers.HandleException<TException>(t.Exception.InnerException, onException);
-                            //todo move this to HandleException but ensure runs even if not handlers to handle
-                            if (SafeExecutionHelpers._shouldAlwaysRethrowException)
-                                Device.BeginInvokeOnMainThread(() => throw t.Exception.InnerException);
-                        }
-                        , CancellationToken.None
-                        , TaskContinuationOptions.OnlyOnFaulted
-                        , scheduler ?? TaskScheduler.Default);
+            task.ContinueWith(
+                    t => SafeExecutionHelpers
+                        .HandleException<TException>(t.Exception.InnerException, onException)
+                    , CancellationToken.None
+                    , TaskContinuationOptions.OnlyOnFaulted
+                    , scheduler ?? TaskScheduler.Default);
 
             return task;
         }

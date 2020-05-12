@@ -13,7 +13,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         class SpecificException : Exception { }
 
         [Fact]
-        public void SafeContinueWith_NothingSet_DoesNothing()
+        public void SafeContinueWith_NothingSet_HandleExceptionRuns()
         {
             SpecificException specificException = new SpecificException();
 
@@ -36,7 +36,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             dts.RunTasksUntilIdle();
 
             Assert.Contains(specificException, dts.Exceptions);
-            mockHelpers.Verify(h => h.HandleException<Exception>(specificException,null), Times.Never);
+            mockHelpers.Verify(h => h.HandleException<Exception>(specificException,null));
             
             SafeExecutionHelpers.RevertToDefaultImplementation();
         }
