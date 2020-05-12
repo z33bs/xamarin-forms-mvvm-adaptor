@@ -20,8 +20,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 action(parameter);
             }
             catch (TException ex)
-            when (SafeExecutionHelpers.DefaultExceptionHandler != null
-                    || onException != null)
             {
                 SafeExecutionHelpers.HandleException(ex, onException);
             }

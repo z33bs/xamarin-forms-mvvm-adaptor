@@ -123,8 +123,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                         MethodInfo.Invoke(MethodInfo.IsStatic ? null : target, parameters);
                     }
                     catch (Exception ex)
-                        when (SafeExecutionHelpers.DefaultExceptionHandler != null
-                              || OnException != null)
                     {
                         SafeExecutionHelpers.HandleException(ex, OnException);
                     }
