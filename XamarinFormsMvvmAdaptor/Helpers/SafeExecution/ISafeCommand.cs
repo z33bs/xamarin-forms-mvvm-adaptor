@@ -12,7 +12,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         /// <summary>
         /// Useful for Unit Tests. Executes the Action/Function delegate
-        /// only (without SafeExecute features etc).
+        /// only without "Safe" features (onException, isBlocking, etc).
         /// </summary>
         Task RawExecuteAsync(object parameter);
     }

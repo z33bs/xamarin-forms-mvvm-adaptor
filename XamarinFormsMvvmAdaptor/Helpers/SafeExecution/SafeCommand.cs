@@ -421,17 +421,24 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #region ICommand implementation
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Occurs when changes occur that affect whether or not the command should execute.
+        /// </summary>
         public event EventHandler CanExecuteChanged
         {
             add => _weakEventManager.AddEventHandler(value);
             remove => _weakEventManager.RemoveEventHandler(value);
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Checks whether the command can execute in its current state.
+        /// </summary>
         public bool CanExecute(object? parameter) => _canExecute(parameter);
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Executes the command with an optional <paramref name="parameter"/>
+        /// which can be <c>null</c>
+        /// </summary>
         public void Execute(object parameter)
         {
             if (_execute != null)
@@ -442,10 +449,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #endregion
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Raises the <see cref="CanExecuteChanged"/> event.
+        /// </summary>
         public void RaiseCanExecuteChanged() => _weakEventManager.HandleEvent(this, EventArgs.Empty, nameof(CanExecuteChanged));
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Useful for Unit Tests. Executes the Action/Function delegate
+        /// only without "Safe" features (onException, isBlocking, etc).
+        /// </summary>
         public async Task RawExecuteAsync(object parameter)
         {
             if (_execute != null)

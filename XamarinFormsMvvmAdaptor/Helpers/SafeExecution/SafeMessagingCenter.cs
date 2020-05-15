@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Associates a callback on subscribers with a specific message name
+    /// </summary>
     public class SafeMessagingCenter : ISafeMessagingCenter
     {
         /// <summary>
@@ -193,10 +195,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        ///<inheritdoc cref="Send{TSender, TArgs}(TSender, string, TArgs)"/>
+        /// <summary>
+        /// Sends a named message
+        /// </summary>
         public static void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class
             => Instance.Send(sender, message, args);
-        ///<inheritdoc/>
         void ISafeMessagingCenter.Send<TSender, TArgs>(TSender sender, string message, TArgs args)
         {
             if (sender == null)
@@ -204,10 +207,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             InnerSend(message, typeof(TSender), typeof(TArgs), sender, args);
         }
 
-        ///<inheritdoc cref="Send{TSender}(TSender, string)"/>
+        /// <summary>
+        /// Sends a named message
+        /// </summary>
         public static void Send<TSender>(TSender sender, string message) where TSender : class
             => Instance.Send(sender, message);
-        ///<inheritdoc/>
         void ISafeMessagingCenter.Send<TSender>(TSender sender, string message)
         {
             if (sender == null)
@@ -232,37 +236,41 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 _subscriptions.Remove(key);
         }
 
-        ///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
+        /// <summary>
+        /// Unsubscribes from the specified subscriber
+        /// </summary>
         public static void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class
             => Instance.Unsubscribe<TSender, TArgs>(subscriber, message);
-        ///<inheritdoc/>
         void ISafeMessagingCenter.Unsubscribe<TSender, TArgs>(object subscriber, string message)
         {
             InnerUnsubscribe(message, typeof(TSender), typeof(TArgs), subscriber);
         }
 
-        ///<inheritdoc cref="Unsubscribe{TSender}(object, string)"/>
+        /// <summary>
+        /// Unsubscribes from the specified subscriber
+        /// </summary>
         public static void Unsubscribe<TSender>(object subscriber, string message) where TSender : class
             => Instance.Unsubscribe<TSender>(subscriber, message);
-        ///<inheritdoc/>
         void ISafeMessagingCenter.Unsubscribe<TSender>(object subscriber, string message)
         {
             InnerUnsubscribe(message, typeof(TSender), null, subscriber);
         }
 
-        ///<inheritdoc cref="UnsubscribeAnySender{TArgs}(object, string)"/>
-        public static void UnsubscribeAnySender<TArgs>(object subscriber, string message)
+        /// <summary>
+        /// Unsubscribes from the specified <c>SubscribeAny</c> subscriber
+        /// </summary>
+        public static void UnsubscribeAny<TArgs>(object subscriber, string message)
             => Instance.UnsubscribeAny<TArgs>(subscriber, message);
-        ///<inheritdoc/>
         void ISafeMessagingCenter.UnsubscribeAny<TArgs>(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, typeof(TArgs), subscriber);
         }
 
-        ///<inheritdoc cref="UnsubscribeAny(object, string)"/>
+        /// <summary>
+        /// Unsubscribes from the specified <c>SubscribeAny</c> subscriber
+        /// </summary>
         public static void UnsubscribeAny(object subscriber, string message)
             => Instance.UnsubscribeAny(subscriber, message);
-        ///<inheritdoc/>
         void ISafeMessagingCenter.UnsubscribeAny(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, null, subscriber);
@@ -324,6 +332,22 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #region Actions
 
+        /// <summary>
+        /// Subscribe to a specified message, and register a callback to execute when the message is recieved
+        /// </summary>
+        /// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+        /// from sender of type <typeparamref name="TSender"/></typeparam>
+        /// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="callback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
@@ -344,6 +368,21 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(typeof(TSender),typeof(TArgs),subscriber, message, callback, viewModel, onException, source, isBlocking);
 
 
+        /// <summary>
+        /// Subscribe to a specified message, and register a callback to execute when the message is recieved
+        /// </summary>
+        /// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+        /// from sender of type <typeparamref name="TSender"/></typeparam>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="callback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void Subscribe<TSender>(
                 object subscriber,
                 string message,
@@ -363,6 +402,20 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             bool isBlocking) where TSender : class
         => InnerSubscribe(typeof(TSender), null, subscriber, message, callback, viewModel, onException, source, isBlocking);
 
+        /// <summary>
+        /// Subscribe to a specified message from any Sender, and register a callback to execute when the message is recieved
+        /// </summary>
+        /// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="callback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
@@ -381,6 +434,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(null, typeof(TArgs), subscriber, message, callback, viewModel, onException, null, isBlocking);
 
 
+        /// <summary>
+        /// Subscribe to a specified message from any Sender, and register a callback to execute when the message is recieved
+        /// </summary>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="callback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void SubscribeAny(
             object subscriber,
             string message,
@@ -401,6 +467,22 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         #endregion
         #region Functions
+        /// <summary>
+        /// Subscribe to a specified message, and register an asynchronous callback to execute when the message is recieved
+        /// </summary>
+        /// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+        /// from sender of type <typeparamref name="TSender"/></typeparam>
+        /// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="asyncCallback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
@@ -421,6 +503,21 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(typeof(TSender), typeof(TArgs), subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
 
 
+        /// <summary>
+        /// Subscribe to a specified message, and register an asynchronous callback to execute when the message is recieved
+        /// </summary>
+        /// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+        /// from sender of type <typeparamref name="TSender"/></typeparam>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="asyncCallback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void Subscribe<TSender>(
             object subscriber,
             string message,
@@ -441,6 +538,20 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(typeof(TSender), null, subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
 
 
+        /// <summary>
+        /// Subscribe to a specified message from any Sender, and register an asynchronous callback to execute when the message is recieved
+        /// </summary>
+        /// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="asyncCallback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
@@ -459,6 +570,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(null, typeof(TArgs), subscriber, message, asyncCallback, viewModel, onException, null, isBlocking);
 
 
+        /// <summary>
+        /// Subscribe to a specified message from any Sender, and register an asynchronous callback to execute when the message is recieved
+        /// </summary>
+        /// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+        /// <param name="message">Will only execute the callback when the specified message is recieved</param>
+        /// <param name="asyncCallback">Callback to execute</param>
+        /// <param name="onException">Callback to execute if Exception is caught</param>
+        /// <param name="source">Instance of the source that will send the message.
+        /// If specified, callback will only execute if the sender is from the
+        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
         public static void SubscribeAny(
             object subscriber,
             string message,

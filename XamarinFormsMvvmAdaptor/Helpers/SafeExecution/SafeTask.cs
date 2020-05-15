@@ -6,12 +6,16 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-    ///<inheritdoc/>
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    /// <summary>
+    /// For unit testing and mocking of <see cref="SafeTaskExtensions"/>
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class SafeTask : ISafeTask
     {
-        ///<inheritdoc/>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        /// <summary>
+        /// For unit testing and mocking of <see cref="SafeTaskExtensions"/>
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public Task SafeContinueWith<TException>(Task task, Action<TException>? onException, TaskScheduler scheduler = null) where TException : Exception
         {
             task.ContinueWith(
