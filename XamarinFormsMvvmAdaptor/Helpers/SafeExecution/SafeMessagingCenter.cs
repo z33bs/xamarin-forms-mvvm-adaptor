@@ -60,30 +60,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             MaybeWeakReference DelegateSource => Item2;
             MethodInfo MethodInfo => Item3;
 
-            public Action<Exception> OnException { get; set; } = null;
-            public bool IsBlocking { get; set; } = false;
-            public object Source { get; set; } = null;
+            public Action<Exception> OnException { get; set; }
+            public bool IsBlocking { get; set; }
+            public object Source { get; set; }
 
-            IViewModelBase viewModel = null;
-            public IViewModelBase ViewModel
-            {
-                get => viewModel;
-                set
-                {
-                    if (value != null)
-                        IsBlocking = true;
-
-                    viewModel = value;
-                }
-            }
+            public IViewModelBase ViewModel { get; set; }
 
             bool _isBusy;
             bool IsBusy
             {
                 get
                 {
-                    if (ViewModel?.IsBusy ?? false)
-                        return true;
+                    //if (ViewModel?.IsBusy ?? false)
+                    //    return true;
 
                     return _isBusy;
                 }
@@ -103,12 +92,16 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                     IsBusy = true;
 
                 if (Source != null && sender != Source)
+                {
+                    IsBusy = false;
                     return;
+                }
 
                 var target = DelegateSource.Target;
 
                 if (target == null)
                 {
+                    IsBusy = false;
                     return; // Collected 
                 }
 
@@ -257,20 +250,20 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             InnerUnsubscribe(message, typeof(TSender), null, subscriber);
         }
 
-        ///<inheritdoc cref="UnsubscribeAny{TArgs}(object, string)"/>
-        public static void UnsubscribeAny<TArgs>(object subscriber, string message)
-            => Instance.UnsubscribeAny<TArgs>(subscriber, message);
+        ///<inheritdoc cref="UnsubscribeAnySender{TArgs}(object, string)"/>
+        public static void UnsubscribeAnySender<TArgs>(object subscriber, string message)
+            => Instance.UnsubscribeAnySender<TArgs>(subscriber, message);
         ///<inheritdoc/>
-        void ISafeMessagingCenter.UnsubscribeAny<TArgs>(object subscriber, string message)
+        void ISafeMessagingCenter.UnsubscribeAnySender<TArgs>(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, typeof(TArgs), subscriber);
         }
 
-        ///<inheritdoc cref="UnsubscribeAny(object, string)"/>
-        public static void UnsubscribeAny(object subscriber, string message)
-            => Instance.UnsubscribeAny(subscriber, message);
+        ///<inheritdoc cref="UnsubscribeAnySender(object, string)"/>
+        public static void UnsubscribeAnySender(object subscriber, string message)
+            => Instance.UnsubscribeAnySender(subscriber, message);
         ///<inheritdoc/>
-        void ISafeMessagingCenter.UnsubscribeAny(object subscriber, string message)
+        void ISafeMessagingCenter.UnsubscribeAnySender(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, null, subscriber);
         }
@@ -286,7 +279,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
 
         #region Subscriptions
-        #region Actions
         private static void ThrowIfNull(object subscriber, string message, Delegate callback)
         {
             if (subscriber == null)
@@ -310,536 +302,181 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, Action<Exception> onException, TSender source) where TSender : class
+        void InnerSubscribe(
+            Type senderType,
+            Type argsType,
+            object subscriber,
+            string message,
+            Delegate callback,
+            IViewModelBase viewModel = null,
+            Action<Exception> onException = null,
+            object source = null,
+            bool isBlocking = true)
         {
             ThrowIfNull(subscriber, message, callback);
 
-            var key = new Sender(message, typeof(TSender), typeof(TArgs));
+            var key = new Sender(message, senderType, argsType);
             var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, Source = source };
+            { OnException = onException, Source = source, ViewModel = viewModel, IsBlocking = isBlocking };
 
             AddSubscription(key, value);
         }
 
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, Source = source };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, Source = source, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, Source = source, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, bool isBlocking, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, bool isBlocking, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Action<TSender, TArgs> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, Source = source, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Action<TSender> callback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, Source = source, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Action<object, TArgs> callback, IViewModelBase viewModel, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Action<object> callback, IViewModelBase viewModel, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, callback);
-
-            var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, callback.Target, callback.GetMethodInfo())
-            { OnException = onException, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-        #endregion
-        #region Functions
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, Source = source };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, Source = source };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, Source = source, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, bool isBlocking, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, Source = source, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, bool isBlocking, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, IsBlocking = isBlocking };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(object subscriber, string message, Func<TSender, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, typeof(TSender), typeof(TArgs));
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, Source = source, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.Subscribe<TSender>(object subscriber, string message, Func<TSender, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException, TSender source) where TSender : class
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, typeof(TSender), null);
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, Source = source, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny<TArgs>(object subscriber, string message, Func<object, TArgs, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, null, typeof(TArgs));
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-
-        ///<inheritdoc/>
-        void ISafeMessagingCenter.SubscribeAny(object subscriber, string message, Func<object, Task> asyncCallback, IViewModelBase viewModel, Action<Exception> onException)
-        {
-            ThrowIfNull(subscriber, message, asyncCallback);
-
-            var key = new Sender(message, null, null);
-            var value = new Subscription(subscriber, asyncCallback.Target, asyncCallback.GetMethodInfo())
-            { OnException = onException, ViewModel = viewModel };
-
-            AddSubscription(key, value);
-        }
-        #endregion
-        #endregion
-
-        #region Static Subscriptions
         #region Actions
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
             Action<TSender, TArgs> callback,
+            IViewModelBase viewModel = null,
             Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender>(
-            object subscriber,
-            string message,
-            Action<TSender> callback,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny<TArgs>(
-            object subscriber,
-            string message,
-            Action<object, TArgs> callback,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, callback, onException);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny(
-            object subscriber,
-            string message,
-            Action<object> callback,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, callback, onException);
-
-        #region bool isBlocking
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender, TArgs>(
-            object subscriber,
-            string message, Action<TSender, TArgs> callback,
-            bool isBlocking,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback,isBlocking, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender>(
-            object subscriber,
-            string message,
-            Action<TSender> callback,
-            bool isBlocking,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny<TArgs>(
-            object subscriber,
-            string message,
-            Action<object, TArgs> callback,
-            bool isBlocking,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny(
-            object subscriber,
-            string message,
-            Action<object> callback,
-            bool isBlocking,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, callback, isBlocking, onException);
-
-
-        #endregion
-
-        #region IViewModelBase viewModel
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender, TArgs>(
+            TSender source = null,
+            bool isBlocking = true) where TSender : class
+        => Instance.Subscribe(subscriber, message, callback, viewModel, onException, source, isBlocking);
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
             Action<TSender, TArgs> callback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException, source);
+            Action<Exception> onException,
+            TSender source,
+            bool isBlocking) where TSender : class
+        => InnerSubscribe(typeof(TSender),typeof(TArgs),subscriber, message, callback, viewModel, onException, source, isBlocking);
 
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+
         public static void Subscribe<TSender>(
+                object subscriber,
+                string message,
+                Action<TSender> callback,
+                IViewModelBase viewModel = null,
+                Action<Exception> onException = null,
+                TSender source = null,
+                bool isBlocking = true) where TSender : class
+            => Instance.Subscribe(subscriber, message, callback, viewModel, onException, source, isBlocking);
+        void ISafeMessagingCenter.Subscribe<TSender>(
             object subscriber,
             string message,
             Action<TSender> callback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException, source);
+            Action<Exception> onException,
+            TSender source,
+            bool isBlocking) where TSender : class
+        => InnerSubscribe(typeof(TSender), null, subscriber, message, callback, viewModel, onException, source, isBlocking);
 
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny<TArgs>(
+        public static void SubscribeAnySender<TArgs>(
+            object subscriber,
+            string message,
+            Action<object, TArgs> callback,
+            IViewModelBase viewModel = null,
+            Action<Exception> onException = null,
+            bool isBlocking = true)
+        => Instance.SubscribeAnySender(subscriber, message, callback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAnySender<TArgs>(
             object subscriber,
             string message,
             Action<object, TArgs> callback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException);
+            Action<Exception> onException,
+            bool isBlocking)
+        => InnerSubscribe(null, typeof(TArgs), subscriber, message, callback, viewModel, onException, null, isBlocking);
 
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny(
+
+        public static void SubscribeAnySender(
+            object subscriber,
+            string message,
+            Action<object> callback,
+            IViewModelBase viewModel = null,
+            Action<Exception> onException = null,
+            bool isBlocking = true)
+        => Instance.SubscribeAnySender(subscriber, message, callback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAnySender(
             object subscriber,
             string message,
             Action<object> callback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, callback, viewModel, onException);
-        #endregion
+            Action<Exception> onException,
+            bool isBlocking)
+        => InnerSubscribe(null, null, subscriber, message, callback, viewModel, onException, null, isBlocking);
+
 
         #endregion
         #region Functions
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
         public static void Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
             Func<TSender, TArgs, Task> asyncCallback,
+            IViewModelBase viewModel = null,
             Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, asyncCallback, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender>(
-            object subscriber,
-            string message,
-            Func<TSender, Task> asyncCallback,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, asyncCallback, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny<TArgs>(
-            object subscriber,
-            string message,
-            Func<object, TArgs, Task> asyncCallback,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, asyncCallback, onException);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny(
-            object subscriber,
-            string message,
-            Func<object, Task> asyncCallback,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, asyncCallback, onException);
-
-        #region bool isBlocking
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender, TArgs>(
-            object subscriber,
-            string message,
-            Func<TSender, TArgs, Task> asyncCallback,
-            bool isBlocking,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender>(
-            object subscriber,
-            string message,
-            Func<TSender, Task> asyncCallback,
-            bool isBlocking,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException, source);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny<TArgs>(
-            object subscriber,
-            string message,
-            Func<object, TArgs, Task> asyncCallback,
-            bool isBlocking,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException);
-
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny(
-            object subscriber,
-            string message,
-            Func<object, Task> asyncCallback,
-            bool isBlocking,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, asyncCallback, isBlocking, onException);
-
-
-        #endregion
-
-        #region IViewModelBase viewModel
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void Subscribe<TSender, TArgs>(
+            TSender source = null,
+            bool isBlocking = true) where TSender : class
+        => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
+        void ISafeMessagingCenter.Subscribe<TSender, TArgs>(
             object subscriber,
             string message,
             Func<TSender, TArgs, Task> asyncCallback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException, source);
+            Action<Exception> onException,
+            TSender source,
+            bool isBlocking) where TSender : class
+        => InnerSubscribe(typeof(TSender), typeof(TArgs), subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
 
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+
         public static void Subscribe<TSender>(
             object subscriber,
             string message,
             Func<TSender, Task> asyncCallback,
-            IViewModelBase viewModel,
+            IViewModelBase viewModel = null,
             Action<Exception> onException = null,
-            TSender source = null) where TSender : class
-            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException, source);
+            TSender source = null,
+            bool isBlocking = true) where TSender : class
+        => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
+        void ISafeMessagingCenter.Subscribe<TSender>(
+            object subscriber,
+            string message,
+            Func<TSender, Task> asyncCallback,
+            IViewModelBase viewModel,
+            Action<Exception> onException,
+            TSender source,
+            bool isBlocking) where TSender : class
+        => InnerSubscribe(typeof(TSender), null, subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
 
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny<TArgs>(
+
+        public static void SubscribeAnySender<TArgs>(
+            object subscriber,
+            string message,
+            Func<object, TArgs, Task> asyncCallback,
+            IViewModelBase viewModel = null,
+            Action<Exception> onException = null,
+            bool isBlocking = true)
+        => Instance.SubscribeAnySender(subscriber, message, asyncCallback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAnySender<TArgs>(
             object subscriber,
             string message,
             Func<object, TArgs, Task> asyncCallback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException);
+            Action<Exception> onException,
+            bool isBlocking)
+        => InnerSubscribe(null, typeof(TArgs), subscriber, message, asyncCallback, viewModel, onException, null, isBlocking);
 
-        ///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-        public static void SubscribeAny(
+
+        public static void SubscribeAnySender(
+            object subscriber,
+            string message,
+            Func<object, Task> asyncCallback,
+            IViewModelBase viewModel = null,
+            Action<Exception> onException = null,
+            bool isBlocking = true)
+        => Instance.SubscribeAnySender(subscriber, message, asyncCallback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAnySender(
             object subscriber,
             string message,
             Func<object, Task> asyncCallback,
             IViewModelBase viewModel,
-            Action<Exception> onException = null)
-            => Instance.Subscribe(subscriber, message, asyncCallback, viewModel, onException);
+            Action<Exception> onException,
+            bool isBlocking)
+        => InnerSubscribe(null, null, subscriber, message, asyncCallback, viewModel, onException, null, isBlocking);
 
         #endregion
-
         #endregion
-
-        #endregion
-
     }
 }

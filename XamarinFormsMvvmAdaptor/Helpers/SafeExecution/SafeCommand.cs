@@ -24,38 +24,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
     /// </summary>
     public class SafeCommand<T> : SafeCommand
     {
-        //isBlocking
-        public SafeCommand(
-            Func<T, Task> executeFunction,
-            bool isBlocking,
-            Action<Exception>? onException = null,
-            Func<T, bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : base(
-                  internalExecuteFunction: o =>
-                  {
-                      if (!IsValidParameter(o))
-                          throw new InvalidCommandParameterException(typeof(T));
-
-                      return executeFunction((T)o);
-                  },
-                  isBlocking,
-                  null,
-                  onException,
-                  o =>
-                  {
-                      if (canExecute is null)
-                          return true;
-
-                      return IsValidParameter(o) && canExecute((T)o);
-                  },
-                  mustRunOnCurrentSyncContext)
-        {
-            if (executeFunction is null)
-                throw new ArgumentNullException(nameof(executeFunction)
-                    , $"{nameof(executeFunction)} cannot be null");
-        }
-
         /// <summary>
         /// Initializes an instance of the <see cref="ICommand" class/>
         /// </summary>
@@ -79,7 +47,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             IViewModelBase viewModel = null,
             Action<Exception>? onException = null,
             Func<T, bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
+            bool mustRunOnCurrentSyncContext = false,
+            bool isBlocking = true)
             : base(
                   internalExecuteFunction: o =>
                   {
@@ -88,7 +57,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
                       return executeFunction((T)o);
                   },
-                  false,
                   viewModel,
                   onException,
                   o =>
@@ -98,7 +66,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
                       return IsValidParameter(o) && canExecute((T)o);
                   },
-                  mustRunOnCurrentSyncContext)
+                  mustRunOnCurrentSyncContext,
+                  isBlocking)
         {
             if (executeFunction is null)
                 throw new ArgumentNullException(nameof(executeFunction)
@@ -111,41 +80,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="executeFunction">The function executed when
         /// <see cref="ICommand.Execute(object)"/> is called.</param>
         public SafeCommand(Func<T, Task> executeFunction)
-            : this(executeFunction, null, null, null, false)
+            : this(executeFunction, null, null, null, false, true)
         { }
-
-        //isBlocking
-        public SafeCommand(
-            Action<T> executeAction,
-            bool isBlocking,
-            Action<Exception>? onException = null,
-            Func<T, bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : base(
-                  internalExecuteAction: o =>
-                  {
-                      if (!IsValidParameter(o))
-                          throw new InvalidCommandParameterException(typeof(T));
-
-                      executeAction((T)o);
-                  },
-                  isBlocking,
-                  null,
-                  onException,
-                  o =>
-                  {
-                      if (canExecute is null)
-                          return true;
-
-                      return IsValidParameter(o) && canExecute((T)o);
-                  },
-                  mustRunOnCurrentSyncContext)
-        {
-            if (executeAction is null)
-                throw new ArgumentNullException(nameof(executeAction)
-                    , $"{nameof(executeAction)} cannot be null");
-        }
-
 
         /// <summary>
         /// Initializes an instance of the <see cref="ICommand" class/>
@@ -178,7 +114,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             IViewModelBase viewModel = null,
             Action<Exception>? onException = null,
             Func<T, bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
+            bool mustRunOnCurrentSyncContext = false,
+            bool isBlocking = true)
             : base(
                   internalExecuteAction: o =>
                   {
@@ -187,7 +124,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
                       executeAction((T)o);
                   },
-                  false,
                   viewModel,
                   onException,
                   o =>
@@ -197,7 +133,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
                       return IsValidParameter(o) && canExecute((T)o);
                   },
-                  mustRunOnCurrentSyncContext)
+                  mustRunOnCurrentSyncContext,
+                  isBlocking)
         {
             if (executeAction is null)
                 throw new ArgumentNullException(nameof(executeAction)
@@ -218,42 +155,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="executeAction">The function executed when
         /// <see cref="ICommand.Execute(object)"/> is called.</param>
         public SafeCommand(Action<T> executeAction)
-            : this(executeAction, null, null, null, false)
+            : this(executeAction, null, null, null, false, true)
         { }
-
-        //IsBlocking
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public SafeCommand(
-            Func<T, Task> executeFunction,
-            TaskScheduler scheduler,
-            bool isBlocking,
-            Action<Exception>? onException = null,
-            Func<T, bool>? canExecute = null
-            //bool mustRunOnCurrentSyncContext is moot
-            )
-            : base(
-                  o =>
-                  {
-                      if (!IsValidParameter(o))
-                          throw new InvalidCommandParameterException(typeof(T));
-
-                      return executeFunction((T)o);
-                  },
-                  scheduler,
-                  isBlocking,
-                  onException,
-                  o =>
-                  {
-                      if (canExecute is null)
-                          return true;
-
-                      return IsValidParameter(o) && canExecute((T)o);
-                  })
-        {
-            if (executeFunction is null)
-                throw new ArgumentNullException(nameof(executeFunction)
-                    , $"{nameof(executeFunction)} cannot be null");
-        }
 
         /// <summary>
         /// For Unit Testing. Command runs using the specified <see cref="TaskScheduler"/>
@@ -264,8 +167,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             TaskScheduler scheduler,
             IViewModelBase viewModel = null,
             Action<Exception>? onException = null,
-            Func<T, bool>? canExecute = null
+            Func<T, bool>? canExecute = null,
             //bool mustRunOnCurrentSyncContext is moot
+            bool isBlocking = true
             )
             : base(
                   o =>
@@ -284,7 +188,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                           return true;
 
                       return IsValidParameter(o) && canExecute((T)o);
-                  })
+                  },
+                  isBlocking)
         {
             if (executeFunction is null)
                 throw new ArgumentNullException(nameof(executeFunction)
@@ -331,26 +236,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         readonly IViewModelBase _viewModel;
         readonly bool _isBlocking;
 
-        //isBlocking
-        public SafeCommand(Func<Task> executeFunction,
-            bool isBlocking,
-            Action<Exception>? onException = null,
-            Func<bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : this(
-                  internalExecuteFunction:
-                    o => executeFunction(),
-                  isBlocking,
-                  null,
-                  onException,
-                  o => canExecute?.Invoke() ?? true,
-                  mustRunOnCurrentSyncContext)
-        {
-            if (executeFunction is null)
-                throw new ArgumentNullException(nameof(executeFunction)
-                    , $"{nameof(executeFunction)} cannot be null");
-        }
-
 
         /// <summary>
         /// Initializes an instance of the <see cref="ICommand" class/>
@@ -374,15 +259,16 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             IViewModelBase viewModel = null,
             Action<Exception>? onException = null,
             Func<bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
+            bool mustRunOnCurrentSyncContext = false,
+            bool isBlocking = true)
             : this(
                   internalExecuteFunction:
                     o => executeFunction(),
-                  false,
                   viewModel,
                   onException,
                   o => canExecute?.Invoke() ?? true,
-                  mustRunOnCurrentSyncContext)
+                  mustRunOnCurrentSyncContext,
+                  isBlocking)
         {
             if (executeFunction is null)
                 throw new ArgumentNullException(nameof(executeFunction)
@@ -395,34 +281,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="executeFunction">The function executed when
         /// <see cref="ICommand.Execute(object)"/> is called.</param>
         public SafeCommand(Func<Task> executeFunction)
-            : this(executeFunction, null, null, null, false)
+            : this(executeFunction, null, null, null, false, true)
         { }
 
-        //isBlocking
-        public SafeCommand(
-            Action executeAction,
-            bool isBlocking,
-            Action<Exception>? onException = null,
-            Func<bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
-            : this(
-                  internalExecuteAction:
-                    o => executeAction(),
-                  isBlocking,
-                  null,
-                  onException,
-                  o =>
-                  {
-                      if (canExecute is null)
-                          return true;
-                      else
-                          return canExecute();
-                  },
-                  mustRunOnCurrentSyncContext)
-        {
-            if (executeAction == null)
-                throw new ArgumentNullException(nameof(executeAction));
-        }
 
         /// <summary>
         /// Initializes an instance of the <see cref="ICommand" class/>
@@ -455,11 +316,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             IViewModelBase viewModel = null,
             Action<Exception>? onException = null,
             Func<bool>? canExecute = null,
-            bool mustRunOnCurrentSyncContext = false)
+            bool mustRunOnCurrentSyncContext = false,
+            bool isBlocking = true)
             : this(
                   internalExecuteAction:
                     o => executeAction(),
-                  false,
                   viewModel,
                   onException,
                   o =>
@@ -469,7 +330,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                       else
                           return canExecute();
                   },
-                  mustRunOnCurrentSyncContext)
+                  mustRunOnCurrentSyncContext,
+                  isBlocking)
         {
             if (executeAction == null)
                 throw new ArgumentNullException(nameof(executeAction));
@@ -489,26 +351,8 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="executeAction">The function executed when
         /// <see cref="ICommand.Execute(object)"/> is called.</param>
         public SafeCommand(Action executeAction)
-            : this(executeAction: executeAction, null, null, null, false)
+            : this(executeAction: executeAction, null, null, null, false, true)
         { }
-
-        //isBlocking
-        [EditorBrowsable(EditorBrowsableState.Never)] //Designed for Testing purposes only
-        public SafeCommand(
-            Func<object?, Task> executeFunction,
-            TaskScheduler scheduler,
-            bool isBlocking,
-            Action<Exception>? onException = null,
-            Func<object?, bool>? canExecute = null
-            //mustRunOnCurrentSyncContext is moot
-            )
-            : this(internalExecuteFunction: executeFunction, isBlocking, null, onException, canExecute, false)
-        {
-            _scheduler = scheduler
-                ?? throw new ArgumentNullException(nameof(scheduler)
-                        , $"{nameof(scheduler)} cannot be null");
-        }
-
 
         /// <summary>
         /// For Unit Testing. Command runs using the specified <see cref="TaskScheduler"/>
@@ -519,10 +363,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             TaskScheduler scheduler,
             IViewModelBase viewModel = null,
             Action<Exception>? onException = null,
-            Func<object?, bool>? canExecute = null
+            Func<object?, bool>? canExecute = null,
             //mustRunOnCurrentSyncContext is moot
+            bool isBlocking = true
             )
-            : this(internalExecuteFunction: executeFunction, false, viewModel, onException, canExecute, false)
+            : this(internalExecuteFunction: executeFunction, viewModel, onException, canExecute, false, isBlocking)
         {
             _scheduler = scheduler
                 ?? throw new ArgumentNullException(nameof(scheduler)
@@ -533,12 +378,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         protected SafeCommand(
             Func<object, Task> internalExecuteFunction,
-            bool isBlocking,
             IViewModelBase viewModel,
             Action<Exception>? onException,
             Func<object?, bool>? canExecute,
-            bool mustRunOnCurrentSyncContext)
-            : this(isBlocking, viewModel, onException, baseCanExecute: canExecute, mustRunOnCurrentSyncContext)
+            bool mustRunOnCurrentSyncContext,
+            bool isBlocking)
+            : this(viewModel, onException, baseCanExecute: canExecute, mustRunOnCurrentSyncContext, isBlocking)
         {
             _executeAsync = internalExecuteFunction
                 ?? throw new ArgumentNullException(nameof(internalExecuteFunction)
@@ -547,12 +392,12 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         protected SafeCommand(
             Action<object> internalExecuteAction,
-            bool isBlocking,
             IViewModelBase viewModel,
             Action<Exception>? onException,
             Func<object?, bool>? canExecute,
-            bool mustRunOnCurrentSyncContext)
-            : this(isBlocking, viewModel, onException ,baseCanExecute: canExecute, mustRunOnCurrentSyncContext)
+            bool mustRunOnCurrentSyncContext,
+            bool isBlocking)
+            : this(viewModel, onException, baseCanExecute: canExecute, mustRunOnCurrentSyncContext, isBlocking)
         {
             _execute = internalExecuteAction
                 ?? throw new ArgumentNullException(nameof(internalExecuteAction)
@@ -560,21 +405,14 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
 
         private SafeCommand(
-            bool isBlocking,
             IViewModelBase viewModel,
             Action<Exception>? onException,
             Func<object?, bool>? baseCanExecute,
-            bool mustRunOnCurrentSyncContext)
+            bool mustRunOnCurrentSyncContext,
+            bool isBlocking)
         {
-            //Set first because if ViewModel !=null then will be set to true
             _isBlocking = isBlocking;
-
-            if (viewModel != null)
-            {
-                _viewModel = viewModel;
-                _isBlocking = true;
-            }
-            
+            _viewModel = viewModel;
             _canExecute = baseCanExecute ?? (_ => true);
             _onException = onException;
             _mustRunOnCurrentSyncContext = mustRunOnCurrentSyncContext;
@@ -671,7 +509,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             if (IsBusy)
                 return;
 
-            if(_isBlocking)
+            if (_isBlocking)
                 IsBusy = true;
 
             try

@@ -24,9 +24,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
 		void Unsubscribe<TSender>(object subscriber, string message) where TSender : class;
 		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
-		void UnsubscribeAny<TArgs>(object subscriber, string message);
+		void UnsubscribeAnySender<TArgs>(object subscriber, string message);
 		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
-		void UnsubscribeAny(object subscriber, string message);
+		void UnsubscribeAnySender(object subscriber, string message);
 
 		#region Subscribe
 		#region Actions
@@ -51,211 +51,72 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 			object subscriber,
 			string message,
 			Action<TSender,TArgs> callback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
 			Action<TSender> callback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
+		void SubscribeAnySender<TArgs>(
 			object subscriber,
 			string message,
 			Action<object, TArgs> callback,
-			Action<Exception> onException = null);
+			IViewModelBase viewModel = null,
+			Action<Exception> onException = null,
+			bool isBlocking = true);
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
+		void SubscribeAnySender(
 			object subscriber,
 			string message,
 			Action<object> callback,
-			Action<Exception> onException = null);
-
-		#region bool isBlocking
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message, Action<TSender, TArgs> callback,
-			bool isBlocking,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Action<TSender> callback,
-			bool isBlocking,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Action<object, TArgs> callback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Action<object> callback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-
-		#endregion
-
-		#region IViewModelBase viewModel
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message,
-			Action<TSender, TArgs> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Action<TSender> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Action<object, TArgs> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Action<object> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-		#endregion
+			bool isBlocking = true);
 
 		#endregion
 		#region Functions
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
 		void Subscribe<TSender, TArgs>(
 			object subscriber,
 			string message,
 			Func<TSender, TArgs, Task> asyncCallback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
 			Func<TSender, Task> asyncCallback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
+		void SubscribeAnySender<TArgs>(
 			object subscriber,
 			string message,
 			Func<object, TArgs, Task> asyncCallback,
-			Action<Exception> onException = null);
+			IViewModelBase viewModel = null,
+			Action<Exception> onException = null,
+			bool isBlocking = true);
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
+		void SubscribeAnySender(
 			object subscriber,
 			string message,
 			Func<object, Task> asyncCallback,
-			Action<Exception> onException = null);
-
-		#region bool isBlocking
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message,
-			Func<TSender, TArgs, Task> asyncCallback,
-			bool isBlocking,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Func<TSender, Task> asyncCallback,
-			bool isBlocking,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Func<object, TArgs, Task> asyncCallback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Func<object, Task> asyncCallback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-
-		#endregion
-
-		#region IViewModelBase viewModel
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message,
-			Func<TSender, TArgs, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Func<TSender, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Func<object, TArgs, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Func<object, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-        #endregion
+			bool isBlocking = true);
 
         #endregion
         #endregion

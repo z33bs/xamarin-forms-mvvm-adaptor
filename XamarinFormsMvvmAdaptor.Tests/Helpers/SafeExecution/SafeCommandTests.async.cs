@@ -404,7 +404,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
         #region Monkey Tests
         [Fact]
-        public void ExecuteT_CalledTwice_FiresTwice()
+        public void ExecuteT_DefaultParameters_CalledTwice_FiresOnceIfBusy()
         {
             int times = 0;
             async Task MockTask(string text)
@@ -413,32 +413,32 @@ namespace XamarinFormsMvvmAdaptor.Tests
                 times++;
             }
             var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
-            ICommand command = new SafeCommand<string>(MockTask, dts, null,null) ;
-
-            command.Execute("test");
-            command.Execute("test");
-            dts.RunTasksUntilIdle();
-
-            Assert.Equal(2, times);
-        }
-
-        [Fact]
-        public void ExecuteT_isBlockingTrue_CalledTwice_FiresOnceIfBusy()
-        {
-            int times = 0;
-            async Task MockTask(string text)
-            {
-                await Task.Delay(Delay);
-                times++;
-            }
-            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
-            ICommand command = new SafeCommand<string>(MockTask, dts, isBlocking:true, null, null);
+            ICommand command = new SafeCommand<string>(MockTask, dts) ;
 
             command.Execute("test");
             command.Execute("test");
             dts.RunTasksUntilIdle();
 
             Assert.Equal(1, times);
+        }
+
+        [Fact]
+        public void ExecuteT_isBlockingFalse_CalledTwice_FiresTwiceIfBusy()
+        {
+            int times = 0;
+            async Task MockTask(string text)
+            {
+                await Task.Delay(Delay);
+                times++;
+            }
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new SafeCommand<string>(MockTask, dts, isBlocking:false);
+
+            command.Execute("test");
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
+
+            Assert.Equal(2, times);
         }
 
         [Fact]
@@ -462,6 +462,30 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             Assert.Equal(1, times);
             mockVm.VerifyGet(vm => vm.IsBusy, Times.Exactly(2));
+            mockVm.VerifySet(vm => vm.IsBusy = true);
+            mockVm.VerifySet(vm => vm.IsBusy = false);
+        }
+
+        [Fact]
+        public void ExecuteT_IViewModelBase_isBlockingFalse_IsBusyPropertyUpdates()
+        {
+            int times = 0;
+            async Task MockTask(string text)
+            {
+                await Task.Delay(Delay);
+                times++;
+            }
+
+            var mockVm = new Mock<IViewModelBase>();
+
+            var dts = new DeterministicTaskScheduler(shouldThrowExceptions: false);
+            ICommand command = new SafeCommand<string>(MockTask, dts, mockVm.Object);
+
+            command.Execute("test");
+            dts.RunTasksUntilIdle();
+
+            Assert.Equal(1, times);
+            mockVm.VerifyGet(vm => vm.IsBusy, Times.Exactly(1));
             mockVm.VerifySet(vm => vm.IsBusy = true);
             mockVm.VerifySet(vm => vm.IsBusy = false);
         }
