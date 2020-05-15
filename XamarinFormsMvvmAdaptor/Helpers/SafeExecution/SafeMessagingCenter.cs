@@ -252,18 +252,18 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 
         ///<inheritdoc cref="UnsubscribeAnySender{TArgs}(object, string)"/>
         public static void UnsubscribeAnySender<TArgs>(object subscriber, string message)
-            => Instance.UnsubscribeAnySender<TArgs>(subscriber, message);
+            => Instance.UnsubscribeAny<TArgs>(subscriber, message);
         ///<inheritdoc/>
-        void ISafeMessagingCenter.UnsubscribeAnySender<TArgs>(object subscriber, string message)
+        void ISafeMessagingCenter.UnsubscribeAny<TArgs>(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, typeof(TArgs), subscriber);
         }
 
-        ///<inheritdoc cref="UnsubscribeAnySender(object, string)"/>
-        public static void UnsubscribeAnySender(object subscriber, string message)
-            => Instance.UnsubscribeAnySender(subscriber, message);
+        ///<inheritdoc cref="UnsubscribeAny(object, string)"/>
+        public static void UnsubscribeAny(object subscriber, string message)
+            => Instance.UnsubscribeAny(subscriber, message);
         ///<inheritdoc/>
-        void ISafeMessagingCenter.UnsubscribeAnySender(object subscriber, string message)
+        void ISafeMessagingCenter.UnsubscribeAny(object subscriber, string message)
         {
             InnerUnsubscribe(message, null, null, subscriber);
         }
@@ -363,15 +363,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             bool isBlocking) where TSender : class
         => InnerSubscribe(typeof(TSender), null, subscriber, message, callback, viewModel, onException, source, isBlocking);
 
-        public static void SubscribeAnySender<TArgs>(
+        public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
             Action<object, TArgs> callback,
             IViewModelBase viewModel = null,
             Action<Exception> onException = null,
             bool isBlocking = true)
-        => Instance.SubscribeAnySender(subscriber, message, callback, viewModel, onException, isBlocking);
-        void ISafeMessagingCenter.SubscribeAnySender<TArgs>(
+        => Instance.SubscribeAny(subscriber, message, callback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(
             object subscriber,
             string message,
             Action<object, TArgs> callback,
@@ -381,15 +381,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(null, typeof(TArgs), subscriber, message, callback, viewModel, onException, null, isBlocking);
 
 
-        public static void SubscribeAnySender(
+        public static void SubscribeAny(
             object subscriber,
             string message,
             Action<object> callback,
             IViewModelBase viewModel = null,
             Action<Exception> onException = null,
             bool isBlocking = true)
-        => Instance.SubscribeAnySender(subscriber, message, callback, viewModel, onException, isBlocking);
-        void ISafeMessagingCenter.SubscribeAnySender(
+        => Instance.SubscribeAny(subscriber, message, callback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAny(
             object subscriber,
             string message,
             Action<object> callback,
@@ -441,15 +441,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(typeof(TSender), null, subscriber, message, asyncCallback, viewModel, onException, source, isBlocking);
 
 
-        public static void SubscribeAnySender<TArgs>(
+        public static void SubscribeAny<TArgs>(
             object subscriber,
             string message,
             Func<object, TArgs, Task> asyncCallback,
             IViewModelBase viewModel = null,
             Action<Exception> onException = null,
             bool isBlocking = true)
-        => Instance.SubscribeAnySender(subscriber, message, asyncCallback, viewModel, onException, isBlocking);
-        void ISafeMessagingCenter.SubscribeAnySender<TArgs>(
+        => Instance.SubscribeAny(subscriber, message, asyncCallback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAny<TArgs>(
             object subscriber,
             string message,
             Func<object, TArgs, Task> asyncCallback,
@@ -459,15 +459,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         => InnerSubscribe(null, typeof(TArgs), subscriber, message, asyncCallback, viewModel, onException, null, isBlocking);
 
 
-        public static void SubscribeAnySender(
+        public static void SubscribeAny(
             object subscriber,
             string message,
             Func<object, Task> asyncCallback,
             IViewModelBase viewModel = null,
             Action<Exception> onException = null,
             bool isBlocking = true)
-        => Instance.SubscribeAnySender(subscriber, message, asyncCallback, viewModel, onException, isBlocking);
-        void ISafeMessagingCenter.SubscribeAnySender(
+        => Instance.SubscribeAny(subscriber, message, asyncCallback, viewModel, onException, isBlocking);
+        void ISafeMessagingCenter.SubscribeAny(
             object subscriber,
             string message,
             Func<object, Task> asyncCallback,

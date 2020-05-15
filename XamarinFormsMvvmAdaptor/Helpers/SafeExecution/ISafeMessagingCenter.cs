@@ -24,9 +24,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
 		void Unsubscribe<TSender>(object subscriber, string message) where TSender : class;
 		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
-		void UnsubscribeAnySender<TArgs>(object subscriber, string message);
+		void UnsubscribeAny<TArgs>(object subscriber, string message);
 		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
-		void UnsubscribeAnySender(object subscriber, string message);
+		void UnsubscribeAny(object subscriber, string message);
 
 		#region Subscribe
 		#region Actions
@@ -66,7 +66,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 			TSender source = null,
 			bool isBlocking = true) where TSender : class;
 
-		void SubscribeAnySender<TArgs>(
+		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
 			Action<object, TArgs> callback,
@@ -74,7 +74,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 			Action<Exception> onException = null,
 			bool isBlocking = true);
 
-		void SubscribeAnySender(
+		void SubscribeAny(
 			object subscriber,
 			string message,
 			Action<object> callback,
@@ -102,7 +102,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 			TSender source = null,
 			bool isBlocking = true) where TSender : class;
 
-		void SubscribeAnySender<TArgs>(
+		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
 			Func<object, TArgs, Task> asyncCallback,
@@ -110,7 +110,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 			Action<Exception> onException = null,
 			bool isBlocking = true);
 
-		void SubscribeAnySender(
+		void SubscribeAny(
 			object subscriber,
 			string message,
 			Func<object, Task> asyncCallback,
