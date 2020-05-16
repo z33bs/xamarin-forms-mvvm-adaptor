@@ -5,10 +5,21 @@ using System.Runtime.CompilerServices;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Helper methods that Raise PropertyChanged event
+    /// </summary>
     public abstract class ObservableObject : IObservableObject
     {
-        ///<inheritdoc/>
+        /// <summary>
+        /// Sets the property.
+        /// </summary>
+        /// <returns><c>true</c>, if property was set, <c>false</c> otherwise.</returns>
+        /// <param name="backingStore">Backing store.</param>
+        /// <param name="value">Value.</param>
+        /// <param name="validateValue">Validates value.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="onChanged">On changed.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         public virtual bool SetProperty<T>(
             ref T backingStore, T value,
             [CallerMemberName]string propertyName = "",
@@ -29,10 +40,15 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             return true;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Implements <see cref="INotifyPropertyChanged"/>
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Raises the property changed event.
+        /// </summary>
+        /// <param name="propertyName">Property name.</param>
         public virtual void OnPropertyChanged([CallerMemberName]string propertyName = "") =>
          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 
+//todo Now that have EditorBrowsable can keep in same namespace
 namespace XamarinFormsMvvmAdaptor.FluentApi
 {
     /// <summary>

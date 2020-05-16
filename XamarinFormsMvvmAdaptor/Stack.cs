@@ -8,10 +8,12 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// For unit testing and mocking of <see cref="StackExtensions"/>
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class Stack : IStack
     {
-        ///<inheritdoc/>
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
         public async Task Collapse(IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)
@@ -28,7 +30,9 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
         public Page GetCurrentPage(IReadOnlyList<Page> stack)
         {
             return InternalGetCurrentPage(stack);
@@ -43,7 +47,9 @@ namespace XamarinFormsMvvmAdaptor
             return page;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
         public Page GetPreviousPage(IReadOnlyList<Page> stack)
         {
             return InternalGetPreviousPage(stack);
@@ -64,13 +70,17 @@ namespace XamarinFormsMvvmAdaptor
             return null;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
         public object GetCurrentViewModel(IReadOnlyList<Page> stack)
         {
             return InternalGetCurrentPage(stack).BindingContext;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// For unit testing and mocking of <see cref="StackExtensions"/>
+        /// </summary>
         public object GetPreviousViewModel(IReadOnlyList<Page> stack)
         {
             if (stack.Count > 1)

@@ -1,10 +1,15 @@
 ﻿namespace XamarinFormsMvvmAdaptor.Helpers
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Commonly used Properties in ViewModel that Raise PropertyChanged event
+    /// </summary>
     public abstract class ViewModelBase : ObservableObject, IViewModelBase
     {
         string title = string.Empty;
-        ///<inheritdoc/>
+        /// <summary>
+        /// Gets or sets the title.
+        /// </summary>
+        /// <value>The title.</value>
         public string Title
         {
             get => title;
@@ -12,7 +17,10 @@
         }
 
         string icon = string.Empty;
-        ///<inheritdoc/>
+        /// <summary>
+        /// Gets or sets the icon.
+        /// </summary>
+        /// <value>The icon.</value>
         public string Icon
         {
             get => icon;
@@ -20,7 +28,10 @@
         }
 
         bool isBusy;
-        ///<inheritdoc/>
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is busy.
+        /// </summary>
+        /// <value><c>true</c> if this instance is busy; otherwise, <c>false</c>.</value>
         public bool IsBusy
         {
             get => isBusy;
@@ -32,7 +43,10 @@
         }
 
         bool isNotBusy = true;
-        ///<inheritdoc/>
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is not busy.
+        /// </summary>
+        /// <value><c>true</c> if this instance is not busy; otherwise, <c>false</c>.</value>
         public bool IsNotBusy
         {
             get => isNotBusy;

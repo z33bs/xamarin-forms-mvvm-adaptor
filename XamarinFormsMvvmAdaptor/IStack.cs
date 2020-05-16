@@ -8,7 +8,7 @@ namespace XamarinFormsMvvmAdaptor
     /// <summary>
     /// For unit testing and mocking of <see cref="StackExtensions"/>
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IStack
     {
         /// <summary>
