@@ -17,36 +17,40 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <summary>
         /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// </summary>
+        /// <param name="task">The Task</param>
         /// <typeparam name="TException">If an exception is thrown of a different type, it will not be handled</typeparam>
         /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
-        public static Task SafeContinueWith<TException>(this Task task, Action<TException>? onException)
+        public static Task SafeContinueWith<TException>(this Task task, Action<TException> onException)
             where TException : Exception
             => Implementation.SafeContinueWith(task, onException);
 
         /// <summary>
         /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// </summary>
+        /// <param name="task">The Task</param>
         /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
-        public static Task SafeContinueWith(this Task task, Action<Exception>? onException)
+        public static Task SafeContinueWith(this Task task, Action<Exception> onException)
             => Implementation.SafeContinueWith(task, onException);
 
         /// <summary>
         /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// </summary>
+        /// <param name="task">The Task</param>
         /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
-        public static void SafeFireAndForget(this Task task, Action<Exception>? onException)
+        public static void SafeFireAndForget(this Task task, Action<Exception> onException)
             => Implementation.SafeContinueWith(task, onException);
 
         /// <summary>
         /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// </summary>
+        /// <param name="task">The Task</param>
         /// <typeparam name="TException">If an exception is thrown of a different type, it will not be handled</typeparam>
         /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
-        public static void SafeFireAndForget<TException>(this Task task, Action<TException>? onException)
+        public static void SafeFireAndForget<TException>(this Task task, Action<TException> onException)
             where TException : Exception => Implementation.SafeContinueWith(task, onException);
 
 
@@ -70,7 +74,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// For unit testing / mocking
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Task SafeContinueWith<TException>(this Task task, Action<TException>? onException, TaskScheduler scheduler = null)
+        public static Task SafeContinueWith<TException>(this Task task, Action<TException> onException, TaskScheduler scheduler = null)
             where TException : Exception
             => Implementation.SafeContinueWith(task, onException, scheduler);
 
@@ -78,20 +82,20 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// For unit testing / mocking
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Task SafeContinueWith(this Task task, Action<Exception>? onException, TaskScheduler scheduler = null)
+        public static Task SafeContinueWith(this Task task, Action<Exception> onException, TaskScheduler scheduler = null)
             => Implementation.SafeContinueWith(task, onException, scheduler);
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void SafeFireAndForget(this Task task, Action<Exception>? onException = null, TaskScheduler scheduler = null) => Implementation.SafeContinueWith(task,onException,scheduler);
+        public static void SafeFireAndForget(this Task task, Action<Exception> onException = null, TaskScheduler scheduler = null) => Implementation.SafeContinueWith(task,onException,scheduler);
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void SafeFireAndForget<TException>(this Task task, Action<TException>? onException = null, TaskScheduler scheduler = null) where TException : Exception => Implementation.SafeContinueWith(task,onException, scheduler);
+        public static void SafeFireAndForget<TException>(this Task task, Action<TException> onException = null, TaskScheduler scheduler = null) where TException : Exception => Implementation.SafeContinueWith(task,onException, scheduler);
         #endregion
     }
 }

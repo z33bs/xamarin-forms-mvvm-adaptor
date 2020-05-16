@@ -20,18 +20,6 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public TestOverloads(Func<Task> func, IViewModelBase viewModel, Action<Exception> onException) : this(func, viewModel) { }
 
     }
-    public class PlayGround
-    {
-        void MyAction() { }
-        void OnException(Exception ex) { }
-        IViewModelBase viewModelBase;
-
-        [Fact]
-        public void Test()
-        {
-            new TestOverloads(() => { }, viewModelBase);
-        }
-    }
 
     [Collection("SafeTests")]
     public class SafeCommandTests_IsBusy

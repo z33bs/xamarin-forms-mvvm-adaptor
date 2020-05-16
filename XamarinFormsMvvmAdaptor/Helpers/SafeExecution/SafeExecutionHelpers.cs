@@ -47,11 +47,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/>
         /// </summary>
-        public static Action<Exception>? DefaultExceptionHandler //{ get; private set; }
+        public static Action<Exception> DefaultExceptionHandler //{ get; private set; }
             => Instance.DefaultExceptionHandler;
 
-        Action<Exception>? _defaultExceptionHandler;
-        Action<Exception>? ISafeExecutionHelpers.DefaultExceptionHandler
+        Action<Exception> _defaultExceptionHandler;
+        Action<Exception> ISafeExecutionHelpers.DefaultExceptionHandler
             => _defaultExceptionHandler;
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// when an exception is caught by
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/></param>
-        public static void Initialize(Action<Exception>? defaultOnException, bool shouldAlwaysRethrowException = false)
+        public static void Initialize(Action<Exception> defaultOnException, bool shouldAlwaysRethrowException = false)
             => Instance.Initialize(defaultOnException, shouldAlwaysRethrowException);
-        void ISafeExecutionHelpers.Initialize(Action<Exception>? defaultOnException, bool shouldAlwaysRethrowException)
+        void ISafeExecutionHelpers.Initialize(Action<Exception> defaultOnException, bool shouldAlwaysRethrowException)
         {
             _shouldAlwaysRethrowException = shouldAlwaysRethrowException;
             _defaultExceptionHandler = defaultOnException;
@@ -124,10 +124,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <typeparam name="TException"></typeparam>
         /// <param name="exception"></param>
         /// <param name="onException"></param>
-        public static void HandleException<TException>(Exception exception, Action<TException>? onException)
+        public static void HandleException<TException>(Exception exception, Action<TException> onException)
             where TException : Exception
             => Instance.HandleException(exception, onException);
-        void ISafeExecutionHelpers.HandleException<TException>(Exception exception, Action<TException>? onException)
+        void ISafeExecutionHelpers.HandleException<TException>(Exception exception, Action<TException> onException)
         {
             if (exception is InvalidCommandParameterException)
                 throw exception; //internal exception from SafeCommand

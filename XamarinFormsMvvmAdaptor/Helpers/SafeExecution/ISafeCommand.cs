@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
+    /// <summary>
+    /// Safe implementation of the <see cref="ICommand"/> interface
+    /// </summary>
     public interface ISafeCommand : ICommand
     {
         /// <summary>

@@ -1,6 +1,9 @@
 ﻿using System;
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
+    /// <summary>
+    /// Core functionality for the collection of &quot;Safe&quot; delgate invokations 
+    /// </summary>
     public interface ISafeExecutionHelpers
     {
         /// <summary>
@@ -8,7 +11,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/>
         /// </summary>
-        Action<Exception>? DefaultExceptionHandler { get; }
+        Action<Exception> DefaultExceptionHandler { get; }
         /// <summary>
         /// Initialize SafeExecutionHelpers without a <see cref="DefaultExceptionHandler"/>.
         ///
@@ -35,7 +38,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/></param>
         void Initialize(
-            Action<Exception>? defaultOnException,
+            Action<Exception> defaultOnException,
             bool shouldAlwaysRethrowException = false);
         /// <summary>
         /// Removes the <see cref="DefaultExceptionHandler"/>
@@ -58,7 +61,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="onException"></param>
         void HandleException<TException>(
             Exception exception,
-            Action<TException>? onException)
+            Action<TException> onException)
             where TException : Exception;
         /// <summary>
         /// Invoke the 

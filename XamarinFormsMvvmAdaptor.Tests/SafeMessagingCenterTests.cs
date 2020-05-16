@@ -15,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         CultureInfo _defaultUICulture;
 
 
-        public virtual void Setup()
+        private void Setup()
         {
             _defaultCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             _defaultUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
@@ -23,7 +23,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         }
 
 
-        public virtual void TearDown()
+        private void TearDown()
         {
             //Device.PlatformServices = null;
             System.Threading.Thread.CurrentThread.CurrentCulture = _defaultCulture;

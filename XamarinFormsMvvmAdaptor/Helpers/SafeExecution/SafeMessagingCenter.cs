@@ -410,9 +410,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="message">Will only execute the callback when the specified message is recieved</param>
         /// <param name="callback">Callback to execute</param>
         /// <param name="onException">Callback to execute if Exception is caught</param>
-        /// <param name="source">Instance of the source that will send the message.
-        /// If specified, callback will only execute if the sender is from the
-        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
         /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
         /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
         /// property.
@@ -441,9 +438,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="message">Will only execute the callback when the specified message is recieved</param>
         /// <param name="callback">Callback to execute</param>
         /// <param name="onException">Callback to execute if Exception is caught</param>
-        /// <param name="source">Instance of the source that will send the message.
-        /// If specified, callback will only execute if the sender is from the
-        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
         /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
         /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
         /// property.
@@ -546,9 +540,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="message">Will only execute the callback when the specified message is recieved</param>
         /// <param name="asyncCallback">Callback to execute</param>
         /// <param name="onException">Callback to execute if Exception is caught</param>
-        /// <param name="source">Instance of the source that will send the message.
-        /// If specified, callback will only execute if the sender is from the
-        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
         /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
         /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
         /// property.
@@ -577,9 +568,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="message">Will only execute the callback when the specified message is recieved</param>
         /// <param name="asyncCallback">Callback to execute</param>
         /// <param name="onException">Callback to execute if Exception is caught</param>
-        /// <param name="source">Instance of the source that will send the message.
-        /// If specified, callback will only execute if the sender is from the
-        /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
         /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
         /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
         /// property.

@@ -16,9 +16,9 @@ namespace XamarinFormsMvvmAdaptor.Tests
         Task IntParameterTask(int delay) => Task.Delay(delay);
         Task StringParameterTask(string text) => Task.Delay(Delay);
 
-        protected bool CanExecuteTrue(object? parameter) => true;
+        protected bool CanExecuteTrue(object parameter) => true;
         protected bool CanExecuteTrue() => true;
-        protected bool CanExecuteFalse(object? parameter) => false;
+        protected bool CanExecuteFalse(object parameter) => false;
         protected bool CanExecuteFalse() => false;
 
         #region AsyncCommand
@@ -143,7 +143,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             SafeCommand command = new SafeCommand(NoParameterTask, canExecute: commandCanExecute);
             command.CanExecuteChanged += handleCanExecuteChanged;
 
-            void handleCanExecuteChanged(object? sender, EventArgs e) => didCanExecuteChangeFire = true;
+            void handleCanExecuteChanged(object sender, EventArgs e) => didCanExecuteChangeFire = true;
             bool commandCanExecute() => canCommandExecute;
 
             Assert.False(command.CanExecute(null));

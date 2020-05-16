@@ -16,7 +16,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// For unit testing and mocking of <see cref="SafeTaskExtensions"/>
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public Task SafeContinueWith<TException>(Task task, Action<TException>? onException, TaskScheduler scheduler = null) where TException : Exception
+        public Task SafeContinueWith<TException>(Task task, Action<TException> onException, TaskScheduler scheduler = null) where TException : Exception
         {
             task.ContinueWith(
                     t => SafeExecutionHelpers

@@ -366,7 +366,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard), string initialValue = "")
+        public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default, string initialValue = "")
         {
             var hasDisplayed = new TaskCompletionSource<Task<string>>();
             Device.BeginInvokeOnMainThread(() =>

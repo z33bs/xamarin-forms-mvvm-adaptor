@@ -1,19 +1,34 @@
-﻿namespace XamarinFormsMvvmAdaptor.FluentApi
+﻿using System.ComponentModel;
+
+namespace XamarinFormsMvvmAdaptor.FluentApi
 {
+    /// <summary>
+    /// Plumbing for Fluent Api
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class ConfigOptions
     {
+        /// <summary>
+        /// Plumbing for Fluent Api
+        /// </summary>
         public ConfigOptions SetViewSuffix(string suffix)
         {
             Settings.ViewSuffix = suffix;
             return this;
         }
 
+        /// <summary>
+        /// Plumbing for Fluent Api
+        /// </summary>
         public ConfigOptions SetViewModelSuffix(string suffix)
         {
             Settings.ViewModelSuffix = suffix;
             return this;
         }
 
+        /// <summary>
+        /// Plumbing for Fluent Api
+        /// </summary>
         public ConfigOptions SetViewAssemblyQualifiedNamespace<TAnyView>()
         {
             SetViewAssemblyQualifiedNamespace(
@@ -22,6 +37,9 @@
             return this;
         }
 
+        /// <summary>
+        /// Plumbing for Fluent Api
+        /// </summary>
         public ConfigOptions SetViewAssemblyQualifiedNamespace(string namespaceName, string assemblyName)
         {
             Settings.ViewAssemblyName = assemblyName;
@@ -29,6 +47,9 @@
             return this;
         }
 
+        /// <summary>
+        /// Plumbing for Fluent Api
+        /// </summary>
         public ConfigOptions SetViewModelAssemblyQualifiedNamespace<TAnyViewModel>()
         {
             SetViewModelAssemblyQualifiedNamespace(
@@ -37,6 +58,9 @@
             return this;
         }
 
+        /// <summary>
+        /// Plumbing for Fluent Api
+        /// </summary>
         public ConfigOptions SetViewModelAssemblyQualifiedNamespace(string namespaceName, string assemblyName)
         {
             Settings.ViewModelAssemblyName = assemblyName;

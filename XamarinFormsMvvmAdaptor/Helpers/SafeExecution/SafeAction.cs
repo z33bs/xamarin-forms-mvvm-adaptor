@@ -14,9 +14,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SafeInvoke<TException>(
-            Action<object?> action,
+            Action<object> action,
             object parameter,
-            Action<TException>? onException)
+            Action<TException> onException)
             where TException : Exception
         {
             try
@@ -33,7 +33,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// For unit testing and mocking of <see cref="SafeActionExtensions"/>
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SafeInvoke<TException>(Action action, Action<TException>? onException)
+        public void SafeInvoke<TException>(Action action, Action<TException> onException)
             where TException : Exception
         {
             try

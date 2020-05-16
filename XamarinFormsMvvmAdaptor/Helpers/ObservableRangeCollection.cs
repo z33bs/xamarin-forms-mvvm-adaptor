@@ -52,7 +52,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
                 return;
             }
 
-            var changedItems = collection is List<T> ? (List<T>)collection : new List<T>(collection);
+            var changedItems = collection is List<T> list ? list : new List<T>(collection);
 
             RaiseChangeNotificationEvents(
                 action: NotifyCollectionChangedAction.Add,
@@ -139,7 +139,7 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             return itemAdded;
         }
 
-        private void RaiseChangeNotificationEvents(NotifyCollectionChangedAction action, List<T>? changedItems = null, int startingIndex = -1)
+        private void RaiseChangeNotificationEvents(NotifyCollectionChangedAction action, List<T> changedItems = null, int startingIndex = -1)
         {
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Count)));
             OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
