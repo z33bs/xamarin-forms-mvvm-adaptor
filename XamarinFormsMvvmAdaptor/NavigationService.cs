@@ -49,9 +49,15 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public IReadOnlyList<Page> ModalStack => navigation.ModalStack;
 
+        #region Avoid dependancy on Xamarin.Forms
         ///<inheritdoc/>
         public ISafeMessagingCenter SafeMessagingCenter => Helpers.SafeMessagingCenter.Instance;
 
+        ///<inheritdoc/>
+        public void BeginInvokeOnMainThread(Action action)
+            => Device.BeginInvokeOnMainThread(action);
+
+        #endregion
         #region CONSTRUCTIVE
         ///<inheritdoc/>
         public Task GoToAsync(ShellNavigationState state, bool animate = true)

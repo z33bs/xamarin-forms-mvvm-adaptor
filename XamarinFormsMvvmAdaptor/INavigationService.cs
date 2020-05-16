@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -26,6 +27,12 @@ namespace XamarinFormsMvvmAdaptor
         /// Returns a singleton instance of the MessagingCenter
         /// </summary>
         Helpers.ISafeMessagingCenter SafeMessagingCenter { get; }
+
+        /// <summary>
+        /// Invokes an Action on the device's main (UI) thread.
+        /// Wrapper of Xamarin.Forms <see cref="Device.BeginInvokeOnMainThread(Action)"/>
+        /// </summary>
+        void BeginInvokeOnMainThread(Action action);
 
         /// <summary>
         /// Navigates to a <see cref="Page"/>
