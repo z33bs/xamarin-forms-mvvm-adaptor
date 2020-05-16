@@ -52,6 +52,12 @@ namespace XamarinFormsMvvmAdaptor
         Task GoToAsync(ShellNavigationState state, object navigationData, bool animate = true);
 
         /// <summary>
+        /// Navigates to a <see cref="Page"/> passing data to the target ViewModel
+        /// </summary>
+        /// <param name="state"></param>
+        Task GoToAsync(ShellNavigationState state);
+
+        /// <summary>
         /// Pops a <see cref="Page"/> off the <see cref="NavigationStack"/>
         /// </summary>
         /// <param name="animated"></param>
@@ -81,7 +87,12 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         Task<TViewModel> PushAsync<TViewModel>(object navigationData, bool animated = true) where TViewModel : class, IOnViewNavigated;
 
-        ///<inheritdoc cref="PushAsync{TViewModel}(object, bool)"/>
+        /// <summary>
+        /// Pushes a <see cref="Page"/> onto the <see cref="NavigationStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         Task<TViewModel> PushAsync<TViewModel>(bool animated = true) where TViewModel : class;
 
         /// <summary>
@@ -93,7 +104,12 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         Task<TViewModel> PushModalAsync<TViewModel>(object navigationData, bool animated = true) where TViewModel : class, IOnViewNavigated;
 
-        ///<inheritdoc cref="PushModalAsync{TViewModel}(object, bool)"/>
+        /// <summary>
+        /// Pushes a <see cref="Page"/> onto the <see cref="ModalStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         Task<TViewModel> PushModalAsync<TViewModel>(bool animated = true) where TViewModel : class;
 
         /// <summary>
@@ -109,7 +125,13 @@ namespace XamarinFormsMvvmAdaptor
         /// <returns></returns>
         Task RemovePreviousPageFromMainStack();
 
-        ///<inheritdoc cref="DisplayAlert(string, string, string, string)"/>
+        /// <summary>
+        /// Display's an Alert
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
         Task DisplayAlert(string title, string message, string cancel);
         /// <summary>
         /// Display's an Alert

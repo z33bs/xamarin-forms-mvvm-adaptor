@@ -18,10 +18,14 @@ using XamarinFormsMvvmAdaptor.Helpers;
 //Autofac adaptor
 namespace XamarinFormsMvvmAdaptor
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Controlls Page Navigation from the ViewModel
+    /// </summary>
     public class NavigationService : INavigationService
     {
-        ///<inheritdoc/>
+        /// <summary>
+        /// Returns Xamarin.Forms.Shell.Current
+        /// </summary>
         public Shell CurrentShell => Shell.Current;
 
         readonly INavigation navigation;
@@ -44,28 +48,48 @@ namespace XamarinFormsMvvmAdaptor
             this.navigation = navigation;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Gets the Current Shell's NavigationStack
+        /// </summary>
         public IReadOnlyList<Page> NavigationStack => navigation.NavigationStack;
-        ///<inheritdoc/>
+        /// <summary>
+        /// Gets the Current Shell's ModalStack
+        /// </summary>
         public IReadOnlyList<Page> ModalStack => navigation.ModalStack;
 
         #region Avoid dependancy on Xamarin.Forms
-        ///<inheritdoc/>
+        /// <summary>
+        /// Returns a singleton instance of the MessagingCenter
+        /// </summary>
         public ISafeMessagingCenter SafeMessagingCenter => Helpers.SafeMessagingCenter.Instance;
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Invokes an Action on the device's main (UI) thread.
+        /// Wrapper of Xamarin.Forms <see cref="Device.BeginInvokeOnMainThread(Action)"/>
+        /// </summary>
         public void BeginInvokeOnMainThread(Action action)
             => Device.BeginInvokeOnMainThread(action);
 
         #endregion
         #region CONSTRUCTIVE
-        ///<inheritdoc/>
+        /// <summary>
+        /// Navigates to a <see cref="Page"/>
+        /// </summary>
+        /// <param name="state">A URI representing either the current page or a destination for navigation in a Shell application.</param>
+        /// <param name="animate"></param>
+        /// <returns></returns>
         public Task GoToAsync(ShellNavigationState state, bool animate = true)
         {
             return GoToAsync(state, null, animate);
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Navigates to a <see cref="Page"/> passing data to the target ViewModel
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="navigationData"></param>
+        /// <param name="animate"></param>
+        /// <returns></returns>
         public async Task GoToAsync(ShellNavigationState state, object navigationData, bool animate = true)
         {
             var isPushed = new TaskCompletionSource<bool>();
@@ -94,13 +118,22 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Navigates to a <see cref="Page"/> passing data to the target ViewModel
+        /// </summary>
+        /// <param name="state"></param>
         public Task GoToAsync(ShellNavigationState state)
         {
             return GoToAsync(state, true);
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pushes a <see cref="Page"/> onto the <see cref="NavigationStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
+        /// <param name="navigationData">Object that will be recieved by the <see cref="IOnViewNavigated.OnViewNavigatedAsync(object)"/> method</param>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task<TViewModel> PushAsync<TViewModel>(
             object navigationData, bool animated = true)
             where TViewModel : class, IOnViewNavigated
@@ -109,7 +142,12 @@ namespace XamarinFormsMvvmAdaptor
             return page.BindingContext as TViewModel; //can be null if no viewModel resolved
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pushes a <see cref="Page"/> onto the <see cref="NavigationStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task<TViewModel> PushAsync<TViewModel>(
             bool animated = true)
             where TViewModel : class
@@ -119,7 +157,13 @@ namespace XamarinFormsMvvmAdaptor
         }
 
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pushes a <see cref="Page"/> onto the <see cref="ModalStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
+        /// <param name="navigationData">Object that will be recieved by the <see cref="IOnViewNavigated.OnViewNavigatedAsync(object)"/> method</param>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task<TViewModel> PushModalAsync<TViewModel>(
             object navigationData, bool animated = true)
             where TViewModel : class, IOnViewNavigated
@@ -128,7 +172,12 @@ namespace XamarinFormsMvvmAdaptor
             return page.BindingContext as TViewModel;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pushes a <see cref="Page"/> onto the <see cref="ModalStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Pushed</typeparam>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task<TViewModel> PushModalAsync<TViewModel>(
             bool animated = true)
             where TViewModel : class
@@ -200,7 +249,10 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         #region DESTRUCTIVE
-        ///<inheritdoc/>
+        /// <summary>
+        /// Removes the <see cref="Page"/> underneath the Top Page in the <see cref="NavigationStack"/>
+        /// </summary>
+        /// <returns></returns>
         public async Task RemovePreviousPageFromMainStack()
         {
             var viewModel = NavigationStack.GetPreviousViewModel();
@@ -227,7 +279,11 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Removes specific <see cref="Page"/> from the <see cref="NavigationStack"/>
+        /// </summary>
+        /// <typeparam name="TViewModel">ViewModel corresponding the the Page to be Removed</typeparam>
+        /// <returns></returns>
         public async Task RemovePageFor<TViewModel>()
         {
             var pageType = GetPageTypeForViewModel(typeof(TViewModel));
@@ -259,7 +315,11 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pops a <see cref="Page"/> off the <see cref="NavigationStack"/>
+        /// </summary>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task PopAsync(bool animated = true)
         {
             var viewModel = NavigationStack.GetCurrentViewModel();
@@ -283,7 +343,11 @@ namespace XamarinFormsMvvmAdaptor
                 await removedViewModel.OnViewRemovedAsync().ConfigureAwait(false);
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pops all pages <see cref="Page"/> off the <see cref="NavigationStack"/>, leaving only the Root Page
+        /// </summary>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task PopToRootAsync(bool animated = true)
         {
             for (int i = navigation.NavigationStack.Count - 1; i > 0; i--)
@@ -292,7 +356,11 @@ namespace XamarinFormsMvvmAdaptor
             }
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Pops a <see cref="Page"/> off the <see cref="ModalStack"/>
+        /// </summary>
+        /// <param name="animated"></param>
+        /// <returns></returns>
         public async Task PopModalAsync(bool animated = true)
         {
             if (!ModalStack.Any())
@@ -321,13 +389,26 @@ namespace XamarinFormsMvvmAdaptor
         #endregion
 
         #region Dialogues/Popups
-        ///<inheritdoc/>
+        /// <summary>
+        /// Display's an Alert
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
         public Task DisplayAlert(string title, string message, string cancel)
         {
             return DisplayAlert(title, message, null, cancel);
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Display's an Alert
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="accept"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
         public Task<bool> DisplayAlert(string title, string message, string accept, string cancel)
         {
             var hasDisplayed = new TaskCompletionSource<Task<bool>>();
@@ -346,7 +427,14 @@ namespace XamarinFormsMvvmAdaptor
             return hasDisplayed.Task.Result;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Display's an Action Sheet
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="cancel"></param>
+        /// <param name="destruction"></param>
+        /// <param name="buttons"></param>
+        /// <returns></returns>
         public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
         {
             var hasDisplayed = new TaskCompletionSource<Task<string>>();
@@ -365,7 +453,18 @@ namespace XamarinFormsMvvmAdaptor
             return hasDisplayed.Task.Result;
         }
 
-        ///<inheritdoc/>
+        /// <summary>
+        /// Display's a Prompt to the user
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="accept"></param>
+        /// <param name="cancel"></param>
+        /// <param name="placeholder"></param>
+        /// <param name="maxLength"></param>
+        /// <param name="keyboard"></param>
+        /// <param name="initialValue"></param>
+        /// <returns></returns>
         public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default, string initialValue = "")
         {
             var hasDisplayed = new TaskCompletionSource<Task<string>>();
