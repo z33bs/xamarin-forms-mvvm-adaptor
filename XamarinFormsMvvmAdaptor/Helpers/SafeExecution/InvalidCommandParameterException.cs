@@ -7,10 +7,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
     public class InvalidCommandParameterException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.InvalidCommandParameterException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidCommandParameterException"/> class.
         /// </summary>
-        /// <param name="expectedType">Expected parameter type for AsyncCommand.Execute.</param>
-        /// <param name="actualType">Actual parameter type for AsyncCommand.Execute.</param>
+        /// <param name="expectedType">Expected parameter type for SafeCommand.Execute.</param>
+        /// <param name="actualType">Actual parameter type for SafeCommand.Execute.</param>
         /// <param name="innerException">Inner Exception</param>
         public InvalidCommandParameterException(Type expectedType, Type actualType, Exception innerException) : base(CreateErrorMessage(expectedType, actualType), innerException)
         {
@@ -18,19 +18,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.InvalidCommandParameterException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidCommandParameterException"/> class.
         /// </summary>
-        /// <param name="expectedType">Expected parameter type for AsyncCommand.Execute.</param>
-        /// <param name="actualType">Actual parameter type for AsyncCommand.Execute.</param>
+        /// <param name="expectedType">Expected parameter type for SafeCommand.Execute.</param>
+        /// <param name="actualType">Actual parameter type for SafeCommand.Execute.</param>
         public InvalidCommandParameterException(Type expectedType, Type actualType) : base(CreateErrorMessage(expectedType, actualType))
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.InvalidCommandParameterException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidCommandParameterException"/> class.
         /// </summary>
-        /// <param name="expectedType">Expected parameter type for AsyncCommand.Execute.</param>
+        /// <param name="expectedType">Expected parameter type for SafeCommand.Execute.</param>
         /// <param name="innerException">Inner Exception</param>
         public InvalidCommandParameterException(Type expectedType, Exception innerException) : base(CreateErrorMessage(expectedType), innerException)
         {
@@ -38,9 +38,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:TaskExtensions.MVVM.InvalidCommandParameterException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidCommandParameterException"/> class.
         /// </summary>
-        /// <param name="expectedType">Expected parameter type for AsyncCommand.Execute.</param>
+        /// <param name="expectedType">Expected parameter type for SafeCommand.Execute.</param>
         public InvalidCommandParameterException(Type expectedType) : base(CreateErrorMessage(expectedType))
         {
 

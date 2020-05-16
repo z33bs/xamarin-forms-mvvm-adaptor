@@ -47,12 +47,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/>
         /// </summary>
-        public static Action<Exception>? DefaultExceptionHandler //{ get; private set; }
+        public static Action<Exception> DefaultExceptionHandler //{ get; private set; }
             => Instance.DefaultExceptionHandler;
 
-        Action<Exception>? _defaultExceptionHandler;
-        ///<inheritdoc/>
-        Action<Exception>? ISafeExecutionHelpers.DefaultExceptionHandler
+        Action<Exception> _defaultExceptionHandler;
+        Action<Exception> ISafeExecutionHelpers.DefaultExceptionHandler
             => _defaultExceptionHandler;
 
         /// <summary>
@@ -69,7 +68,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </param>
         public static void Initialize(bool shouldAlwaysRethrowException = false)
             => Instance.Initialize(shouldAlwaysRethrowException);
-        ///<inheritdoc/>
         void ISafeExecutionHelpers.Initialize(bool shouldAlwaysRethrowException)
             => _shouldAlwaysRethrowException = shouldAlwaysRethrowException;
 
@@ -85,10 +83,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// when an exception is caught by
         /// <see cref="SafeTaskExtensions"/>, <see cref="SafeActionExtensions"/>
         /// , and <see cref="SafeCommand"/></param>
-        public static void Initialize(Action<Exception>? defaultOnException, bool shouldAlwaysRethrowException = false)
+        public static void Initialize(Action<Exception> defaultOnException, bool shouldAlwaysRethrowException = false)
             => Instance.Initialize(defaultOnException, shouldAlwaysRethrowException);
-        ///<inheritdoc/>
-        void ISafeExecutionHelpers.Initialize(Action<Exception>? defaultOnException, bool shouldAlwaysRethrowException)
+        void ISafeExecutionHelpers.Initialize(Action<Exception> defaultOnException, bool shouldAlwaysRethrowException)
         {
             _shouldAlwaysRethrowException = shouldAlwaysRethrowException;
             _defaultExceptionHandler = defaultOnException;
@@ -100,7 +97,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         public static void RemoveDefaultExceptionHandler()
             => Instance.RemoveDefaultExceptionHandler();
-        ///<inheritdoc/>
         void ISafeExecutionHelpers.RemoveDefaultExceptionHandler()
             => _defaultExceptionHandler = null;
 
@@ -110,7 +106,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <param name="onException">If an exception is thrown in the Task using SafeFireAndForget, <c>onException</c> will execute</param>
         public static void SetDefaultExceptionHandler(Action<Exception> onException)
             => Instance.SetDefaultExceptionHandler(onException);
-        ///<inheritdoc/>
         void ISafeExecutionHelpers.SetDefaultExceptionHandler(Action<Exception> onException)
         {
             if (onException is null)
@@ -129,11 +124,10 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <typeparam name="TException"></typeparam>
         /// <param name="exception"></param>
         /// <param name="onException"></param>
-        public static void HandleException<TException>(Exception exception, Action<TException>? onException)
+        public static void HandleException<TException>(Exception exception, Action<TException> onException)
             where TException : Exception
             => Instance.HandleException(exception, onException);
-        ///<inheritdoc/>
-        void ISafeExecutionHelpers.HandleException<TException>(Exception exception, Action<TException>? onException)
+        void ISafeExecutionHelpers.HandleException<TException>(Exception exception, Action<TException> onException)
         {
             if (exception is InvalidCommandParameterException)
                 throw exception; //internal exception from SafeCommand
@@ -153,7 +147,6 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// </summary>
         public static void HandleException(Exception exception)
             => Instance.HandleException(exception);
-        ///<inheritdoc/>
         void ISafeExecutionHelpers.HandleException(Exception exception)
             => Instance.HandleException<Exception>(exception, null);
     }

@@ -17,25 +17,42 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <summary>
         /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// </summary>
+        /// <param name="task">The Task</param>
         /// <typeparam name="TException">If an exception is thrown of a different type, it will not be handled</typeparam>
         /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
-        public static Task SafeContinueWith<TException>(this Task task, Action<TException>? onException)
+        public static Task SafeContinueWith<TException>(this Task task, Action<TException> onException)
             where TException : Exception
-            => Implementation.SafeContinueWith(task, onException);
-
-        ///<inheritdoc cref="SafeFireAndForget{TException}(Task, Action{TException}?)"/>
-        public static void SafeFireAndForget(this Task task, Action<Exception>? onException)
             => Implementation.SafeContinueWith(task, onException);
 
         /// <summary>
         /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// </summary>
+        /// <param name="task">The Task</param>
+        /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
+        /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
+        public static Task SafeContinueWith(this Task task, Action<Exception> onException)
+            => Implementation.SafeContinueWith(task, onException);
+
+        /// <summary>
+        /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
+        /// </summary>
+        /// <param name="task">The Task</param>
+        /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
+        /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
+        public static void SafeFireAndForget(this Task task, Action<Exception> onException)
+            => Implementation.SafeContinueWith(task, onException);
+
+        /// <summary>
+        /// Handles exceptions for the given Task with <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
+        /// </summary>
+        /// <param name="task">The Task</param>
         /// <typeparam name="TException">If an exception is thrown of a different type, it will not be handled</typeparam>
         /// <param name="onException">In addition to the <see cref="SafeExecutionHelpers.DefaultExceptionHandler"/>
         /// , <paramref name="onException"/> will execute if an Exception is thrown.</param>
-        public static void SafeFireAndForget<TException>(this Task task, Action<TException>? onException)
+        public static void SafeFireAndForget<TException>(this Task task, Action<TException> onException)
             where TException : Exception => Implementation.SafeContinueWith(task, onException);
+
 
         #region For Unit Testing
 
@@ -44,45 +61,41 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static ISafeTask Implementation { private get; set; } = defaultImplementation;
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static void RevertToDefaultImplementation() => Implementation = defaultImplementation;
-
-        ///<inheritdoc cref="SafeContinueWith{TException}(Task, Action{TException}?, TaskScheduler)"/>
-        public static Task SafeContinueWith(this Task task, Action<Exception>? onException)
-            => Implementation.SafeContinueWith(task, onException);
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public static Task SafeContinueWith<TException>(this Task task, Action<TException>? onException, TaskScheduler scheduler = null)
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Task SafeContinueWith<TException>(this Task task, Action<TException> onException, TaskScheduler scheduler = null)
             where TException : Exception
             => Implementation.SafeContinueWith(task, onException, scheduler);
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public static Task SafeContinueWith(this Task task, Action<Exception>? onException, TaskScheduler scheduler = null)
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Task SafeContinueWith(this Task task, Action<Exception> onException, TaskScheduler scheduler = null)
             => Implementation.SafeContinueWith(task, onException, scheduler);
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public static void SafeFireAndForget(this Task task, Action<Exception>? onException = null, TaskScheduler scheduler = null) => Implementation.SafeContinueWith(task,onException,scheduler);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void SafeFireAndForget(this Task task, Action<Exception> onException = null, TaskScheduler scheduler = null) => Implementation.SafeContinueWith(task,onException,scheduler);
 
         /// <summary>
         /// For unit testing / mocking
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public static void SafeFireAndForget<TException>(this Task task, Action<TException>? onException = null, TaskScheduler scheduler = null) where TException : Exception => Implementation.SafeContinueWith(task,onException, scheduler);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void SafeFireAndForget<TException>(this Task task, Action<TException> onException = null, TaskScheduler scheduler = null) where TException : Exception => Implementation.SafeContinueWith(task,onException, scheduler);
         #endregion
     }
 }

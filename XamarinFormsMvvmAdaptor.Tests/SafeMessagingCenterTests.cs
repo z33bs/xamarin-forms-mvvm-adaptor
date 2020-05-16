@@ -15,7 +15,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         CultureInfo _defaultUICulture;
 
 
-        public virtual void Setup()
+        private void Setup()
         {
             _defaultCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             _defaultUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
@@ -23,7 +23,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         }
 
 
-        public virtual void TearDown()
+        private void TearDown()
         {
             //Device.PlatformServices = null;
             System.Threading.Thread.CurrentThread.CurrentCulture = _defaultCulture;
@@ -47,14 +47,14 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void Filter()
         {
             string sentMessage = null;
-            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, "SimpleTest", (sender, args) => sentMessage = args, null, this);
+            SafeMessagingCenter.Subscribe<SafeMessagingCenterTests, string>(this, "SimpleTest", callback:(sender, args) => sentMessage = args, source:this);
 
             SafeMessagingCenter.Send(new SafeMessagingCenterTests(), "SimpleTest", "My Message");
 
             Assert.Null(sentMessage);
 
             SafeMessagingCenter.Send(this, "SimpleTest", "My Message");
-
+            
             Assert.Equal("My Message", sentMessage);
 
             SafeMessagingCenter.Unsubscribe<SafeMessagingCenterTests, string>(this, "SimpleTest");
@@ -115,7 +115,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
         public void NoArgFilter()
         {
             bool sentMessage = false;
-            SafeMessagingCenter.Subscribe(this, "SimpleTest", (sender) => sentMessage = true, null, this);
+            SafeMessagingCenter.Subscribe(this, "SimpleTest", (sender) => sentMessage = true, source:this);
 
             SafeMessagingCenter.Send(new SafeMessagingCenterTests(), "SimpleTest");
 
@@ -175,7 +175,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
 
             Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(null, "Foo", (sender) => { }));
             Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(this, null, (sender) => { }));
-            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe<SafeMessagingCenterTests>(this, "Foo", null));
+            Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Subscribe(this, "Foo",(Action<SafeMessagingCenterTests>)null));
 
             Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Send<SafeMessagingCenterTests, string>(null, "Foo", "Bar"));
             Assert.Throws<ArgumentNullException>(() => SafeMessagingCenter.Send<SafeMessagingCenterTests, string>(this, null, "Bar"));

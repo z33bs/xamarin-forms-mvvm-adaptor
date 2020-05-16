@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -321,7 +322,7 @@ namespace XamarinFormsMvvmAdaptor
         }
         #endregion
         #region DESTRUCTIVE
-        public void Teardown()
+        public void PurgeContainer()
         {
             foreach (var registeredObject in RegisteredObjects.ToList())
             {
@@ -473,36 +474,80 @@ namespace XamarinFormsMvvmAdaptor
         }
     }
 
+    /// <summary>
+    /// Scope of the registered object
+    /// </summary>
     public enum Scope
     {
+        /// <summary>
+        /// Global scope - is available from any container
+        /// </summary>
         Global,
+        /// <summary>
+        /// Local scope - available from a specific container
+        /// </summary>
         Local
     }
 }
 namespace XamarinFormsMvvmAdaptor.FluentApi
 {
+    /// <summary>
+    /// Plumbing for Fluent Api
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IRegisterOptions : IWithKey, IAs
     {
     }
 
+    /// <summary>
+    /// Plumbing for Fluent Api
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface ILifeCycleOptions
     {
+        /// <summary>
+        /// Will resolve a single instance
+        /// </summary>
         void SingleInstance();
+        /// <summary>
+        /// Will instantiate a new instance each time its resolved
+        /// </summary>
         void MultiInstance();
     }
 
+    /// <summary>
+    /// Plumbing for Fluent Api
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IWithKey : ILifeCycleOptions
     {
+        /// <summary>
+        /// Registers with a named <paramref name="key"/>
+        /// </summary>
         IAs WithKey(string key);
     }
 
+    /// <summary>
+    /// Plumbing for Fluent Api
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IAs : ILifeCycleOptions
     {
+        /// <summary>
+        /// Registers as a <typeparamref name="TypeToResolve"/> (usually an interface)
+        /// </summary>
         IWithKey As<TypeToResolve>() where TypeToResolve : notnull;
     }
 
+    /// <summary>
+    /// Plumbing for Fluent Api
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IInstanceRegisterOptions
     {
+        /// <summary>
+        /// Registers as a <typeparamref name="TypeToResolve"/> (usually an interface)
+        /// </summary>
         void As<TypeToResolve>() where TypeToResolve : notnull;
     }
 }

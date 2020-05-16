@@ -3,16 +3,20 @@ using System.ComponentModel;
 
 namespace XamarinFormsMvvmAdaptor.Helpers
 {
-    ///<inheritdoc/>
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    /// <summary>
+    /// For unit testing and mocking of <see cref="SafeActionExtensions"/>
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class SafeAction : ISafeAction
     {
-        ///<inheritdoc/>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        /// <summary>
+        /// For unit testing and mocking of <see cref="SafeActionExtensions"/>
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SafeInvoke<TException>(
-            Action<object?> action,
+            Action<object> action,
             object parameter,
-            Action<TException>? onException)
+            Action<TException> onException)
             where TException : Exception
         {
             try
@@ -25,9 +29,11 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
-        ///<inheritdoc/>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public void SafeInvoke<TException>(Action action, Action<TException>? onException)
+        /// <summary>
+        /// For unit testing and mocking of <see cref="SafeActionExtensions"/>
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SafeInvoke<TException>(Action action, Action<TException> onException)
             where TException : Exception
         {
             try

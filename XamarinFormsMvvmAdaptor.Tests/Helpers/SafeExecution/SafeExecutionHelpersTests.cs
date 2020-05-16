@@ -33,9 +33,9 @@ namespace XamarinFormsMvvmAdaptor.Tests
             await Task.Delay(delay);
             throw new NullReferenceException();
         }
-        protected bool CanExecuteTrue(object? parameter) => true;
-        protected bool CanExecuteFalse(object? parameter) => false;
-        protected bool CanExecuteDynamic(object? booleanParameter)
+        protected bool CanExecuteTrue(object parameter) => true;
+        protected bool CanExecuteFalse(object parameter) => false;
+        protected bool CanExecuteDynamic(object booleanParameter)
         {
             if (booleanParameter is bool parameter)
                 return parameter;
@@ -44,13 +44,13 @@ namespace XamarinFormsMvvmAdaptor.Tests
         }
 
         #region Setup/TearDown
-        public void BeforeEachTest()
+        private void BeforeEachTest()
         {
             SafeExecutionHelpers.Initialize(false);
             SafeExecutionHelpers.RemoveDefaultExceptionHandler();
         }
 
-        public void AfterEachTest()
+        private void AfterEachTest()
         {
             SafeExecutionHelpers.Initialize(false);
             SafeExecutionHelpers.RemoveDefaultExceptionHandler();
@@ -100,7 +100,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             BeforeEachTest();
 
             //Arrange
-            Exception? exception = null;
+            Exception exception = null;
 
             //Act
             NoParameterDelayedNullReferenceExceptionTask().SafeFireAndForget(onException: ex => exception = ex);
@@ -183,7 +183,7 @@ namespace XamarinFormsMvvmAdaptor.Tests
             BeforeEachTest();
 
             //Arrange
-            NullReferenceException? exception = null;
+            NullReferenceException exception = null;
 
             //Act
             NoParameterDelayedNullReferenceExceptionTask().SafeFireAndForget<NullReferenceException>(onException: ex => exception = ex);

@@ -15,12 +15,19 @@ namespace XamarinFormsMvvmAdaptor.Helpers
         private readonly WeakReference _targetReference;
         private readonly MethodInfo _method;
 
+        /// <summary>
+        /// Instantiates a new instance of the <see cref="WeakEventHandler{TEventArgs}"/>
+        ///  with provided <paramref name="callback"/>
+        /// </summary>
         public WeakEventHandler(EventHandler<TEventArgs> callback)
         {
             _method = callback.GetMethodInfo();
             _targetReference = new WeakReference(callback.Target, true);
         }
 
+        /// <summary>
+        /// Invokes the callback
+        /// </summary>
         public void Handler(object sender, TEventArgs e)
         {
             var target = _targetReference.Target;
@@ -32,6 +39,9 @@ namespace XamarinFormsMvvmAdaptor.Helpers
             }
         }
 
+        /// <summary>
+        /// Invokes the callback on the Device main (UI) thread
+        /// </summary>
         public void HandlerOnMainThread(object sender, TEventArgs e)
         {
             var target = _targetReference.Target;

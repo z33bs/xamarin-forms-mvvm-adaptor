@@ -3,9 +3,10 @@ using System.Text;
 
 namespace XamarinFormsMvvmAdaptor
 {
-    public class RegisteredObject : IDisposable
+
+    internal class RegisteredObject : IDisposable
     {
-        public RegisteredObject(Type typeToResolve, Type concreteType, LifeCycle lifeCycle)
+        internal RegisteredObject(Type typeToResolve, Type concreteType, LifeCycle lifeCycle)
         {
             TypeToResolve = typeToResolve;
             ConcreteType = concreteType;
@@ -17,7 +18,7 @@ namespace XamarinFormsMvvmAdaptor
         /// the container.
         /// </summary>
         /// <param name="instanceToResolve">Instance to resolve.</param>
-        public RegisteredObject(object instanceToResolve)
+        internal RegisteredObject(object instanceToResolve)
         {
             TypeToResolve = instanceToResolve.GetType();
             ConcreteType = instanceToResolve.GetType();
@@ -29,7 +30,7 @@ namespace XamarinFormsMvvmAdaptor
             Instance = instanceToResolve;
         }
 
-        public RegisteredObject(Type typeToResolve,object instanceToResolve)
+        internal RegisteredObject(Type typeToResolve,object instanceToResolve)
         {
             TypeToResolve = typeToResolve;
             ConcreteType = instanceToResolve.GetType();
@@ -41,17 +42,17 @@ namespace XamarinFormsMvvmAdaptor
             Instance = instanceToResolve;
         }
 
-        public string Key { get; set; }
+        internal string Key { get; set; }
 
-        public Type TypeToResolve { get; set; }
+        internal Type TypeToResolve { get; set; }
 
-        public Type ConcreteType { get; private set; }
+        internal Type ConcreteType { get; private set; }
 
-        public object Instance { get; private set; }
+        internal object Instance { get; private set; }
 
-        public LifeCycle LifeCycle { get; set; }
+        internal LifeCycle LifeCycle { get; set; }
 
-        public void CreateInstance(params object[] args)
+        internal void CreateInstance(params object[] args)
         {
             this.Instance = Activator.CreateInstance(this.ConcreteType, args);
         }

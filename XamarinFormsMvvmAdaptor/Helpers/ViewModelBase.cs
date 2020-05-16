@@ -3,17 +3,17 @@
     ///<inheritdoc/>
     public abstract class ViewModelBase : ObservableObject, IViewModelBase
     {
-        string? title = string.Empty;
+        string title = string.Empty;
         ///<inheritdoc/>
-        public string? Title
+        public string Title
         {
             get => title;
             set => SetProperty(ref title, value);
         }
 
-        string? icon = string.Empty;
+        string icon = string.Empty;
         ///<inheritdoc/>
-        public string? Icon
+        public string Icon
         {
             get => icon;
             set => SetProperty(ref icon, value);

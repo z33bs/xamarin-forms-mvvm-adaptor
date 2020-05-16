@@ -62,7 +62,7 @@ namespace XamarinFormsMvvmAdaptor
         /// <summary>
         /// Sets the <see cref="AutoWireViewModelProperty"/> to true
         /// </summary>
-        /// <param name="view">The view, commonly <see cref="this"/></param>
+        /// <param name="view">The view, commonly <c>this</c></param>
         public static void AutoWireViewModel(Page view)
         {
             if (view != null)

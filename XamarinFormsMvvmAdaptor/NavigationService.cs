@@ -49,9 +49,15 @@ namespace XamarinFormsMvvmAdaptor
         ///<inheritdoc/>
         public IReadOnlyList<Page> ModalStack => navigation.ModalStack;
 
+        #region Avoid dependancy on Xamarin.Forms
         ///<inheritdoc/>
         public ISafeMessagingCenter SafeMessagingCenter => Helpers.SafeMessagingCenter.Instance;
 
+        ///<inheritdoc/>
+        public void BeginInvokeOnMainThread(Action action)
+            => Device.BeginInvokeOnMainThread(action);
+
+        #endregion
         #region CONSTRUCTIVE
         ///<inheritdoc/>
         public Task GoToAsync(ShellNavigationState state, bool animate = true)
@@ -360,7 +366,7 @@ namespace XamarinFormsMvvmAdaptor
         }
 
         ///<inheritdoc/>
-        public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard), string initialValue = "")
+        public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default, string initialValue = "")
         {
             var hasDisplayed = new TaskCompletionSource<Task<string>>();
             Device.BeginInvokeOnMainThread(() =>

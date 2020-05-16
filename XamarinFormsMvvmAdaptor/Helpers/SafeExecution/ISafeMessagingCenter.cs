@@ -14,18 +14,26 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		/// Sends a named message
 		/// </summary>
 		void Send<TSender, TArgs>(TSender sender, string message, TArgs args) where TSender : class;
-		///<inheritdoc cref="Send{TSender, TArgs}(TSender, string, TArgs)"/>
+		/// <summary>
+		/// Sends a named message
+		/// </summary>
 		void Send<TSender>(TSender sender, string message) where TSender : class;
 
 		/// <summary>
 		/// Unsubscribes from the specified subscriber
 		/// </summary>
 		void Unsubscribe<TSender, TArgs>(object subscriber, string message) where TSender : class;
-		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
+		/// <summary>
+		/// Unsubscribes from the specified subscriber
+		/// </summary>
 		void Unsubscribe<TSender>(object subscriber, string message) where TSender : class;
-		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
+		/// <summary>
+		/// Unsubscribes from the specified <c>SubscribeAny</c> subscriber
+		/// </summary>
 		void UnsubscribeAny<TArgs>(object subscriber, string message);
-		///<inheritdoc cref="Unsubscribe{TSender, TArgs}(object, string)"/>
+		/// <summary>
+		/// Unsubscribes from the specified <c>SubscribeAny</c> subscriber
+		/// </summary>
 		void UnsubscribeAny(object subscriber, string message);
 
 		#region Subscribe
@@ -39,223 +47,170 @@ namespace XamarinFormsMvvmAdaptor.Helpers
 		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
 		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
 		/// <param name="callback">Callback to execute</param>
-        /// <param name="asyncCallback">Asynchronous callback to execute</param>
 		/// <param name="onException">Callback to execute if Exception is caught</param>
 		/// <param name="source">Instance of the source that will send the message.
         /// If specified, callback will only execute if the sender is from the
         /// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
-        /// <param name="isBlocking">If specified, will block execution of the callback if the callback is already busy executing.</param>
-        /// <param name="viewModel">If specified will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
-        /// property, and block the callback's execution if its already busy.
+        /// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+        /// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+        /// property.
 		void Subscribe<TSender, TArgs>(
 			object subscriber,
 			string message,
 			Action<TSender,TArgs> callback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message, and register a callback to execute when the message is recieved
+		/// </summary>
+		/// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+		/// from sender of type <typeparamref name="TSender"/></typeparam>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="callback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="source">Instance of the source that will send the message.
+		/// If specified, callback will only execute if the sender is from the
+		/// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+		/// property.
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
 			Action<TSender> callback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message from any Sender, and register a callback to execute when the message is recieved
+		/// </summary>
+		/// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="callback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>&apos;s <c>IsBusy</c></param>
+		/// property.
 		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
 			Action<object, TArgs> callback,
-			Action<Exception> onException = null);
+			IViewModelBase viewModel = null,
+			Action<Exception> onException = null,
+			bool isBlocking = true);
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message from any Sender, and register a callback to execute when the message is recieved
+		/// </summary>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="callback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+		/// property.
 		void SubscribeAny(
 			object subscriber,
 			string message,
 			Action<object> callback,
-			Action<Exception> onException = null);
-
-		#region bool isBlocking
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message, Action<TSender, TArgs> callback,
-			bool isBlocking,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Action<TSender> callback,
-			bool isBlocking,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Action<object, TArgs> callback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Action<object> callback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-
-		#endregion
-
-		#region IViewModelBase viewModel
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message,
-			Action<TSender, TArgs> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Action<TSender> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Action<object, TArgs> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Action<object> callback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-		#endregion
+			bool isBlocking = true);
 
 		#endregion
 		#region Functions
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message, and register an asynchronous callback to execute when the message is recieved
+		/// </summary>
+		/// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+		/// from sender of type <typeparamref name="TSender"/></typeparam>
+		/// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="asyncCallback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="source">Instance of the source that will send the message.
+		/// If specified, callback will only execute if the sender is from the
+		/// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+		/// property.
 		void Subscribe<TSender, TArgs>(
 			object subscriber,
 			string message,
 			Func<TSender, TArgs, Task> asyncCallback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message, and register an asynchronous callback to execute when the message is recieved
+		/// </summary>
+		/// <typeparam name="TSender">Sender Type. Callback will only execute if recieved
+		/// from sender of type <typeparamref name="TSender"/></typeparam>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="asyncCallback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="source">Instance of the source that will send the message.
+		/// If specified, callback will only execute if the sender is from the
+		/// specified source. If not, callback will execute if the sender's type is equal to <typeparamref name="TSender"/></param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+		/// property.
 		void Subscribe<TSender>(
 			object subscriber,
 			string message,
 			Func<TSender, Task> asyncCallback,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
+			TSender source = null,
+			bool isBlocking = true) where TSender : class;
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message from any Sender, and register an asynchronous callback to execute when the message is recieved
+		/// </summary>
+		/// <typeparam name="TArgs">Arguments Type. Callback expects arguements of type <typeparamref name="TArgs"/></typeparam>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="asyncCallback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+		/// property.
 		void SubscribeAny<TArgs>(
 			object subscriber,
 			string message,
 			Func<object, TArgs, Task> asyncCallback,
-			Action<Exception> onException = null);
+			IViewModelBase viewModel = null,
+			Action<Exception> onException = null,
+			bool isBlocking = true);
 
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
+		/// <summary>
+		/// Subscribe to a specified message from any Sender, and register an asynchronous callback to execute when the message is recieved
+		/// </summary>
+		/// <param name="subscriber">The subscriber. Usually <c>this</c>.</param>
+		/// <param name="message">Will only execute the callback when the specified message is recieved</param>
+		/// <param name="asyncCallback">Callback to execute</param>
+		/// <param name="onException">Callback to execute if Exception is caught</param>
+		/// <param name="isBlocking">Will block execution of the callback if the callback is already busy executing.</param>
+		/// <param name="viewModel">Will update <see cref="IViewModelBase"/>'s <c>IsBusy</c></param>
+		/// property.
 		void SubscribeAny(
 			object subscriber,
 			string message,
 			Func<object, Task> asyncCallback,
-			Action<Exception> onException = null);
-
-		#region bool isBlocking
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message,
-			Func<TSender, TArgs, Task> asyncCallback,
-			bool isBlocking,
+			IViewModelBase viewModel = null,
 			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Func<TSender, Task> asyncCallback,
-			bool isBlocking,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Func<object, TArgs, Task> asyncCallback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Func<object, Task> asyncCallback,
-			bool isBlocking,
-			Action<Exception> onException = null);
-
-
-		#endregion
-
-		#region IViewModelBase viewModel
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender, TArgs>(
-			object subscriber,
-			string message,
-			Func<TSender, TArgs, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void Subscribe<TSender>(
-			object subscriber,
-			string message,
-			Func<TSender, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null,
-			TSender source = null) where TSender : class;
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny<TArgs>(
-			object subscriber,
-			string message,
-			Func<object, TArgs, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-
-		///<inheritdoc cref="Subscribe{TSender, TArgs}(object, string, Action{TSender, TArgs}, Action{Exception}, TSender)"/>
-		void SubscribeAny(
-			object subscriber,
-			string message,
-			Func<object, Task> asyncCallback,
-			IViewModelBase viewModel,
-			Action<Exception> onException = null);
-        #endregion
+			bool isBlocking = true);
 
         #endregion
         #endregion
