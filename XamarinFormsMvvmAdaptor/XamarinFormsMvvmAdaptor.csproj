@@ -19,7 +19,6 @@
         <Title>Xamarin Forms Mvvm Adaptor</Title>
         <Description>ViewModel-first mvvm framework for Xamarin.Forms. Lightweight, it adapts Xamarin's existing mvvm engine. </Description>
         <PackageId>XamarinFormsMvvmAdaptor</PackageId>
-        <ReleaseVersion></ReleaseVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType>
@@ -40,7 +39,6 @@
     <ItemGroup>
       <Folder Include="Helpers\" />
       <Folder Include="Exceptions\" />
-      <Folder Include="IoC\Attributes\" />
       <Folder Include="FluentApi\" />
       <Folder Include="Helpers\SafeExecution\" />
     </ItemGroup>
