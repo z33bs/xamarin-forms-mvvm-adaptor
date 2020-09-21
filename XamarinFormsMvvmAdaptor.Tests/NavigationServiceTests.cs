@@ -10,6 +10,7 @@ using Xamarin.Forms;
 
 namespace XamarinFormsMvvmAdaptor.Tests
 {
+    [Collection("SmartDi")]
     public class NavigationServiceTests
     {
         public NavigationServiceTests()
