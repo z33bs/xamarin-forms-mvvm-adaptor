@@ -32,26 +32,38 @@ using System.Text;
 namespace XamarinFormsMvvmAdaptor
 {
     /// <summary>
-    /// Customise behaviour. All settings default to true.
+    /// Represents a set of configurable options when creating a new instance of the container.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class DiSettings
+    public class ContainerOptions
     {
+        private static readonly Lazy<ContainerOptions> DefaultOptions =
+            new Lazy<ContainerOptions>(CreateDefaultContainerOptions);
+
         /// <summary>
-        /// Constructs the <see cref="DiSettings"/> class
+        /// Initializes a new instance of the <see cref="ContainerOptions"/> class.
         /// </summary>
-        public DiSettings()
+        public ContainerOptions()
         {
             TryResolveUnregistered = true;
             ResolveShouldBubbleUpContainers = true;
         }
+
+        /// <summary>
+        /// Gets the default <see cref="ContainerOptions"/> used across all <see cref="DiContainer"/> instances.
+        /// </summary>
+        public static ContainerOptions Default => DefaultOptions.Value;
+
         /// <summary>
         /// If <c>true</c> will attempt to resolve
         ///  the class anyway. If successful it will
         ///  add the resolved class to the container.
-        ///  Default is <c>true</c>.
         /// </summary>
+        /// <remarks>
+        /// The default value is true.
+        /// </remarks>
         public bool TryResolveUnregistered { get; set; }
+
+
         /// <summary>
         /// Applies when resolving from a child container
         ///  and the type to resolve is not registered in
@@ -60,12 +72,15 @@ namespace XamarinFormsMvvmAdaptor
         ///  If nested children, will bubble up to the ultimate
         ///  ancestor.
         /// </summary>
+        /// <remarks>
+        /// The default value is true.
+        /// </remarks>
         public bool ResolveShouldBubbleUpContainers { get; set; }
+
+        private static ContainerOptions CreateDefaultContainerOptions() => new ContainerOptions();
     }
 
-    //todo documentation
     //todo list registrations
-    //todo autoregister (with flags like bindingflags) and exclusion like Tiny
     /// <summary>
     /// Interface for the dependency injection container
     /// </summary>
@@ -293,26 +308,47 @@ namespace XamarinFormsMvvmAdaptor
     /// </summary>
     public class DiContainer : IDiContainer
     {
-        /// <summary>
-        /// Settings that customise the container's behaviour
-        /// </summary>
-        public static DiSettings Settings { get; } = new DiSettings();
+        readonly ContainerOptions options;
 
         /// <summary>
         /// Instantiate a new container
         /// </summary>
-        public DiContainer()
+        public DiContainer() : this(ContainerOptions.Default)
         {
-            container = new ConcurrentDictionary<Tuple<Type, string>, MetaObject>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiContainer"/> class.
+        /// </summary>
+        /// <param name="options">The <see cref="ContainerOptions"/> instances that represents the configurable options.</param>
+        public DiContainer(ContainerOptions options) : this(o =>
+        {
+            o.TryResolveUnregistered = options.TryResolveUnregistered;
+            o.ResolveShouldBubbleUpContainers = options.ResolveShouldBubbleUpContainers;
+        })
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiContainer"/> class.
+        /// </summary>
+        /// <param name="configureOptions">A delegate used to configure <see cref="ContainerOptions"/>.</param>
+        public DiContainer(Action<ContainerOptions> configureOptions)
+        {
+            this.options = new ContainerOptions();
+            configureOptions(options);
+            this.container = new ConcurrentDictionary<Tuple<Type, string>, MetaObject>();
         }
 
         /// <summary>
         /// Constructs the container with the given dictionary
         /// </summary>
         /// <param name="container"></param>
+        /// <param name="options">The <see cref="ContainerOptions"/> instances that represents the configurable options.</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public DiContainer(
-            ConcurrentDictionary<Tuple<Type, string>, MetaObject> container)
+            ConcurrentDictionary<Tuple<Type, string>, MetaObject> container, ContainerOptions options) : this(options)
         {
             this.container = container;
         }
@@ -333,6 +369,24 @@ namespace XamarinFormsMvvmAdaptor
         {
             Instance = new DiContainer();
         }
+
+        /// <summary>
+        /// Initializes the Singleton intance of the <see cref="DiContainer"/>
+        /// class with user-specified options. 
+        /// </summary>
+        /// <remarks>Will only apply to the singleton, and will recreate the container (erasing any registrations)</remarks>
+        /// <param name="options">The <see cref="ContainerOptions"/> instances that represents the configurable options.</param>
+        public static void Initialize(ContainerOptions options)
+            => Instance = new DiContainer(options);
+
+        /// <summary>
+        /// Initializes the Singleton intance of the <see cref="DiContainer"/>
+        /// class with user-specified options. 
+        /// </summary>
+        /// <remarks>Will only apply to the singleton, and will recreate the container (erasing any registrations)</remarks>
+        /// <param name="configureOptions">A delegate used to configure <see cref="ContainerOptions"/>.</param>
+        public static void Initialize(Action<ContainerOptions> configureOptions)
+            => Instance = new DiContainer(configureOptions);
 
         internal static DiContainer Instance { get; private set; } = new DiContainer();
 
@@ -780,7 +834,7 @@ namespace XamarinFormsMvvmAdaptor
 
             else if (metaObject.TConcrete.IsGenericType
                      && metaObject.TConcrete.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                        metaObject.NewExpression = GetEnumerableExpression(container, metaObject.TConcrete);
+                metaObject.NewExpression = GetEnumerableExpression(container, metaObject.TConcrete);
 
             else
                 throw new Exception($"{nameof(metaObject.ConstructorCache)} should not be null");
@@ -817,20 +871,16 @@ namespace XamarinFormsMvvmAdaptor
                         return specificMetaObject;
                     }
                 }
-
-                throw new ResolveException(
-                    $"Could not Resolve or Create {resolvedType.Name}" +
-                    $". It is not registered in {nameof(DiContainer)}. Furthermore, " +
-                    $"smart resolve couldn't create an instance.");
             }
 
-            if (Parent != null && Settings.ResolveShouldBubbleUpContainers == true)
+            if (Parent != null && options.ResolveShouldBubbleUpContainers == true)
                 return GetMetaObject(parentContainer, resolvedType, key);
 
-            if (!Settings.TryResolveUnregistered)
+            if (!options.TryResolveUnregistered)
                 throw new ResolveException(
                     $"The type {resolvedType.Name} has not been registered. Either " +
-                    $"register the class, or configure {nameof(Settings)}.");
+                    $"register the class, or configure the container options differently " +
+                    $"when initialising the conatiner.");
 
             if (resolvedType.IsInterface || resolvedType.IsAbstract)
             {
@@ -847,7 +897,7 @@ namespace XamarinFormsMvvmAdaptor
                         resolvedType.IsAssignableFrom(t)
                         && t != resolvedType);
 
-                if(implementations.Count() != 1)
+                if (implementations.Count() != 1)
                 {
                     var builder = new StringBuilder();
                     builder.Append(
@@ -877,6 +927,7 @@ namespace XamarinFormsMvvmAdaptor
             if (container.TryAdd(new Tuple<Type, string>(resolvedType, null), metaObject))
                 return metaObject;
 
+            // This condition should never be hit. Here just in case.
             throw new ResolveException(
                 $"The type {resolvedType.Name} has not been registered and SmartResolve didn't work.");
         }
@@ -901,7 +952,7 @@ namespace XamarinFormsMvvmAdaptor
             {
                 if (key.Item1 == resolvableType)
                 {
-                    var expression = GetExpression(container,resolvableType, key.Item2);
+                    var expression = GetExpression(container, resolvableType, key.Item2);
                     listElements.Add(Expression.ElementInit(addMethod, expression));
                 }
             }
@@ -913,11 +964,11 @@ namespace XamarinFormsMvvmAdaptor
 
             // Create a ListInitExpression that represents initializing
             // a new Dictionary<> instance with two key-value pairs.
-            if(listElements.Any())
-            return
-                Expression.ListInit(
-                    newDictionaryExpression,
-                    listElements);
+            if (listElements.Any())
+                return
+                    Expression.ListInit(
+                        newDictionaryExpression,
+                        listElements);
 
             throw new ResolveException($"Could not resolve {resolvedType.Name}");
         }
